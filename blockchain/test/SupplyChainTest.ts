@@ -23,7 +23,7 @@ describe("SupplyChain", function () {
         deploySupplyChainFixture
       );
 
-      expect(await supplyChain.owner()).to.equal(owner.address);
+      expect(await supplyChain.isOwner()).to.equal(true);
     });
   });
 });

@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 import "./Common.sol";
 
-contract SupplyChain {
+contract SupplyChain is Ownable {
     enum EventType {
         Update,
         Transaction
@@ -23,10 +23,5 @@ contract SupplyChain {
         Event[] events;
     }
 
-    address public owner;
     mapping(address => Batch) public batches;
-
-    constructor() {
-        owner = msg.sender;
-    }
 }
