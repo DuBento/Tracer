@@ -1,3 +1,8 @@
-export default function App() {
-  return <h1 className="text-3xl font-bold underline">Hello world!</h1>;
-}
+import { connectWallet } from "./services/BlockchainServices";
+
+const App = () => {
+  connectWallet();
+  return <button className="center">Hello world!</button>;
+};
+
+export default App;
