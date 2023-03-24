@@ -1,14 +1,27 @@
-import { ethers, Signer, BrowserProvider } from "ethers";
+import { ethers, Signer, BrowserProvider, Contract } from "ethers";
 
-import {
-  address as supplyChainAddress,
-  abi as supplyChainAbi,
-} from "../../../abi/SupplyChain.json";
+import SupplyChainSC from "../../../abi/SupplyChain.json";
+
+const supplyChainAddress = SupplyChainSC.address;
+const supplyChainAbi = SupplyChainSC.abi;
 
 export var signer: Signer | null = null;
 export var provider: BrowserProvider;
 
-export const connectWallet = async () => {
+export var supplyChainContract: Contract;
+
+export const connect = () => {
+  connectWallet().then(() => {
+    // Create a contract
+    supplyChainContract = new Contract(
+      supplyChainAddress,
+      supplyChainAbi,
+      provider!
+    );
+  });
+};
+
+const connectWallet = async () => {
   if (window.ethereum == null) {
     // If MetaMask is not installed, we use the default provider,
     // which is backed by a variety of third-party services (such
