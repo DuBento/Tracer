@@ -20,22 +20,22 @@ contract SupplyChain is Ownable {
     }
 
     struct Batch {
-        address id;
+        uint256 id;
         string description;
         ConformityState state;
         Event[] events;
     }
 
-    mapping(address => Batch) public batches;
+    mapping(uint256 => Batch) public batches;
 
     function newBatch(
-        string memory _description,
-        Hash _documentHash
-    ) public returns (address) {
-        address batchId = generateAddress();
+        string memory description_,
+        Hash documentHash_
+    ) public returns (uint256) {
+        uint256 batchId = 1;
         Batch storage batch = batches[batchId];
         batch.id = batchId;
-        batch.description = _description;
+        batch.description = description_;
         batch.state = ConformityState.Functioning;
 
         console.log("batchId:", batchId);
@@ -43,7 +43,7 @@ contract SupplyChain is Ownable {
         // handle create event
         Event memory newEvent = Event(
             msg.sender,
-            _documentHash,
+            documentHash_,
             block.timestamp,
             EventType.Create
         );
@@ -52,38 +52,34 @@ contract SupplyChain is Ownable {
         return batchId;
     }
 
-    function handleEvent(address _address, Event memory _event) public {
+    function handleEvent(uint256 id_, Event memory event_) public {
         // Asserts (modifier)
-        assertEventOwner(_event, msg.sender);
-        assertBacthExists(_address);
-        assertEventValidTimestamp(_address, _event);
+        assertEventOwner(event_, msg.sender);
+        assertBacthExists(id_);
+        assertEventValidTimestamp(id_, event_);
         // Send BCEvent
         // Record Event
-        batches[_address].events.push(_event);
+        batches[id_].events.push(event_);
     }
 
     function getLastEvent(
-        address _address
+        uint256 address_
     ) private view returns (Event storage) {
-        Event[] storage events = batches[_address].events;
+        Event[] storage events = batches[address_].events;
         uint256 arrayLen = events.length;
         require(arrayLen > 0, "Accessing empty array");
 
         return events[arrayLen - 1];
     }
 
-    function generateAddress() public view returns (address) {
+    function generateId() public view returns (uint256) {
         return
-            address(
-                uint160(
-                    uint256(
-                        keccak256(
-                            abi.encodePacked(
-                                msg.sender,
-                                block.timestamp,
-                                block.difficulty
-                            )
-                        )
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        msg.sender,
+                        block.timestamp,
+                        block.difficulty
                     )
                 )
             );
@@ -92,30 +88,27 @@ contract SupplyChain is Ownable {
     // Asserts
 
     function assertEventOwner(
-        Event memory _event,
-        address _sender
+        Event memory event_,
+        address sender_
     ) private pure {
         require(
-            _event.owner == _sender,
+            event_.owner == sender_,
             "Event owner differs from message sender"
         );
     }
 
-    function assertBacthExists(address _address) private view {
-        require(
-            batches[_address].id != address(0),
-            "Address for nonexistent batch"
-        );
+    function assertBacthExists(uint256 id_) private view {
+        require(batches[id_].id != 0, "Address for nonexistent batch");
     }
 
     function assertEventValidTimestamp(
-        address _address,
-        Event memory _event
+        uint256 address_,
+        Event memory event_
     ) private view {
-        Event[] storage events = batches[_address].events;
+        Event[] storage events = batches[address_].events;
         require(
-            (((events.length > 0 && getLastEvent(_address).ts < _event.ts)) ||
-                events.length == 0) && _event.ts <= block.timestamp,
+            (((events.length > 0 && getLastEvent(address_).ts < event_.ts)) ||
+                events.length == 0) && event_.ts <= block.timestamp,
             "Invalid event timestamp"
         );
     }
