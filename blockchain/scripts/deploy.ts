@@ -12,7 +12,10 @@ async function main() {
   saveFrontendFiles("SupplyChain", supplyChain);
 }
 
-async function saveFrontendFiles(contractName: string, contract: BaseContract) {
+export async function saveFrontendFiles(
+  contractName: string,
+  contract: BaseContract
+) {
   const fs = require("fs");
   const path = require("path");
 
