@@ -26,7 +26,11 @@ contract SupplyChain is Ownable {
         Event[] events;
     }
 
-    mapping(uint256 => Batch) public batches;
+    mapping(uint256 => Batch) batches;
+
+    function getBatch(uint256 id_) public view returns (Batch memory) {
+        return batches[id_];
+    }
 
     function newBatch(
         string memory description_,
@@ -62,10 +66,8 @@ contract SupplyChain is Ownable {
         batches[id_].events.push(event_);
     }
 
-    function getLastEvent(
-        uint256 address_
-    ) private view returns (Event storage) {
-        Event[] storage events = batches[address_].events;
+    function getLastEvent(uint256 id_) private view returns (Event storage) {
+        Event[] storage events = batches[id_].events;
         uint256 arrayLen = events.length;
         require(arrayLen > 0, "Accessing empty array");
 
@@ -102,12 +104,12 @@ contract SupplyChain is Ownable {
     }
 
     function assertEventValidTimestamp(
-        uint256 address_,
+        uint256 id_,
         Event memory event_
     ) private view {
-        Event[] storage events = batches[address_].events;
+        Event[] storage events = batches[id_].events;
         require(
-            (((events.length > 0 && getLastEvent(address_).ts < event_.ts)) ||
+            (((events.length > 0 && getLastEvent(id_).ts < event_.ts)) ||
                 events.length == 0) && event_.ts <= block.timestamp,
             "Invalid event timestamp"
         );
