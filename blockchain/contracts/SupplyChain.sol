@@ -32,6 +32,10 @@ contract SupplyChain is Ownable {
         return batches[id_];
     }
 
+    function ping() public pure returns (string memory) {
+        return "pong";
+    }
+
     function newBatch(
         string memory description_,
         Hash documentHash_

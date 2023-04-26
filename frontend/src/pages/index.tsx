@@ -1,7 +1,5 @@
-import { connect } from "../services/BlockchainServices";
+import SupplyChainController from "./SupplychainController";
 
 export default function Home() {
-  connect();
-
-  return <>Hello World</>;
+  return <SupplyChainController />;
 }
