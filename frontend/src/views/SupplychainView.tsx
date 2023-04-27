@@ -3,11 +3,11 @@ type SupplychainViewProps = {
 };
 
 const SupplychainView = ({ value }: SupplychainViewProps) => {
-  console.log(value);
+  console.log(value.description);
 
   return (
     <>
-      <p>{value.toString()}</p>
+      <p>{value.description.toString()}</p>
     </>
   );
 };
