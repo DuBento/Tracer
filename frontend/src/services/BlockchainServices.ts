@@ -43,6 +43,7 @@ interface BlockchainServicesInterface {
   // provider: ethers.JsonRpcApiProvider;
   supplyChainContract: () => ethers.Contract;
   ping: () => Promise<string>;
+  getBatch: (id: number) => Promise<object>;
 }
 
 const BlockchainServices: BlockchainServicesInterface = {
@@ -53,6 +54,10 @@ const BlockchainServices: BlockchainServicesInterface = {
 
   ping: async (): Promise<string> => {
     return BlockchainServices.supplyChainContract().ping();
+  },
+
+  getBatch: async (id: number): Promise<object> => {
+    return BlockchainServices.supplyChainContract().getBatch(id);
   },
 };
 
