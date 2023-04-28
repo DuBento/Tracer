@@ -1,13 +1,13 @@
 type SupplychainViewProps = {
-  value: object;
+  description: string;
 };
 
-const SupplychainView = ({ value }: SupplychainViewProps) => {
-  console.log(value.description);
+const SupplychainView = ({ description }: SupplychainViewProps) => {
+  console.log(description);
 
   return (
     <>
-      <p>{value.description.toString()}</p>
+      <p>{description}</p>
     </>
   );
 };

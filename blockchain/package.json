@@ -11,5 +11,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "hardhat": "^2.14.0"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1"
   }
 }

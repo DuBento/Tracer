@@ -3,9 +3,7 @@
 
 LICENSE
 
-/abi/*
-!abi/README.md
-
+/frontend/contracts/
 
 ## Blockchain (hardhat)
 

@@ -17,12 +17,18 @@ export async function saveFrontendFiles(
   contract: BaseContract
 ) {
   const fs = require("fs");
+  const fse = require("fs-extra");
   const path = require("path");
 
-  const contractsDir = path.join(__dirname, "..", "..", "abi");
+  const contractsDir = path.join(
+    __dirname,
+    "..",
+    "artifacts",
+    "frontend-artifacts"
+  );
 
   if (!fs.existsSync(contractsDir)) {
-    fs.mkdirSync(contractsDir);
+    fse.mkdirSync(contractsDir);
   }
 
   const abi = await getContractAbi(contractName);
@@ -31,6 +37,18 @@ export async function saveFrontendFiles(
     path.join(contractsDir, contractName + ".json"),
     JSON.stringify({ address: contract.address, abi: abi }, undefined, 2)
   );
+
+  // Copy type + abi files to frontend dir
+  // const allFrontendFiles = path.join(contractsDir, "*");
+  const frontendOutDir = path.join(
+    __dirname,
+    "..",
+    "..",
+    "frontend",
+    "contracts"
+  );
+
+  fse.copySync(contractsDir, frontendOutDir, { overwrite: true });
 }
 
 async function getContractAbi(contractName: string) {

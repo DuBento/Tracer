@@ -1,13 +1,9 @@
 import { ethers, Contract, providers } from "ethers";
 
-// import {
-//   SupplyChain,
-//   SupplyChain__factory,
-// } from "../../../blockchain/typechain-types";
-import SupplyChainSCConfig from "../../../abi/SupplyChain.json";
+import { SupplyChain__factory, SupplyChain } from "@/contracts/";
+import SupplyChainSCConfig from "@/contracts/SupplyChain.json";
 
 const supplyChainAddress = SupplyChainSCConfig.address;
-const supplyChainAbi = SupplyChainSCConfig.abi;
 
 const connectWallet = (): providers.JsonRpcProvider => {
   if (window?.ethereum == null) {
@@ -43,22 +39,22 @@ const connectHardhat = async () => {
 
 interface BlockchainServicesInterface {
   // provider: ethers.JsonRpcApiProvider;
-  supplyChainContract: () => ethers.Contract;
+  supplyChainContract: () => SupplyChain;
   ping: () => Promise<string>;
-  getBatch: (id: number) => Promise<object>;
+  getBatch: (id: number) => Promise<SupplyChain.BatchStructOutput>;
 }
 
 const BlockchainServices: BlockchainServicesInterface = {
   // provider: connectWallet(),
 
   supplyChainContract: () =>
-    new Contract(supplyChainAddress, supplyChainAbi, connectWallet()),
+    SupplyChain__factory.connect(supplyChainAddress, connectWallet()),
 
   ping: async (): Promise<string> => {
     return BlockchainServices.supplyChainContract().ping();
   },
 
-  getBatch: async (id: number): Promise<object> => {
+  getBatch: async (id: number): Promise<SupplyChain.BatchStructOutput> => {
     return BlockchainServices.supplyChainContract().getBatch(id);
   },
 };
