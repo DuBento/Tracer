@@ -14,7 +14,7 @@ contract SupplyChain is Ownable {
 
     struct Event {
         address owner;
-        Hash documentHash;
+        bytes32 documentHash;
         uint256 ts;
         EventType eventType;
     }
@@ -38,7 +38,7 @@ contract SupplyChain is Ownable {
 
     function newBatch(
         string memory description_,
-        Hash documentHash_
+        bytes32 documentHash_
     ) public returns (uint256) {
         uint256 batchId = 1;
         Batch storage batch = batches[batchId];
@@ -68,6 +68,14 @@ contract SupplyChain is Ownable {
         // Send BCEvent
         // Record Event
         batches[id_].events.push(event_);
+
+        console.log("Event pushed successfully in id: ");
+        console.log(id_);
+        console.log(", event: ");
+        console.log(event_.owner);
+        // console.log(event_.documentHash);
+        console.log(event_.ts);
+        console.log(uint8(event_.eventType));
     }
 
     function getLastEvent(uint256 id_) private view returns (Event storage) {
@@ -118,4 +126,7 @@ contract SupplyChain is Ownable {
             "Invalid event timestamp"
         );
     }
+
+    // @developement mitigate metamask node errors
+    fallback() external {}
 }

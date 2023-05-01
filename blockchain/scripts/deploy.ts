@@ -39,7 +39,6 @@ export async function saveFrontendFiles(
   );
 
   // Copy type + abi files to frontend dir
-  // const allFrontendFiles = path.join(contractsDir, "*");
   const frontendOutDir = path.join(
     __dirname,
     "..",

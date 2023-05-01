@@ -1,23 +1,37 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SupplyChainView from "@/views/SupplychainView";
 import BlockchainServices from "@/services/BlockchainServices";
 import { SupplyChain } from "@/contracts";
+import { ethers } from "ethers";
 
 const SupplychainController = () => {
-  const [data, setData] = useState<SupplyChain.BatchStructOutput>();
+  const [batch, setBatch] = useState<SupplyChain.BatchStructOutput>();
+  const [error, setError] = useState<String>();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setData(await BlockchainServices.getBatch(1));
+  const handleFetchBatch = async (id: ethers.BigNumberish) => {
+    setBatch(await BlockchainServices.getBatch(id));
   };
 
-  return data ? (
-    <SupplyChainView description={data.description} />
-  ) : (
-    <p>Batch not loaded</p>
+  const handlePushNewEvent = async (
+    id: ethers.BigNumberish,
+    partialEvent: Partial<SupplyChain.EventStruct>
+  ) => {
+    try {
+      await BlockchainServices.pushNewEvent(id, partialEvent);
+    } catch (error: any) {
+      console.error(error);
+      setError(error.message);
+    }
+  };
+
+  if (error) return <>{error}</>;
+
+  return (
+    <SupplyChainView
+      batch={batch}
+      handleFetchBatch={handleFetchBatch}
+      handlePushNewEvent={handlePushNewEvent}
+    />
   );
 };
 

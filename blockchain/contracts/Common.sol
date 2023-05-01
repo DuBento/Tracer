@@ -2,7 +2,6 @@
 pragma solidity ^0.8.9;
 
 // Type definitions
-type Hash is bytes32;
 
 enum ConformityState {
     Functioning,
