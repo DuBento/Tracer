@@ -8,8 +8,25 @@ const SupplychainController = () => {
   const [batch, setBatch] = useState<SupplyChain.BatchStructOutput>();
   const [error, setError] = useState<String>();
 
+  const handleCreateNewBatch = async (
+    description: string,
+    documentHash: string
+  ) => {
+    try {
+      await BlockchainServices.newBatch(description, documentHash);
+    } catch (error: any) {
+      console.error(error);
+      setError(error.message);
+    }
+  };
+
   const handleFetchBatch = async (id: ethers.BigNumberish) => {
-    setBatch(await BlockchainServices.getBatch(id));
+    try {
+      setBatch(await BlockchainServices.getBatch(id));
+    } catch (error: any) {
+      console.error(error);
+      setError(error.message);
+    }
   };
 
   const handlePushNewEvent = async (
@@ -29,6 +46,7 @@ const SupplychainController = () => {
   return (
     <SupplyChainView
       batch={batch}
+      handleCreateNewBatch={handleCreateNewBatch}
       handleFetchBatch={handleFetchBatch}
       handlePushNewEvent={handlePushNewEvent}
     />

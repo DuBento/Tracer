@@ -59,6 +59,12 @@ const BlockchainServices = {
     );
   },
 
+  newBatch: async (description: string, hash: string): Promise<number> => {
+    return BlockchainServices.supplyChainContract().then((contract) =>
+      contract.newBatch(description, hash)
+    );
+  },
+
   pushNewEvent: async (
     id: ethers.BigNumberish,
     partialEvent: Partial<SupplyChain.EventStruct>
