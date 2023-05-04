@@ -1,19 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SupplyChainView from "@/views/SupplychainView";
 import BlockchainServices from "@/services/BlockchainServices";
 import { SupplyChain } from "@/contracts";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 const SupplychainController = () => {
   const [batch, setBatch] = useState<SupplyChain.BatchStructOutput>();
+  const [newBatchId, setNewBatchId] = useState<BigNumber>();
   const [error, setError] = useState<String>();
+
+  useEffect(() => {
+    // BlockchainServices.listenOnNewBatchEvent();
+  }, []);
 
   const handleCreateNewBatch = async (
     description: string,
     documentHash: string
   ) => {
     try {
-      await BlockchainServices.newBatch(description, documentHash);
+      const newBatchId = await BlockchainServices.newBatch(
+        description,
+        documentHash
+      );
+      setNewBatchId(newBatchId);
     } catch (error: any) {
       console.error(error);
       setError(error.message);
@@ -46,6 +55,7 @@ const SupplychainController = () => {
   return (
     <SupplyChainView
       batch={batch}
+      newBatchId={newBatchId}
       handleCreateNewBatch={handleCreateNewBatch}
       handleFetchBatch={handleFetchBatch}
       handlePushNewEvent={handlePushNewEvent}

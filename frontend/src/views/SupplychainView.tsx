@@ -4,6 +4,7 @@ import { useState } from "react";
 
 type SupplychainViewProps = {
   batch?: SupplyChain.BatchStructOutput;
+  newBatchId?: ethers.BigNumber;
   handleCreateNewBatch: (description: string, documentHash: string) => void;
   handleFetchBatch: (id: ethers.BigNumberish) => void;
   handlePushNewEvent: (
@@ -14,6 +15,7 @@ type SupplychainViewProps = {
 
 const SupplychainView = ({
   batch,
+  newBatchId,
   handleCreateNewBatch,
   handleFetchBatch,
   handlePushNewEvent,
@@ -61,6 +63,8 @@ const SupplychainView = ({
           <br />
           <button type="submit">Submit</button>
         </form>
+
+        {newBatchId && <p>{newBatchId.toString()}</p>}
       </div>
       <div>
         <h3>Get Batch</h3>

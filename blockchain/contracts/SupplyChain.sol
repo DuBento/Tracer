@@ -26,6 +26,9 @@ contract SupplyChain is Ownable {
         Event[] events;
     }
 
+    //events
+    event NewBatch(address indexed owner, uint256 id);
+
     mapping(uint256 => Batch) batches;
 
     function getBatch(uint256 id_) public view returns (Batch memory) {
@@ -40,7 +43,7 @@ contract SupplyChain is Ownable {
         string memory description_,
         bytes32 documentHash_
     ) public returns (uint256) {
-        uint256 batchId = 1;
+        uint256 batchId = generateId();
         Batch storage batch = batches[batchId];
         batch.id = batchId;
         batch.description = description_;
@@ -56,6 +59,8 @@ contract SupplyChain is Ownable {
             EventType.Create
         );
         handleEvent(batchId, newEvent);
+
+        emit NewBatch(msg.sender, batch.id);
 
         return batchId;
     }

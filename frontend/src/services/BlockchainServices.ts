@@ -1,7 +1,8 @@
-import { ethers, providers } from "ethers";
+import { BigNumber, ethers, providers } from "ethers";
 
 import { SupplyChain__factory, SupplyChain } from "@/contracts/";
 import SupplyChainSCConfig from "@/contracts/SupplyChain.json";
+import { NewBatchEvent, NewBatchEventObject } from "@/contracts/SupplyChain";
 
 const supplyChainAddress = SupplyChainSCConfig.address;
 
@@ -59,30 +60,53 @@ const BlockchainServices = {
     );
   },
 
-  newBatch: async (description: string, hash: string): Promise<number> => {
-    return BlockchainServices.supplyChainContract().then((contract) =>
-      contract.newBatch(description, hash)
-    );
+  newBatch: async (description: string, hash: string): Promise<BigNumber> => {
+    return BlockchainServices.supplyChainContract().then(async (contract) => {
+      const tx = await contract.newBatch(description, hash);
+      const receipt = await tx.wait();
+
+      const newBatchEvent = receipt.events?.find(
+        (event) => event.event == "NewBatch"
+      )?.args as unknown as NewBatchEventObject;
+
+      return newBatchEvent.id;
+    });
   },
 
   pushNewEvent: async (
     id: ethers.BigNumberish,
     partialEvent: Partial<SupplyChain.EventStruct>
   ) => {
-    partialEvent.owner = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
-    partialEvent.ts = ethers.BigNumber.from(Math.floor(Date.now() / 1000));
-    partialEvent.eventType = 1;
+    return await BlockchainServices.supplyChainContract().then(
+      async (contract) => {
+        const currentAddress = await contract.signer.getAddress();
+        partialEvent.owner = currentAddress;
+        partialEvent.ts = ethers.BigNumber.from(Math.floor(Date.now() / 1000));
+        partialEvent.eventType = 1;
 
-    const event = partialEvent as SupplyChain.EventStruct;
+        const event = partialEvent as SupplyChain.EventStruct;
 
-    console.log("Sending:");
-    console.log({ id, event });
+        console.log("Sending:");
+        console.log({ id, event });
 
-    const res = await BlockchainServices.supplyChainContract().then(
-      (contract) => contract.handleEvent(id, event)
+        return contract.handleEvent(id, event);
+      }
     );
+  },
 
-    console.log({ res });
+  listenOnNewBatchEvent: async () => {
+    BlockchainServices.supplyChainContract().then(
+      async (contract: SupplyChain) => {
+        const currentAddress = await contract.signer.getAddress();
+        const filter = contract.filters.NewBatch(currentAddress);
+
+        contract.on(filter, (owner, id, event) => {
+          console.log(
+            `#Listening: New Bacth event with id: ${owner}. Owner is ${id}.`
+          );
+        });
+      }
+    );
   },
 };
 
