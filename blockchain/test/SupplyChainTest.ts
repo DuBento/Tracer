@@ -6,6 +6,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { SupplyChain } from "../artifacts/frontend-artifacts";
 import * as Values from "./TestConfig";
 import { BigNumber } from "ethers";
+import { NewBatchEventObject } from "../artifacts/frontend-artifacts/SupplyChain";
 
 describe("SupplyChain", function () {
   let supplyChain: SupplyChain;
@@ -26,6 +27,21 @@ describe("SupplyChain", function () {
     return { contract, primaryAccount, otherAccount1, otherAccount2 };
   }
 
+  async function createNewBatch(
+    supplyChain: SupplyChain,
+    description: string,
+    hash: string
+  ): Promise<BigNumber> {
+    const tx = await supplyChain.newBatch(description, hash);
+    const receipt = await tx.wait();
+
+    const newBatchEvent = receipt.events?.find(
+      (event) => event.event == "NewBatch"
+    )?.args as unknown as NewBatchEventObject;
+
+    return newBatchEvent.id;
+  }
+
   beforeEach(async function () {
     const { contract, primaryAccount, otherAccount1, otherAccount2 } =
       await loadFixture(deploySupplyChainFixture);
@@ -43,16 +59,15 @@ describe("SupplyChain", function () {
 
   describe("Batches", function () {
     it("New batch should be properly initialized", async function () {
-      await supplyChain.newBatch(
+      const id = await createNewBatch(
+        supplyChain,
         Values.BATCH_DESCRIPTION,
         Values.EVENT_DOCUMENT_HASH
       );
 
-      // TODO get Id from event and check struct
-      const id = 1;
       const batch = await supplyChain.getBatch(id);
 
-      expect(batch.id).to.equal(ethers.BigNumber.from("1"));
+      expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
       expect(batch.events).to.have.lengthOf(1);
       expect(batch.events[0].owner).to.equal(owner.address);
@@ -62,17 +77,15 @@ describe("SupplyChain", function () {
   });
 
   describe("Supplychain events", function () {
-    let id: number;
+    let id: BigNumber;
     let batchTs: BigNumber;
 
     beforeEach(async function () {
-      await supplyChain.newBatch(
+      id = await createNewBatch(
+        supplyChain,
         Values.BATCH_DESCRIPTION,
         Values.EVENT_DOCUMENT_HASH
       );
-
-      // TODO get Id from event and check struct
-      id = 1;
 
       const batch = await supplyChain.getBatch(id);
       batchTs = batch.events[0].ts;
@@ -94,7 +107,7 @@ describe("SupplyChain", function () {
       const batch = await supplyChain.getBatch(id);
       const eventIdx = batch.events.length - 1; // second event
 
-      expect(batch.id).to.equal(ethers.BigNumber.from("1"));
+      expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
       expect(batch.events).to.have.lengthOf(2);
       expect(batch.events[eventIdx].owner).to.equal(actor1.address);
