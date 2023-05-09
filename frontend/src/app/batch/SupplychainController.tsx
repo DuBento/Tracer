@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import SupplyChainView from "@/views/SupplychainView";
 import BlockchainServices from "@/services/BlockchainServices";

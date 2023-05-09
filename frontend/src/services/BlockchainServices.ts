@@ -6,6 +6,8 @@ import { NewBatchEvent, NewBatchEventObject } from "@/contracts/SupplyChain";
 
 const supplyChainAddress = SupplyChainSCConfig.address;
 
+let supplyChainContract: SupplyChain | undefined = undefined;
+
 const connectWallet = async (): Promise<ethers.Signer> => {
   if (window?.ethereum == null) {
     //   // If MetaMask is not installed, we use the default provider,
@@ -39,11 +41,15 @@ const connectHardhat = async () => {
 };
 
 const BlockchainServices = {
-  // provider: connectWallet(),
-
   supplyChainContract: async (): Promise<SupplyChain> => {
-    const signer = await connectWallet();
-    return SupplyChain__factory.connect(supplyChainAddress, signer);
+    if (supplyChainContract) return supplyChainContract;
+    else {
+      supplyChainContract = SupplyChain__factory.connect(
+        supplyChainAddress,
+        await connectWallet()
+      );
+      return supplyChainContract;
+    }
   },
 
   ping: async (): Promise<string> => {
