@@ -1,9 +1,13 @@
-import SupplychainController from "./SupplychainController";
+import GetBatch from "@/components/batch/getBatch";
+import NewBatch from "@/components/batch/newBatch";
+import UpdateBatch from "@/components/batch/updateBatch";
 
 const BatchPage = () => {
   return (
     <main>
-      <SupplychainController />
+      <NewBatch />
+      <GetBatch />
+      <UpdateBatch />
     </main>
   );
 };
