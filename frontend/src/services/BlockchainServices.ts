@@ -1,9 +1,8 @@
-import { BigNumber, ethers, providers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 import { SupplyChain__factory, SupplyChain } from "@/contracts/";
+import { NewBatchEventObject } from "@/contracts/SupplyChain";
 import SupplyChainSCConfig from "@/contracts/SupplyChain.json";
-import { NewBatchEvent, NewBatchEventObject } from "@/contracts/SupplyChain";
-
 const supplyChainAddress = SupplyChainSCConfig.address;
 
 let supplyChainContract: SupplyChain | undefined = undefined;

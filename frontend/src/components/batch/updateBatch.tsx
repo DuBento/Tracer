@@ -3,12 +3,13 @@
 import { SupplyChain } from "@/contracts";
 import BlockchainServices from "@/services/BlockchainServices";
 import { ethers } from "ethers";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { BatchContext } from "@/context/batchContext";
+import NotificationContext from "@/context/notificationContext";
 
 const UpdateBatch = ({}) => {
-  const batchContext = useContext(BatchContext);
-  const batch = batchContext?.batch;
+  const { batch } = useContext(BatchContext);
+  const notifications = useContext(NotificationContext);
 
   const formSubmit = (e: React.FormEvent | React.MouseEvent, method: any) => {
     e.preventDefault();
@@ -21,9 +22,10 @@ const UpdateBatch = ({}) => {
   ) => {
     try {
       await BlockchainServices.pushNewEvent(id, partialEvent);
+      notifications.notify("New event pushed");
     } catch (error: any) {
       console.error(error);
-      // TODO use provider default error function
+      notifications.error(error.message);
     }
   };
 

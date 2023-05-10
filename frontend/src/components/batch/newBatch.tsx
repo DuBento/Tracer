@@ -1,12 +1,16 @@
 "use client";
 
+import NotificationContext from "@/context/notificationContext";
 import BlockchainServices from "@/services/BlockchainServices";
 import { ethers } from "ethers";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { toast } from "react-hot-toast";
 
 const NewBatch = ({}) => {
   const [batchId, setBatchId] = useState<string>();
   const [newBatchDescription, setNewBatchDescription] = useState("");
+
+  const notifications = useContext(NotificationContext);
 
   const formSubmit = (e: React.FormEvent | React.MouseEvent, method: any) => {
     e.preventDefault();
@@ -22,10 +26,11 @@ const NewBatch = ({}) => {
         description,
         documentHash
       );
+      notifications.notify(newBatchId.toString());
       setBatchId(newBatchId.toString());
     } catch (error: any) {
       console.error(error);
-      // TODO use provider default error function
+      notifications.error(error.message);
     }
   };
 

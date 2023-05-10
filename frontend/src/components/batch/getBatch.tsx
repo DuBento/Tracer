@@ -1,7 +1,7 @@
 "use client";
 
 import { BatchContext } from "@/context/batchContext";
-import { SupplyChain } from "@/contracts";
+import NotificationContext from "@/context/notificationContext";
 import BlockchainServices from "@/services/BlockchainServices";
 import { ethers } from "ethers";
 import { useContext, useState } from "react";
@@ -9,6 +9,8 @@ import { useContext, useState } from "react";
 const GetBatch = ({}) => {
   const [batchId, setBatchId] = useState<string>("");
   const { batch, setBatch } = useContext(BatchContext);
+
+  const notifications = useContext(NotificationContext);
 
   const formSubmit = (e: React.FormEvent | React.MouseEvent, method: any) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ const GetBatch = ({}) => {
       setBatch(await BlockchainServices.getBatch(id));
     } catch (error: any) {
       console.error(error);
-      // TODO use provider default error function
+      notifications.error(error.message);
     }
   };
 
