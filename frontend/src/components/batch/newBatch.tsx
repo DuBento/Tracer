@@ -4,7 +4,6 @@ import NotificationContext from "@/context/notificationContext";
 import BlockchainServices from "@/services/BlockchainServices";
 import { ethers } from "ethers";
 import { useContext, useState } from "react";
-import { toast } from "react-hot-toast";
 
 const NewBatch = ({}) => {
   const [batchId, setBatchId] = useState<string>();

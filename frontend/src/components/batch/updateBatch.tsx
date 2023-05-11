@@ -1,11 +1,14 @@
 "use client";
 
 import { SupplyChain } from "@/contracts";
-import BlockchainServices from "@/services/BlockchainServices";
-import { ethers } from "ethers";
+import BlockchainServices, {
+  BatchId,
+  PartialUpdate,
+} from "@/services/BlockchainServices";
 import { useContext } from "react";
 import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
+import { ethers } from "ethers";
 
 const UpdateBatch = ({}) => {
   const { batch } = useContext(BatchContext);
@@ -17,11 +20,11 @@ const UpdateBatch = ({}) => {
   };
 
   const handlePushNewEvent = async (
-    id: ethers.BigNumberish,
-    partialEvent: Partial<SupplyChain.EventStruct>
+    id: BatchId,
+    partialEvent: PartialUpdate
   ) => {
     try {
-      await BlockchainServices.pushNewEvent(id, partialEvent);
+      await BlockchainServices.pushNewUpdate(id, partialEvent);
       notifications.notify("New event pushed");
     } catch (error: any) {
       console.error(error);

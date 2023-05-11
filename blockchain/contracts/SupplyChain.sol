@@ -6,37 +6,34 @@ import "./Common.sol";
 import "hardhat/console.sol";
 
 contract SupplyChain is Ownable {
-    enum EventType {
-        Create,
-        Update,
-        Transaction
-    }
-
-    struct Event {
-        address owner;
-        bytes32 documentHash;
-        uint256 ts;
-        EventType eventType;
-    }
-
     struct Batch {
         uint256 id;
         string description;
+        address currentOwner;
         ConformityState state;
-        Event[] events;
+        Update[] updates;
+        Transaction[] transactions;
     }
 
-    //events
-    event NewBatch(address indexed owner, uint256 id);
+    struct Update {
+        address owner;
+        bytes32 documentHash;
+        uint256 ts;
+    }
+
+    struct Transaction {
+        address receiver;
+        Update info;
+    }
 
     mapping(uint256 => Batch) batches;
 
+    //events
+    event NewBatch(address indexed owner, uint256 id);
+    event SupplychainEvent(uint256 indexed batchId, address indexed owner);
+
     function getBatch(uint256 id_) public view returns (Batch memory) {
         return batches[id_];
-    }
-
-    function ping() public pure returns (string memory) {
-        return "pong";
     }
 
     function newBatch(
@@ -47,48 +44,50 @@ contract SupplyChain is Ownable {
         Batch storage batch = batches[batchId];
         batch.id = batchId;
         batch.description = description_;
+        batch.currentOwner = msg.sender;
         batch.state = ConformityState.Functioning;
 
-        console.log("batchId:", batchId);
-
-        // handle create event
-        Event memory newEvent = Event(
+        // handle create transaction
+        Transaction memory newTransaction = Transaction(
             msg.sender,
-            documentHash_,
-            block.timestamp,
-            EventType.Create
+            Update(msg.sender, documentHash_, block.timestamp)
         );
-        handleEvent(batchId, newEvent);
+        batch.transactions.push(newTransaction);
 
         emit NewBatch(msg.sender, batch.id);
+        console.log("batchId:", batchId);
 
         return batchId;
     }
 
-    function handleEvent(uint256 id_, Event memory event_) public {
-        // Asserts (modifier)
-        assertEventOwner(event_, msg.sender);
-        assertBacthExists(id_);
-        assertEventValidTimestamp(id_, event_);
+    function handleUpdate(
+        uint256 id_,
+        Update memory update_
+    ) public isValidUpdate(id_, update_) {
         // Send BCEvent
-        // Record Event
-        batches[id_].events.push(event_);
+        // Record Update
+        batches[id_].updates.push(update_);
 
         console.log("Event pushed successfully in id: ");
         console.log(id_);
-        console.log(", event: ");
-        console.log(event_.owner);
-        // console.log(event_.documentHash);
-        console.log(event_.ts);
-        console.log(uint8(event_.eventType));
     }
 
-    function getLastEvent(uint256 id_) private view returns (Event storage) {
-        Event[] storage events = batches[id_].events;
-        uint256 arrayLen = events.length;
+    function handleTransaction(
+        uint256 id_,
+        Transaction memory transaction_
+    ) public isValidUpdate(id_, transaction_.info) {
+        Batch storage batch = batches[id_];
+        batch.currentOwner = transaction_.receiver;
+        batch.transactions.push(transaction_);
+    }
+
+    function getLastElement(
+        Update[] storage updates
+    ) private view returns (Update storage) {
+        uint256 arrayLen = updates.length;
         require(arrayLen > 0, "Accessing empty array");
 
-        return events[arrayLen - 1];
+        return updates[arrayLen - 1];
     }
 
     function generateId() public view returns (uint256) {
@@ -104,30 +103,55 @@ contract SupplyChain is Ownable {
             );
     }
 
+    // Admin
+
+    function changeConformityState(
+        ConformityState newState_
+    ) external onlyOwner {
+        // TODO
+    }
+
     // Asserts
 
-    function assertEventOwner(
-        Event memory event_,
-        address sender_
-    ) private pure {
+    modifier isValidUpdate(uint256 id_, Update memory update_) {
+        assertUpdateOwner(update_);
+        assertBatchExists(id_);
+        assertCurrentOwner(id_, update_);
+        assertValidUpdateTimestamp(id_, update_);
+        _;
+    }
+
+    function assertUpdateOwner(Update memory update_) private view {
         require(
-            event_.owner == sender_,
-            "Event owner differs from message sender"
+            update_.owner == msg.sender,
+            "Update owner differs from message sender"
         );
     }
 
-    function assertBacthExists(uint256 id_) private view {
+    function assertCurrentOwner(
+        uint256 id_,
+        Update memory update_
+    ) private view {
+        require(
+            batches[id_].currentOwner == update_.owner,
+            "Trying to update batch while not being the current owner"
+        );
+    }
+
+    function assertBatchExists(uint256 id_) private view {
         require(batches[id_].id != 0, "Address for nonexistent batch");
     }
 
-    function assertEventValidTimestamp(
+    function assertValidUpdateTimestamp(
         uint256 id_,
-        Event memory event_
+        Update memory update_
     ) private view {
-        Event[] storage events = batches[id_].events;
+        Update[] storage updates = batches[id_].updates;
         require(
-            (((events.length > 0 && getLastEvent(id_).ts < event_.ts)) ||
-                events.length == 0) && event_.ts <= block.timestamp,
+            update_.ts <= block.timestamp &&
+                ((updates.length > 0 &&
+                    getLastElement(updates).ts < update_.ts) ||
+                    updates.length == 0),
             "Invalid event timestamp"
         );
     }

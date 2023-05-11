@@ -7,6 +7,14 @@ const supplyChainAddress = SupplyChainSCConfig.address;
 
 let supplyChainContract: SupplyChain | undefined = undefined;
 
+// Types
+
+export type Batch = SupplyChain.BatchStructOutput;
+export type BatchId = ethers.BigNumberish;
+
+export type Update = SupplyChain.UpdateStruct;
+export type PartialUpdate = Partial<Update>;
+
 const connectWallet = async (): Promise<ethers.Signer> => {
   if (window?.ethereum == null) {
     //   // If MetaMask is not installed, we use the default provider,
@@ -51,21 +59,13 @@ const BlockchainServices = {
     }
   },
 
-  ping: async (): Promise<string> => {
-    return BlockchainServices.supplyChainContract().then((contract) =>
-      contract.ping()
-    );
-  },
-
-  getBatch: async (
-    id: ethers.BigNumberish
-  ): Promise<SupplyChain.BatchStructOutput> => {
+  getBatch: async (id: BatchId): Promise<Batch> => {
     return BlockchainServices.supplyChainContract().then((contract) =>
       contract.getBatch(id)
     );
   },
 
-  newBatch: async (description: string, hash: string): Promise<BigNumber> => {
+  newBatch: async (description: string, hash: string): Promise<BatchId> => {
     return BlockchainServices.supplyChainContract().then(async (contract) => {
       const tx = await contract.newBatch(description, hash);
       const receipt = await tx.wait();
@@ -78,23 +78,19 @@ const BlockchainServices = {
     });
   },
 
-  pushNewEvent: async (
-    id: ethers.BigNumberish,
-    partialEvent: Partial<SupplyChain.EventStruct>
-  ) => {
+  pushNewUpdate: async (id: BatchId, partialUpdate: PartialUpdate) => {
     return await BlockchainServices.supplyChainContract().then(
       async (contract) => {
         const currentAddress = await contract.signer.getAddress();
-        partialEvent.owner = currentAddress;
-        partialEvent.ts = ethers.BigNumber.from(Math.floor(Date.now() / 1000));
-        partialEvent.eventType = 1;
+        partialUpdate.owner = currentAddress;
+        partialUpdate.ts = ethers.BigNumber.from(Math.floor(Date.now() / 1000));
 
-        const event = partialEvent as SupplyChain.EventStruct;
+        const event = partialUpdate as Update;
 
         console.log("Sending:");
         console.log({ id, event });
 
-        return contract.handleEvent(id, event);
+        return contract.handleUpdate(id, event);
       }
     );
   },

@@ -2,8 +2,7 @@
 
 import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices from "@/services/BlockchainServices";
-import { ethers } from "ethers";
+import BlockchainServices, { BatchId } from "@/services/BlockchainServices";
 import { useContext, useState } from "react";
 
 const GetBatch = ({}) => {
@@ -17,7 +16,7 @@ const GetBatch = ({}) => {
     method();
   };
 
-  const handleFetchBatch = async (id: ethers.BigNumberish) => {
+  const handleFetchBatch = async (id: BatchId) => {
     try {
       setBatch(await BlockchainServices.getBatch(id));
     } catch (error: any) {
@@ -39,7 +38,7 @@ const GetBatch = ({}) => {
         />
         <button type="submit">Submit</button>
       </form>
-      {batch && <p>{JSON.stringify(batch)}</p>}
+      {batch && <p>{JSON.stringify(batch, null, 2)}</p>}
     </>
   );
 };
