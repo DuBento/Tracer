@@ -1,20 +1,19 @@
 "use client";
 
+import { formSubmit } from "@/app/batch/page";
 import NotificationContext from "@/context/notificationContext";
 import BlockchainServices from "@/services/BlockchainServices";
 import { ethers } from "ethers";
 import { useContext, useState } from "react";
 
 const NewBatch = ({}) => {
-  const [batchId, setBatchId] = useState<string>();
-  const [newBatchDescription, setNewBatchDescription] = useState("");
-
   const notifications = useContext(NotificationContext);
 
-  const formSubmit = (e: React.FormEvent | React.MouseEvent, method: any) => {
-    e.preventDefault();
-    method();
-  };
+  const [batchId, setBatchId] = useState<string>();
+  const [newBatchDescription, setNewBatchDescription] = useState("");
+  const [document, setDocument] = useState<string>(
+    ethers.utils.formatBytes32String("New batch document test hash")
+  );
 
   const handleCreateNewBatch = async (
     description: string,
@@ -35,38 +34,56 @@ const NewBatch = ({}) => {
 
   return (
     <>
-      <h3>New Batch</h3>
+      <h2 className="text-2xl font-">New Batch</h2>
       <form
         onSubmit={(e) =>
           formSubmit(e, () =>
-            handleCreateNewBatch(
-              newBatchDescription,
-              ethers.utils.formatBytes32String("Event document test hash")
-            )
+            handleCreateNewBatch(newBatchDescription, document)
           )
         }
       >
-        <label htmlFor="fdescription">Batch description:</label>
-        <input
-          type="text"
-          id="fdescription"
-          name="fdescription"
-          onChange={(e) => setNewBatchDescription(e.target.value)}
-        />
-        <br />
-        <label htmlFor="fdescription">Batch documentHash TODO changable </label>
-        <input
-          type="text"
-          id="fdescription"
-          name="fdescription"
-          value={ethers.utils.formatBytes32String("Event document test hash")}
-          readOnly
-        />
-        <br />
-        <button type="submit">Submit</button>
+        <label htmlFor="fdescription" className="text-base leading-6">
+          Batch description
+        </label>
+        <div className="my-2 ">
+          <input
+            id="fdescription"
+            name="fdescription"
+            type="text"
+            className="block w-full rounded-md border-0 py-1.5 
+              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
+              focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
+            onChange={(e) => setNewBatchDescription(e.target.value)}
+          />
+        </div>
+        <label htmlFor="fdescription" className="text-base leading-6">
+          Batch documentHash TODO
+        </label>
+        <div className="my-2 ">
+          <input
+            id="fdescription"
+            name="fdescription"
+            type="text"
+            className="block w-full rounded-md border-0 py-1.5 
+              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-500 placeholder:text-gray-400
+              sm:text-sm sm:leading-6"
+            value={document}
+            disabled
+          />
+        </div>
+        <button
+          className="my-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
+          type="submit"
+        >
+          Submit
+        </button>
       </form>
 
-      {batchId && <p>{batchId.toString()}</p>}
+      {batchId && (
+        <p className="text-base font-semibold font-sans">
+          {batchId.toString()}
+        </p>
+      )}
     </>
   );
 };

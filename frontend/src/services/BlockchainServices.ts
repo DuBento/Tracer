@@ -15,6 +15,11 @@ export type BatchId = ethers.BigNumberish;
 export type Update = SupplyChain.UpdateStruct;
 export type PartialUpdate = Partial<Update>;
 
+export type Transaction = SupplyChain.TransactionStruct;
+export type PartialTransaction = Partial<Transaction> & {
+  info?: PartialUpdate;
+};
+
 const connectWallet = async (): Promise<ethers.Signer> => {
   if (window?.ethereum == null) {
     //   // If MetaMask is not installed, we use the default provider,
@@ -81,6 +86,9 @@ const BlockchainServices = {
   pushNewUpdate: async (id: BatchId, partialUpdate: PartialUpdate) => {
     return await BlockchainServices.supplyChainContract().then(
       async (contract) => {
+        if (!partialUpdate.documentHash)
+          throw new Error("No document associated with update");
+
         const currentAddress = await contract.signer.getAddress();
         partialUpdate.owner = currentAddress;
         partialUpdate.ts = ethers.BigNumber.from(Math.floor(Date.now() / 1000));
@@ -91,6 +99,33 @@ const BlockchainServices = {
         console.log({ id, event });
 
         return contract.handleUpdate(id, event);
+      }
+    );
+  },
+
+  pushNewTransaction: async (
+    id: BatchId,
+    partialTransaction: PartialTransaction
+  ) => {
+    return await BlockchainServices.supplyChainContract().then(
+      async (contract) => {
+        if (!partialTransaction.receiver)
+          throw new Error("No receiver associated with transaction");
+        if (!partialTransaction.info?.documentHash)
+          throw new Error("No document associated with transaction");
+
+        const currentAddress = await contract.signer.getAddress();
+        partialTransaction.info.owner = currentAddress;
+        partialTransaction.info.ts = ethers.BigNumber.from(
+          Math.floor(Date.now() / 1000)
+        );
+
+        const transaction = partialTransaction as Transaction;
+
+        console.log("Sending transaction:");
+        console.log({ id, transaction });
+
+        return contract.handleTransaction(id, transaction);
       }
     );
   },

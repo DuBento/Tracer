@@ -30,7 +30,6 @@ contract SupplyChain is Ownable {
 
     //events
     event NewBatch(address indexed owner, uint256 id);
-    event SupplychainEvent(uint256 indexed batchId, address indexed owner);
 
     function getBatch(uint256 id_) public view returns (Batch memory) {
         return batches[id_];

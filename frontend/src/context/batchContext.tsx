@@ -1,11 +1,11 @@
 "use client";
 
-import { SupplyChain } from "@/contracts";
+import { Batch } from "@/services/BlockchainServices";
 import { createContext, useState } from "react";
 
 interface BatchContextType {
-  batch?: SupplyChain.BatchStructOutput;
-  setBatch: (newBatch: SupplyChain.BatchStructOutput) => void;
+  batch?: Batch;
+  setBatch: (newBatch: Batch) => void;
 }
 
 export const BatchContext = createContext<BatchContextType>({
@@ -18,7 +18,7 @@ export default function BatchProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [batch, setBatch] = useState<SupplyChain.BatchStructOutput>();
+  const [batch, setBatch] = useState<Batch>();
 
   return (
     <BatchContext.Provider value={{ batch, setBatch }}>

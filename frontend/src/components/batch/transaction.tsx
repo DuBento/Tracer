@@ -2,30 +2,31 @@
 
 import BlockchainServices, {
   Batch,
-  PartialUpdate,
+  PartialTransaction,
 } from "@/services/BlockchainServices";
 import { useContext, useState } from "react";
 import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
-import { ethers } from "ethers";
 import { formSubmit } from "@/app/batch/page";
+import { ethers } from "ethers";
 
-const UpdateBatch = ({}) => {
+const Transaction = ({}) => {
   const { batch } = useContext(BatchContext);
   const notifications = useContext(NotificationContext);
 
+  const [address, setAddress] = useState<string>();
   const [document, setDocument] = useState<string>(
-    ethers.utils.formatBytes32String("Update document test hash")
+    ethers.utils.formatBytes32String("Transaction document test hash")
   );
 
-  const handlePushNewEvent = async (
+  const handleSendTransaction = async (
     batch: Batch | undefined,
-    partialEvent: PartialUpdate
+    partialTransaction: PartialTransaction
   ) => {
     try {
       if (batch === undefined) throw new Error("No batch to be updated");
-      await BlockchainServices.pushNewUpdate(batch.id, partialEvent);
-      notifications.notify("New event pushed");
+      await BlockchainServices.pushNewTransaction(batch.id, partialTransaction);
+      notifications.notify("New transaction submitted");
     } catch (error: any) {
       console.error(error);
       notifications.error(error.message);
@@ -34,8 +35,32 @@ const UpdateBatch = ({}) => {
 
   return (
     <>
-      <div>
-        <h2 className="text-2xl font-mono">Push new event</h2>
+      <h2 className="text-2xl font-mono ">Send to</h2>
+      <form
+        onSubmit={(e) =>
+          formSubmit(e, () =>
+            handleSendTransaction(batch, {
+              receiver: address,
+              info: { documentHash: document },
+            })
+          )
+        }
+      >
+        <label htmlFor="fid" className="text-base leading-6">
+          Receiver address
+        </label>
+        <div className="my-2">
+          <input
+            id="fid"
+            name="fid"
+            type="text"
+            className="block w-full rounded-md border-0 py-1.5 
+              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
+              focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
+            onChange={(e) => setAddress(e.target.value)}
+          />
+        </div>
+
         <label htmlFor="fid" className="text-base leading-6">
           Document
         </label>
@@ -51,19 +76,16 @@ const UpdateBatch = ({}) => {
             disabled
           />
         </div>
+
         <button
           className="my-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
-          onClick={(e) =>
-            formSubmit(e, () =>
-              handlePushNewEvent(batch, { documentHash: document })
-            )
-          }
+          type="submit"
         >
-          Push new update
+          Submit
         </button>
-      </div>
+      </form>
     </>
   );
 };
 
-export default UpdateBatch;
+export default Transaction;
