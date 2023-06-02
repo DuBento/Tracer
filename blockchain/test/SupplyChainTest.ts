@@ -83,9 +83,6 @@ describe("SupplyChain", function () {
     let batchTs: BigNumber;
 
     beforeEach(async function () {
-      // Change sender to normal actor
-      supplyChain = supplyChain.connect(actor1);
-
       id = await createNewBatch(
         supplyChain,
         Values.BATCH_DESCRIPTION,
@@ -98,7 +95,7 @@ describe("SupplyChain", function () {
 
     it("New update should be registered correctly", async function () {
       const update: SupplyChain.UpdateStruct = {
-        owner: actor1.address,
+        owner: owner.address,
         documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.add(1),
       };
@@ -110,7 +107,7 @@ describe("SupplyChain", function () {
 
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
-      expect(batch.updates[updateIdx].owner).to.equal(actor1.address);
+      expect(batch.updates[updateIdx].owner).to.equal(owner.address);
       expect(batch.updates[updateIdx].documentHash).to.equal(
         Values.UPDATE_DOCUMENT_HASH
       );
@@ -130,7 +127,7 @@ describe("SupplyChain", function () {
 
     it("New update with invalid timestamp, lower than previous update", async function () {
       const update: SupplyChain.UpdateStruct = {
-        owner: actor1.address,
+        owner: owner.address,
         documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.sub(1),
       };
@@ -142,7 +139,7 @@ describe("SupplyChain", function () {
 
     it("New update with invalid timestamp, higher than block ts", async function () {
       const update: SupplyChain.UpdateStruct = {
-        owner: actor1.address,
+        owner: owner.address,
         documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.add(9999),
       };
@@ -154,13 +151,90 @@ describe("SupplyChain", function () {
 
     it("New update with invalid timestamp, lower than batch genesis", async function () {
       const update: SupplyChain.UpdateStruct = {
-        owner: actor1.address,
+        owner: owner.address,
         documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.sub(9999),
       };
 
       await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
         "Invalid update timestamp"
+      );
+    });
+
+    it("New update from actor that is not the current owner", async function () {
+      // Change sender to normal actor
+      supplyChain = supplyChain.connect(actor1);
+
+      const update: SupplyChain.UpdateStruct = {
+        owner: actor1.address,
+        documentHash: Values.UPDATE_DOCUMENT_HASH,
+        ts: batchTs.add(1),
+      };
+
+      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+        "Trying to update batch while not being the current owner"
+      );
+    });
+  });
+
+  describe("Supplychain transactions", function () {
+    let id: BigNumber;
+    let batchTs: BigNumber;
+
+    beforeEach(async function () {
+      id = await createNewBatch(
+        supplyChain,
+        Values.BATCH_DESCRIPTION,
+        Values.UPDATE_DOCUMENT_HASH
+      );
+
+      const batch = await supplyChain.getBatch(id);
+      batchTs = batch.transactions[0].info.ts;
+    });
+
+    it("New transaction between actors works correctly", async function () {
+      const transaction: SupplyChain.TransactionStruct = {
+        receiver: actor1.address,
+        info: {
+          owner: owner.address,
+          documentHash: Values.UPDATE_DOCUMENT_HASH,
+          ts: batchTs.add(1),
+        },
+      };
+
+      await supplyChain.handleTransaction(id, transaction);
+
+      const batch = await supplyChain.getBatch(id);
+      const transactionIdx = batch.transactions.length - 1;
+
+      expect(batch.id).to.equal(id);
+      expect(batch.currentOwner).to.equal(actor1.address);
+      expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
+      expect(batch.transactions[transactionIdx].receiver).to.equal(
+        actor1.address
+      );
+      expect(batch.transactions[transactionIdx].info.owner).to.equal(
+        owner.address
+      );
+    });
+
+    it("New transaction from actor that is not the current owner", async function () {
+      // Change sender to normal actor
+      supplyChain = supplyChain.connect(actor1);
+
+      const transaction: SupplyChain.TransactionStruct = {
+        receiver: actor2.address,
+        info: {
+          owner: actor1.address,
+          documentHash: Values.UPDATE_DOCUMENT_HASH,
+          ts: batchTs.add(1),
+        },
+      };
+
+      await expect(
+        supplyChain.handleTransaction(id, transaction)
+      ).to.be.revertedWith(
+        "Trying to update batch while not being the current owner"
       );
     });
   });
