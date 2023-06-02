@@ -81,12 +81,21 @@ contract SupplyChain is Ownable {
     }
 
     function getLastElement(
-        Update[] storage updates
+        Update[] storage updates_
     ) private view returns (Update storage) {
-        uint256 arrayLen = updates.length;
+        uint256 arrayLen = updates_.length;
         require(arrayLen > 0, "Accessing empty array");
 
-        return updates[arrayLen - 1];
+        return updates_[arrayLen - 1];
+    }
+
+    function getLastElement(
+        Transaction[] storage transactions_
+    ) private view returns (Transaction storage) {
+        uint256 arrayLen = transactions_.length;
+        require(arrayLen > 0, "Accessing empty array");
+
+        return transactions_[arrayLen - 1];
     }
 
     function generateId() public view returns (uint256) {
@@ -146,12 +155,14 @@ contract SupplyChain is Ownable {
         Update memory update_
     ) private view {
         Update[] storage updates = batches[id_].updates;
+        Transaction[] storage transactions = batches[id_].transactions;
         require(
             update_.ts <= block.timestamp &&
                 ((updates.length > 0 &&
                     getLastElement(updates).ts < update_.ts) ||
-                    updates.length == 0),
-            "Invalid event timestamp"
+                (transactions.length > 0 &&
+                getLastElement(transactions).info.ts < update_.ts)),
+            "Invalid update timestamp"
         );
     }
 

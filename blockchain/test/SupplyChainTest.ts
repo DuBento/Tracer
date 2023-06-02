@@ -62,110 +62,105 @@ describe("SupplyChain", function () {
       const id = await createNewBatch(
         supplyChain,
         Values.BATCH_DESCRIPTION,
-        Values.EVENT_DOCUMENT_HASH
+        Values.UPDATE_DOCUMENT_HASH
       );
 
       const batch = await supplyChain.getBatch(id);
 
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
-      expect(batch.events).to.have.lengthOf(1);
-      expect(batch.events[0].owner).to.equal(owner.address);
-      expect(batch.events[0].documentHash).to.equal(Values.EVENT_DOCUMENT_HASH);
-      expect(batch.events[0].eventType).to.equal(0);
+      expect(batch.transactions).to.have.lengthOf(1);
+      expect(batch.transactions[0].receiver).to.equal(owner.address);
+      expect(batch.transactions[0].info.owner).to.equal(owner.address);
+      expect(batch.transactions[0].info.documentHash).to.equal(
+        Values.UPDATE_DOCUMENT_HASH
+      );
     });
   });
 
-  describe("Supplychain events", function () {
+  describe("Supplychain updates", function () {
     let id: BigNumber;
     let batchTs: BigNumber;
 
     beforeEach(async function () {
+      // Change sender to normal actor
+      supplyChain = supplyChain.connect(actor1);
+
       id = await createNewBatch(
         supplyChain,
         Values.BATCH_DESCRIPTION,
-        Values.EVENT_DOCUMENT_HASH
+        Values.UPDATE_DOCUMENT_HASH
       );
 
       const batch = await supplyChain.getBatch(id);
-      batchTs = batch.events[0].ts;
-
-      // Change sender to normal actor
-      supplyChain = supplyChain.connect(actor1);
+      batchTs = batch.transactions[0].info.ts;
     });
 
-    it("New event should be registered correctly", async function () {
-      const event: SupplyChain.EventStruct = {
+    it("New update should be registered correctly", async function () {
+      const update: SupplyChain.UpdateStruct = {
         owner: actor1.address,
-        documentHash: Values.EVENT_DOCUMENT_HASH,
+        documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.add(1),
-        eventType: 1,
       };
 
-      await supplyChain.handleEvent(id, event);
+      await supplyChain.handleUpdate(id, update);
 
       const batch = await supplyChain.getBatch(id);
-      const eventIdx = batch.events.length - 1; // second event
+      const updateIdx = batch.updates.length - 1;
 
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
-      expect(batch.events).to.have.lengthOf(2);
-      expect(batch.events[eventIdx].owner).to.equal(actor1.address);
-      expect(batch.events[eventIdx].documentHash).to.equal(
-        Values.EVENT_DOCUMENT_HASH
+      expect(batch.updates[updateIdx].owner).to.equal(actor1.address);
+      expect(batch.updates[updateIdx].documentHash).to.equal(
+        Values.UPDATE_DOCUMENT_HASH
       );
-      expect(batch.events[eventIdx].eventType).to.equal(1);
     });
 
-    it("New event with owner address different than tx sender", async function () {
-      const event: SupplyChain.EventStruct = {
+    it("New update with owner address different than tx sender", async function () {
+      const update: SupplyChain.UpdateStruct = {
         owner: actor2.address,
-        documentHash: Values.EVENT_DOCUMENT_HASH,
+        documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.add(1),
-        eventType: 1,
       };
 
-      await expect(supplyChain.handleEvent(id, event)).to.be.revertedWith(
-        "Event owner differs from message sender"
+      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+        "Update owner differs from message sender"
       );
     });
 
-    it("New event with invalid timestamp, lower than previous event", async function () {
-      const event: SupplyChain.EventStruct = {
+    it("New update with invalid timestamp, lower than previous update", async function () {
+      const update: SupplyChain.UpdateStruct = {
         owner: actor1.address,
-        documentHash: Values.EVENT_DOCUMENT_HASH,
+        documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.sub(1),
-        eventType: 1,
       };
 
-      await expect(supplyChain.handleEvent(id, event)).to.be.revertedWith(
-        "Invalid event timestamp"
+      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+        "Invalid update timestamp"
       );
     });
 
-    it("New event with invalid timestamp, higher than block ts", async function () {
-      const event: SupplyChain.EventStruct = {
+    it("New update with invalid timestamp, higher than block ts", async function () {
+      const update: SupplyChain.UpdateStruct = {
         owner: actor1.address,
-        documentHash: Values.EVENT_DOCUMENT_HASH,
+        documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.add(9999),
-        eventType: 1,
       };
 
-      await expect(supplyChain.handleEvent(id, event)).to.be.revertedWith(
-        "Invalid event timestamp"
+      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+        "Invalid update timestamp"
       );
     });
 
-    it("New event with invalid timestamp, lower than batch genesis", async function () {
-      const event: SupplyChain.EventStruct = {
+    it("New update with invalid timestamp, lower than batch genesis", async function () {
+      const update: SupplyChain.UpdateStruct = {
         owner: actor1.address,
-        documentHash: Values.EVENT_DOCUMENT_HASH,
+        documentHash: Values.UPDATE_DOCUMENT_HASH,
         ts: batchTs.sub(9999),
-        eventType: 1,
       };
 
-      await expect(supplyChain.handleEvent(id, event)).to.be.revertedWith(
-        "Invalid event timestamp"
+      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+        "Invalid update timestamp"
       );
     });
   });
