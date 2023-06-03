@@ -132,7 +132,9 @@ const BlockchainServices = {
   },
 
   parseTime: (bigNumberish: PromiseOrValue<BigNumberish>): string => {
-    return new Date(BigNumber.from(bigNumberish).toNumber()).toISOString();
+    return new Date(
+      BigNumber.from(bigNumberish).toNumber() * 1000
+    ).toISOString();
   },
 };
 
