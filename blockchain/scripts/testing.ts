@@ -12,7 +12,7 @@ async function main() {
 
   await supplyChain.newBatch(
     Values.BATCH_DESCRIPTION,
-    Values.UPDATE_DOCUMENT_HASH
+    Values.UPDATE_DOCUMENT_URI
   );
 
   saveFrontendFiles("SupplyChain", supplyChain);

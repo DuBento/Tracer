@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 
 // Constants
 export const BATCH_DESCRIPTION = "Batch test description";
-export const UPDATE_DOCUMENT_HASH = ethers.utils.formatBytes32String(
+export const UPDATE_DOCUMENT_URI = ethers.utils.formatBytes32String(
   "Event document test hash"
 );
 

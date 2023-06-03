@@ -8,6 +8,7 @@ import BlockchainServices, {
   BatchId,
 } from "@/services/BlockchainServices";
 import { useContext, useEffect, useState } from "react";
+import DisplayBatch from "./displayBatch";
 
 const GetBatch = ({}) => {
   const [batchId, setBatchId] = useState<string>("");
@@ -23,29 +24,6 @@ const GetBatch = ({}) => {
       notifications.error(error.message);
     }
   };
-
-  function stringifyEthersResult(obj: any, level = 0): string[] {
-    let res: string[] = [];
-    const whitespace = "\t".repeat(level);
-    for (const key of Object.keys(obj)) {
-      if (!Number.isInteger(Number(key))) {
-        if (Array.isArray(obj[key])) {
-          let nestedResult;
-          if (
-            Object.keys(obj[key]).every((key) => Number.isInteger(Number(key)))
-          )
-            nestedResult = obj[key].flatMap((v: any) =>
-              stringifyEthersResult(v, level + 2).concat(
-                `${"\t".repeat(level + 2)}---`
-              )
-            );
-          else nestedResult = stringifyEthersResult(obj[key], level + 2);
-          res.push(`${whitespace}${key}:`, ...nestedResult);
-        } else res.push(`${whitespace}${key}: ${obj[key]}`);
-      }
-    }
-    return res;
-  }
 
   useEffect(() => {
     if (!batch) return;
@@ -78,15 +56,7 @@ const GetBatch = ({}) => {
           Submit
         </button>
       </form>
-      {batch &&
-        stringifyEthersResult(batch).map((val, idx) => (
-          <p
-            className="text-base font-semibold font-sans whitespace-pre"
-            key={idx}
-          >
-            {val}
-          </p>
-        ))}
+      <DisplayBatch />
     </>
   );
 };

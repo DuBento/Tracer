@@ -11,18 +11,18 @@ const NewBatch = ({}) => {
 
   const [batchId, setBatchId] = useState<string>();
   const [newBatchDescription, setNewBatchDescription] = useState("");
-  const [document, setDocument] = useState<string>(
-    ethers.utils.formatBytes32String("New batch document test hash")
+  const [document, setDocument] = useState(
+    "QmPbycHCj1Z1zBynNz1GEKD2DMjJZ7wDvMMyy6qX6QHGgC"
   );
 
   const handleCreateNewBatch = async (
     description: string,
-    documentHash: string
+    documentURI: string
   ) => {
     try {
       const newBatchId = await BlockchainServices.newBatch(
         description,
-        documentHash
+        documentURI
       );
       notifications.notify(newBatchId.toString());
       setBatchId(newBatchId.toString());
@@ -56,19 +56,19 @@ const NewBatch = ({}) => {
             onChange={(e) => setNewBatchDescription(e.target.value)}
           />
         </div>
-        <label htmlFor="fdescription" className="text-base leading-6">
-          Batch documentHash TODO
+        <label htmlFor="fdocument" className="text-base leading-6">
+          Batch documentURI TODO
         </label>
         <div className="my-2 ">
           <input
-            id="fdescription"
-            name="fdescription"
+            id="fdocument"
+            name="fdocument"
             type="text"
             className="block w-full rounded-md border-0 py-1.5 
-              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-500 placeholder:text-gray-400
-              sm:text-sm sm:leading-6"
+              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
+              focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
             value={document}
-            disabled
+            onChange={(e) => setDocument(e.target.value)}
           />
         </div>
         <button

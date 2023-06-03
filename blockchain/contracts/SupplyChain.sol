@@ -17,7 +17,7 @@ contract SupplyChain is Ownable {
 
     struct Update {
         address owner;
-        bytes32 documentHash;
+        string documentURI;
         uint256 ts;
     }
 
@@ -37,7 +37,7 @@ contract SupplyChain is Ownable {
 
     function newBatch(
         string memory description_,
-        bytes32 documentHash_
+        string memory documentURI_
     ) public returns (uint256) {
         uint256 batchId = generateId();
         Batch storage batch = batches[batchId];
@@ -47,11 +47,11 @@ contract SupplyChain is Ownable {
         batch.state = ConformityState.Functioning;
 
         // handle create transaction
-        Transaction memory newTransaction = Transaction(
+        Transaction memory transaction = newTransaction(
             msg.sender,
-            Update(msg.sender, documentHash_, block.timestamp)
+            documentURI_
         );
-        batch.transactions.push(newTransaction);
+        batch.transactions.push(transaction);
 
         emit NewBatch(msg.sender, batch.id);
         console.log("batchId:", batchId);
@@ -61,11 +61,12 @@ contract SupplyChain is Ownable {
 
     function handleUpdate(
         uint256 id_,
-        Update memory update_
-    ) public isValidUpdate(id_, update_) {
+        string memory documentURI_
+    ) public isValidUpdate(id_) {
         // Send BCEvent
         // Record Update
-        batches[id_].updates.push(update_);
+        Update memory update = newUpdate(documentURI_);
+        batches[id_].updates.push(update);
 
         console.log("Event pushed successfully in id: ");
         console.log(id_);
@@ -73,11 +74,32 @@ contract SupplyChain is Ownable {
 
     function handleTransaction(
         uint256 id_,
-        Transaction memory transaction_
-    ) public isValidUpdate(id_, transaction_.info) {
+        address receiver_,
+        string memory documentURI_
+    ) public isValidUpdate(id_) {
         Batch storage batch = batches[id_];
-        batch.currentOwner = transaction_.receiver;
-        batch.transactions.push(transaction_);
+
+        Transaction memory transaction = newTransaction(
+            receiver_,
+            documentURI_
+        );
+        batch.transactions.push(transaction);
+
+        batch.currentOwner = receiver_;
+        // TODO: check if receiver in DAO?
+    }
+
+    function newUpdate(
+        string memory documentURI_
+    ) internal view returns (Update memory) {
+        return Update(msg.sender, documentURI_, block.timestamp);
+    }
+
+    function newTransaction(
+        address receiver_,
+        string memory documentURI_
+    ) internal view returns (Transaction memory) {
+        return Transaction(receiver_, newUpdate(documentURI_));
     }
 
     function getLastElement(
@@ -121,11 +143,11 @@ contract SupplyChain is Ownable {
 
     // Asserts
 
-    modifier isValidUpdate(uint256 id_, Update memory update_) {
-        assertUpdateOwner(update_);
+    modifier isValidUpdate(uint256 id_) {
+        // assertUpdateOwner(update_);
         assertBatchExists(id_);
-        assertCurrentOwner(id_, update_);
-        assertValidUpdateTimestamp(id_, update_);
+        assertCurrentOwner(id_);
+        // assertValidUpdateTimestamp(id_, update_);
         _;
     }
 
@@ -136,12 +158,9 @@ contract SupplyChain is Ownable {
         );
     }
 
-    function assertCurrentOwner(
-        uint256 id_,
-        Update memory update_
-    ) private view {
+    function assertCurrentOwner(uint256 id_) private view {
         require(
-            batches[id_].currentOwner == update_.owner,
+            batches[id_].currentOwner == msg.sender,
             "Trying to update batch while not being the current owner"
         );
     }
@@ -160,8 +179,8 @@ contract SupplyChain is Ownable {
             update_.ts <= block.timestamp &&
                 ((updates.length > 0 &&
                     getLastElement(updates).ts < update_.ts) ||
-                (transactions.length > 0 &&
-                getLastElement(transactions).info.ts < update_.ts)),
+                    (transactions.length > 0 &&
+                        getLastElement(transactions).info.ts < update_.ts)),
             "Invalid update timestamp"
         );
     }

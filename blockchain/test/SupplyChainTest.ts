@@ -62,7 +62,7 @@ describe("SupplyChain", function () {
       const id = await createNewBatch(
         supplyChain,
         Values.BATCH_DESCRIPTION,
-        Values.UPDATE_DOCUMENT_HASH
+        Values.UPDATE_DOCUMENT_URI
       );
 
       const batch = await supplyChain.getBatch(id);
@@ -72,35 +72,25 @@ describe("SupplyChain", function () {
       expect(batch.transactions).to.have.lengthOf(1);
       expect(batch.transactions[0].receiver).to.equal(owner.address);
       expect(batch.transactions[0].info.owner).to.equal(owner.address);
-      expect(batch.transactions[0].info.documentHash).to.equal(
-        Values.UPDATE_DOCUMENT_HASH
+      expect(batch.transactions[0].info.documentURI).to.equal(
+        Values.UPDATE_DOCUMENT_URI
       );
     });
   });
 
   describe("Supplychain updates", function () {
     let id: BigNumber;
-    let batchTs: BigNumber;
 
     beforeEach(async function () {
       id = await createNewBatch(
         supplyChain,
         Values.BATCH_DESCRIPTION,
-        Values.UPDATE_DOCUMENT_HASH
+        Values.UPDATE_DOCUMENT_URI
       );
-
-      const batch = await supplyChain.getBatch(id);
-      batchTs = batch.transactions[0].info.ts;
     });
 
     it("New update should be registered correctly", async function () {
-      const update: SupplyChain.UpdateStruct = {
-        owner: owner.address,
-        documentHash: Values.UPDATE_DOCUMENT_HASH,
-        ts: batchTs.add(1),
-      };
-
-      await supplyChain.handleUpdate(id, update);
+      await supplyChain.handleUpdate(id, Values.UPDATE_DOCUMENT_URI);
 
       const batch = await supplyChain.getBatch(id);
       const updateIdx = batch.updates.length - 1;
@@ -108,70 +98,65 @@ describe("SupplyChain", function () {
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
       expect(batch.updates[updateIdx].owner).to.equal(owner.address);
-      expect(batch.updates[updateIdx].documentHash).to.equal(
-        Values.UPDATE_DOCUMENT_HASH
+      expect(batch.updates[updateIdx].documentURI).to.equal(
+        Values.UPDATE_DOCUMENT_URI
       );
     });
 
-    it("New update with owner address different than tx sender", async function () {
-      const update: SupplyChain.UpdateStruct = {
-        owner: actor2.address,
-        documentHash: Values.UPDATE_DOCUMENT_HASH,
-        ts: batchTs.add(1),
-      };
-
-      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
-        "Update owner differs from message sender"
-      );
+    xit("New update with owner address different than tx sender", async function () {
+      // Skipped
+      // const update: SupplyChain.UpdateStruct = {
+      //   owner: actor2.address,
+      //   documentURI: Values.UPDATE_DOCUMENT_URI,
+      //   ts: batchTs.add(1),
+      // };
+      // await expect(
+      //   supplyChain.handleUpdate(id, update)
+      // ).to.be.revertedWith("Update owner differs from message sender");
     });
 
-    it("New update with invalid timestamp, lower than previous update", async function () {
-      const update: SupplyChain.UpdateStruct = {
-        owner: owner.address,
-        documentHash: Values.UPDATE_DOCUMENT_HASH,
-        ts: batchTs.sub(1),
-      };
-
-      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
-        "Invalid update timestamp"
-      );
+    xit("New update with invalid timestamp, lower than previous update", async function () {
+      // Skipped
+      // const update: SupplyChain.UpdateStruct = {
+      //   owner: owner.address,
+      //   documentURI: Values.UPDATE_DOCUMENT_URI,
+      //   ts: batchTs.sub(1),
+      // };
+      // await expect(
+      //   supplyChain.handleUpdate(id, update)
+      // ).to.be.revertedWith("Invalid update timestamp");
     });
 
-    it("New update with invalid timestamp, higher than block ts", async function () {
-      const update: SupplyChain.UpdateStruct = {
-        owner: owner.address,
-        documentHash: Values.UPDATE_DOCUMENT_HASH,
-        ts: batchTs.add(9999),
-      };
-
-      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
-        "Invalid update timestamp"
-      );
+    xit("New update with invalid timestamp, higher than block ts", async function () {
+      // Skiped
+      // const update: SupplyChain.UpdateStruct = {
+      //   owner: owner.address,
+      //   documentURI: Values.UPDATE_DOCUMENT_URI,
+      //   ts: batchTs.add(9999),
+      // };
+      // await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+      //   "Invalid update timestamp"
+      // );
     });
 
-    it("New update with invalid timestamp, lower than batch genesis", async function () {
-      const update: SupplyChain.UpdateStruct = {
-        owner: owner.address,
-        documentHash: Values.UPDATE_DOCUMENT_HASH,
-        ts: batchTs.sub(9999),
-      };
-
-      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
-        "Invalid update timestamp"
-      );
+    xit("New update with invalid timestamp, lower than batch genesis", async function () {
+      // const update: SupplyChain.UpdateStruct = {
+      //   owner: owner.address,
+      //   documentURI: Values.UPDATE_DOCUMENT_URI,
+      //   ts: batchTs.sub(9999),
+      // };
+      // await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+      //   "Invalid update timestamp"
+      // );
     });
 
     it("New update from actor that is not the current owner", async function () {
       // Change sender to normal actor
       supplyChain = supplyChain.connect(actor1);
 
-      const update: SupplyChain.UpdateStruct = {
-        owner: actor1.address,
-        documentHash: Values.UPDATE_DOCUMENT_HASH,
-        ts: batchTs.add(1),
-      };
-
-      await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+      await expect(
+        supplyChain.handleUpdate(id, Values.UPDATE_DOCUMENT_URI)
+      ).to.be.revertedWith(
         "Trying to update batch while not being the current owner"
       );
     });
@@ -185,7 +170,7 @@ describe("SupplyChain", function () {
       id = await createNewBatch(
         supplyChain,
         Values.BATCH_DESCRIPTION,
-        Values.UPDATE_DOCUMENT_HASH
+        Values.UPDATE_DOCUMENT_URI
       );
 
       const batch = await supplyChain.getBatch(id);
@@ -193,16 +178,11 @@ describe("SupplyChain", function () {
     });
 
     it("New transaction between actors works correctly", async function () {
-      const transaction: SupplyChain.TransactionStruct = {
-        receiver: actor1.address,
-        info: {
-          owner: owner.address,
-          documentHash: Values.UPDATE_DOCUMENT_HASH,
-          ts: batchTs.add(1),
-        },
-      };
-
-      await supplyChain.handleTransaction(id, transaction);
+      await supplyChain.handleTransaction(
+        id,
+        actor1.address,
+        Values.UPDATE_DOCUMENT_URI
+      );
 
       const batch = await supplyChain.getBatch(id);
       const transactionIdx = batch.transactions.length - 1;
@@ -222,17 +202,12 @@ describe("SupplyChain", function () {
       // Change sender to normal actor
       supplyChain = supplyChain.connect(actor1);
 
-      const transaction: SupplyChain.TransactionStruct = {
-        receiver: actor2.address,
-        info: {
-          owner: actor1.address,
-          documentHash: Values.UPDATE_DOCUMENT_HASH,
-          ts: batchTs.add(1),
-        },
-      };
-
       await expect(
-        supplyChain.handleTransaction(id, transaction)
+        supplyChain.handleTransaction(
+          id,
+          actor2.address,
+          Values.UPDATE_DOCUMENT_URI
+        )
       ).to.be.revertedWith(
         "Trying to update batch while not being the current owner"
       );

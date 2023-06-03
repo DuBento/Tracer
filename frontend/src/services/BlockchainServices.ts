@@ -1,8 +1,9 @@
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 
 import { SupplyChain__factory, SupplyChain } from "@/contracts/";
 import { NewBatchEventObject } from "@/contracts/SupplyChain";
 import SupplyChainSCConfig from "@/contracts/SupplyChain.json";
+import { PromiseOrValue } from "@/contracts/common";
 const supplyChainAddress = SupplyChainSCConfig.address;
 
 let supplyChainContract: SupplyChain | undefined = undefined;
@@ -70,9 +71,12 @@ const BlockchainServices = {
     );
   },
 
-  newBatch: async (description: string, hash: string): Promise<BatchId> => {
+  newBatch: async (
+    description: string,
+    documentURI: string
+  ): Promise<BatchId> => {
     return BlockchainServices.supplyChainContract().then(async (contract) => {
-      const tx = await contract.newBatch(description, hash);
+      const tx = await contract.newBatch(description, documentURI);
       const receipt = await tx.wait();
 
       const newBatchEvent = receipt.events?.find(
@@ -83,49 +87,31 @@ const BlockchainServices = {
     });
   },
 
-  pushNewUpdate: async (id: BatchId, partialUpdate: PartialUpdate) => {
+  pushNewUpdate: async (id: BatchId, documentURI: string) => {
     return await BlockchainServices.supplyChainContract().then(
       async (contract) => {
-        if (!partialUpdate.documentHash)
-          throw new Error("No document associated with update");
-
-        const currentAddress = await contract.signer.getAddress();
-        partialUpdate.owner = currentAddress;
-        partialUpdate.ts = ethers.BigNumber.from(Math.floor(Date.now() / 1000));
-
-        const event = partialUpdate as Update;
-
         console.log("Sending:");
-        console.log({ id, event });
+        console.log({ id, documentURI });
 
-        return contract.handleUpdate(id, event);
+        return contract.handleUpdate(id, documentURI);
       }
     );
   },
 
   pushNewTransaction: async (
     id: BatchId,
-    partialTransaction: PartialTransaction
+    receiver: string,
+    documentURI: string
   ) => {
     return await BlockchainServices.supplyChainContract().then(
       async (contract) => {
-        if (!partialTransaction.receiver)
+        if (!ethers.utils.isAddress(receiver))
           throw new Error("No receiver associated with transaction");
-        if (!partialTransaction.info?.documentHash)
-          throw new Error("No document associated with transaction");
-
-        const currentAddress = await contract.signer.getAddress();
-        partialTransaction.info.owner = currentAddress;
-        partialTransaction.info.ts = ethers.BigNumber.from(
-          Math.floor(Date.now() / 1000)
-        );
-
-        const transaction = partialTransaction as Transaction;
 
         console.log("Sending transaction:");
-        console.log({ id, transaction });
+        console.log({ id, receiver, documentURI });
 
-        return contract.handleTransaction(id, transaction);
+        return contract.handleTransaction(id, receiver, documentURI);
       }
     );
   },
@@ -143,6 +129,10 @@ const BlockchainServices = {
         });
       }
     );
+  },
+
+  parseTime: (bigNumberish: PromiseOrValue<BigNumberish>): string => {
+    return new Date(BigNumber.from(bigNumberish).toNumber()).toISOString();
   },
 };
 

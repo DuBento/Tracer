@@ -14,18 +14,23 @@ const Transaction = ({}) => {
   const { batch } = useContext(BatchContext);
   const notifications = useContext(NotificationContext);
 
-  const [address, setAddress] = useState<string>();
-  const [document, setDocument] = useState<string>(
+  const [receiverAddress, setReceiverAddress] = useState<string>("");
+  const [documentURI, setDocumentURI] = useState<string>(
     ethers.utils.formatBytes32String("Transaction document test hash")
   );
 
   const handleSendTransaction = async (
     batch: Batch | undefined,
-    partialTransaction: PartialTransaction
+    receiverAddress: string,
+    documentURI: string
   ) => {
     try {
       if (batch === undefined) throw new Error("No batch to be updated");
-      await BlockchainServices.pushNewTransaction(batch.id, partialTransaction);
+      await BlockchainServices.pushNewTransaction(
+        batch.id,
+        receiverAddress,
+        documentURI
+      );
       notifications.notify("New transaction submitted");
     } catch (error: any) {
       console.error(error);
@@ -39,15 +44,12 @@ const Transaction = ({}) => {
       <form
         onSubmit={(e) =>
           formSubmit(e, () =>
-            handleSendTransaction(batch, {
-              receiver: address,
-              info: { documentHash: document },
-            })
+            handleSendTransaction(batch, receiverAddress, documentURI)
           )
         }
       >
         <label htmlFor="fid" className="text-base leading-6">
-          Receiver address
+          Receiver receiveraddress
         </label>
         <div className="my-2">
           <input
@@ -57,7 +59,7 @@ const Transaction = ({}) => {
             className="block w-full rounded-md border-0 py-1.5 
               bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e) => setReceiverAddress(e.target.value)}
           />
         </div>
 
@@ -70,10 +72,10 @@ const Transaction = ({}) => {
             name="ftxdocument"
             type="text"
             className="block w-full rounded-md border-0 py-1.5 
-              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-500 placeholder:text-gray-400
-              sm:text-sm sm:leading-6"
-            value={document}
-            disabled
+            bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
+            focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
+            value={documentURI}
+            onChange={(e) => setDocumentURI(e.target.value)}
           />
         </div>
 
