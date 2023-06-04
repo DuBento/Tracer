@@ -15,7 +15,7 @@ const UpdateBatch = ({}) => {
   const notifications = useContext(NotificationContext);
 
   const [documentURI, setDocumentURI] = useState<string>(
-    ethers.utils.formatBytes32String("Update document test hash")
+    "Qmanau1ipjXNYBZvkZiugGY6W5GPKkAW96jhJBSBccmQwz"
   );
 
   const handlePushNewEvent = async (
@@ -41,9 +41,10 @@ const UpdateBatch = ({}) => {
         </label>
         <div className="my-2 ">
           <input
-            id="ftxdocument"
-            name="ftxdocument"
+            id="fUpdtDocument"
+            name="fUpdtDocument"
             type="text"
+            autoComplete="off"
             className="block w-full rounded-md border-0 py-1.5 
             bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
             focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"

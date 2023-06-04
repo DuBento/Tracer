@@ -42,6 +42,7 @@ const GetBatch = ({}) => {
             id="fid"
             name="fid"
             type="text"
+            autoComplete="fBatchId"
             className="block w-full rounded-md border-0 py-1.5 
               bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"

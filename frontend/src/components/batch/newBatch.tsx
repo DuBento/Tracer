@@ -12,7 +12,7 @@ const NewBatch = ({}) => {
   const [batchId, setBatchId] = useState<string>();
   const [newBatchDescription, setNewBatchDescription] = useState("");
   const [document, setDocument] = useState(
-    "QmPbycHCj1Z1zBynNz1GEKD2DMjJZ7wDvMMyy6qX6QHGgC"
+    "QmYiBNWbsTJ6zjBzfav962PZz9GEXF2GcTE1hsd4xazA2B"
   );
 
   const handleCreateNewBatch = async (
@@ -50,6 +50,7 @@ const NewBatch = ({}) => {
             id="fdescription"
             name="fdescription"
             type="text"
+            autoComplete="off"
             className="block w-full rounded-md border-0 py-1.5 
               bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
@@ -64,6 +65,7 @@ const NewBatch = ({}) => {
             id="fdocument"
             name="fdocument"
             type="text"
+            autoComplete="off"
             className="block w-full rounded-md border-0 py-1.5 
               bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"

@@ -13,10 +13,10 @@ let supplyChainContract: SupplyChain | undefined = undefined;
 export type Batch = SupplyChain.BatchStructOutput;
 export type BatchId = ethers.BigNumberish;
 
-export type Update = SupplyChain.UpdateStruct;
+export type Update = SupplyChain.UpdateStructOutput;
 export type PartialUpdate = Partial<Update>;
 
-export type Transaction = SupplyChain.TransactionStruct;
+export type Transaction = SupplyChain.TransactionStructOutput;
 export type PartialTransaction = Partial<Transaction> & {
   info?: PartialUpdate;
 };

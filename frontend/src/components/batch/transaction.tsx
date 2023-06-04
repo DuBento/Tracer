@@ -16,7 +16,7 @@ const Transaction = ({}) => {
 
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [documentURI, setDocumentURI] = useState<string>(
-    ethers.utils.formatBytes32String("Transaction document test hash")
+    "Qmd9CGJL1N2W1S7U77fDXp11uoVQ5f73XwVTeMQWADmVPZ"
   );
 
   const handleSendTransaction = async (
@@ -49,13 +49,14 @@ const Transaction = ({}) => {
         }
       >
         <label htmlFor="fid" className="text-base leading-6">
-          Receiver receiveraddress
+          Receiver
         </label>
         <div className="my-2">
           <input
             id="fid"
             name="fid"
             type="text"
+            autoComplete="transactionReceiver"
             className="block w-full rounded-md border-0 py-1.5 
               bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
@@ -71,6 +72,7 @@ const Transaction = ({}) => {
             id="ftxdocument"
             name="ftxdocument"
             type="text"
+            autoComplete="off"
             className="block w-full rounded-md border-0 py-1.5 
             bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
             focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
