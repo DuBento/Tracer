@@ -1,7 +1,7 @@
 "use client";
 
 import BlockchainServices, { Batch } from "@/services/BlockchainServices";
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
 import FilesDropzone from "../common/filesDropzone";
@@ -14,23 +14,23 @@ const UpdateBatch = ({}) => {
   const [updateDescription, setUpdateDescription] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
 
-  const handlePushNewEvent = async (
-    batch: Batch | undefined,
-    updateDescription: string,
-    files: File[]
-  ) => {
-    try {
-      if (batch === undefined) throw new Error("No batch to be updated");
-      if (files.length == 0 || !updateDescription)
-        throw new Error("No files or description provided");
+  const handlePushNewEvent = async () => {
+    if (batch === undefined) throw new Error("No batch to be updated");
+    if (files.length == 0 || !updateDescription)
+      throw new Error("No files or description provided");
 
-      const URI = StorageService.uploadDocument(updateDescription, files);
-      await BlockchainServices.pushNewUpdate(batch.id, URI);
-      notifications.notify("New event pushed");
-    } catch (error: any) {
-      console.error(error);
-      notifications.error(error.message);
-    }
+    return StorageService.uploadDocuments(updateDescription, files).then(
+      (URI) => console.log(URI)
+    );
+    // .then((URI) => BlockchainServices.pushNewUpdate(batch.id, URI))
+  };
+
+  const handlePushNewEventNotify = async () => {
+    notifications.notifyPromise(handlePushNewEvent(), {
+      loading: "Pushing new event...",
+      success: "New event pushed",
+      error: (err) => `${err}`,
+    });
   };
 
   return (
@@ -60,7 +60,7 @@ const UpdateBatch = ({}) => {
 
         <button
           className="my-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
-          onClick={() => handlePushNewEvent(batch, updateDescription, files)}
+          onClick={() => handlePushNewEventNotify()}
         >
           Push new update
         </button>

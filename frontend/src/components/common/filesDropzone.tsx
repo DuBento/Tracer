@@ -59,7 +59,7 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
           type="file"
           multiple
           className="hidden"
-          accept="image/*, audio/*, video/*, .xml, .txt, .xlsx, .xls, .doc, .docx, .ppt, .pptx, .pdf"
+          accept="image/*, audio/*, video/*, .xml, .json, .txt, .xlsx, .xls, .doc, .docx, .ppt, .pptx, .pdf"
           onChange={handleFileSelect}
         />
         <div className="flex flex-row space-x-4 items-center">
@@ -81,7 +81,7 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
       </div>
 
       {fileArray.length > 0 && (
-        <div className="grid grid-cols-4 gap-2 mt-4 px-4 w-full">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 mt-4 px-4 w-full">
           {fileArray.map((file, index) => (
             <div key={index} className="h-48">
               <FilePreview file={file} close={removeFile} />

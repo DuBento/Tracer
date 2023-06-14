@@ -11,7 +11,9 @@ import { useContext, useEffect, useState } from "react";
 import DisplayBatch from "./displayBatch";
 
 const GetBatch = ({}) => {
-  const [batchId, setBatchId] = useState<string>("");
+  const [batchId, setBatchId] = useState<string>(
+    "88937340103839047480479271132253803649125425632794499494927339795308753602107"
+  );
   const { batch, setBatch } = useContext(BatchContext);
 
   const notifications = useContext(NotificationContext);
@@ -43,6 +45,7 @@ const GetBatch = ({}) => {
             name="fid"
             type="text"
             autoComplete="fBatchId"
+            value={batchId}
             className="block w-full rounded-md border-0 py-1.5 
               bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"

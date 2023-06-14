@@ -93,7 +93,8 @@ const BlockchainServices = {
         console.log("Sending:");
         console.log({ id, documentURI });
 
-        return contract.handleUpdate(id, documentURI);
+        const tx = await contract.handleUpdate(id, documentURI);
+        tx.wait();
       }
     );
   },
