@@ -16,13 +16,15 @@ const UpdateBatch = ({}) => {
 
   const handlePushNewEvent = async () => {
     if (batch === undefined) throw new Error("No batch to be updated");
-    if (files.length == 0 || !updateDescription)
+    if (!updateDescription && files.length == 0)
       throw new Error("No files or description provided");
 
-    return StorageService.uploadDocuments(updateDescription, files).then(
-      (URI) => console.log(URI)
-    );
-    // .then((URI) => BlockchainServices.pushNewUpdate(batch.id, URI))
+    return StorageService.uploadDocuments(updateDescription, files)
+      .then((URI) => BlockchainServices.pushNewUpdate(batch.id, URI))
+      .then(() => {
+        setUpdateDescription("");
+        setFiles([]);
+      });
   };
 
   const handlePushNewEventNotify = async () => {

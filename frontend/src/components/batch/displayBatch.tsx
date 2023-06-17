@@ -99,7 +99,7 @@ const DisplayUpdate = ({ update }: DisplayUpdateProps) => {
   };
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-start">
       <div className="flex-shrink-0">
         <svg
           className="h-5 w-5 text-green-500"
@@ -113,7 +113,7 @@ const DisplayUpdate = ({ update }: DisplayUpdateProps) => {
           />
         </svg>
       </div>
-      <div className="ml-3">
+      <div className="flex-grow ml-3">
         <p className="text-sm font-medium text-green-500">Owner</p>
         <p className="text-sm text-gray-900">{update.owner.toString()}</p>
         <p className="text-xs text-gray-500">
@@ -128,7 +128,7 @@ const DisplayUpdate = ({ update }: DisplayUpdateProps) => {
               Show Document
             </button>
             {showDocument && (
-              <div>
+              <div className="text-xs text-gray-500">
                 <DocumentContainer uri={update.documentURI} />
               </div>
             )}
@@ -184,7 +184,7 @@ const DisplayTransaction = ({ transaction }: DisplayTransactionProps) => {
               Show Document
             </button>
             {showDocument && (
-              <div>
+              <div className="text-xs text-gray-500">
                 <DocumentContainer uri={transaction.info.documentURI} />
               </div>
             )}

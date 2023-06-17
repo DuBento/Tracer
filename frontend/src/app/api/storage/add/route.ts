@@ -30,11 +30,24 @@ export async function POST(request: Request) {
     const queryParams = new URLSearchParams();
     queryParams.append("wrap-with-directory", "true");
 
+    const myHeaders = new Headers();
+    if (process.env.STORAGE_API_KEY && process.env.STORAGE_API_KEY_SECRET)
+      myHeaders.append(
+        "Authorization",
+        "Basic " +
+          Buffer.from(
+            process.env.STORAGE_API_KEY +
+              ":" +
+              process.env.STORAGE_API_KEY_SECRET
+          ).toString("base64")
+      );
+
     const requestUrl = `${process.env
       .STORAGE_API_ADD!}?${queryParams.toString()}`;
     const res = await fetch(requestUrl, {
       method: "POST",
       body: formData,
+      headers: myHeaders,
     });
 
     const data = await res.text();

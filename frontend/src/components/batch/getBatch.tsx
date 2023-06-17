@@ -12,7 +12,7 @@ import DisplayBatch from "./displayBatch";
 
 const GetBatch = ({}) => {
   const [batchId, setBatchId] = useState<string>(
-    "88937340103839047480479271132253803649125425632794499494927339795308753602107"
+    "69481545315357533314318464714618564425867746107952425533677118423758687210182"
   );
   const { batch, setBatch } = useContext(BatchContext);
 

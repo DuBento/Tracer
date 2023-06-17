@@ -10,7 +10,8 @@ interface UpdateIndexDocument {
   imgs: string[];
   vids: string[];
   txt: string[];
-  docs: string[];
+  pdf: string[];
+  other: string[];
 }
 
 export const composeMetadata = (
@@ -22,7 +23,8 @@ export const composeMetadata = (
     imgs: [],
     vids: [],
     txt: [],
-    docs: [],
+    pdf: [],
+    other: [],
   };
 
   files.forEach((file) => {
@@ -32,8 +34,10 @@ export const composeMetadata = (
       metadata.vids.push(file.name);
     } else if (file.type.startsWith("text/")) {
       metadata.txt.push(file.name);
+    } else if (file.type.match("application/pdf")) {
+      metadata.pdf.push(file.name);
     } else {
-      metadata.docs.push(file.name);
+      metadata.other.push(file.name);
     }
   });
 
@@ -41,10 +45,16 @@ export const composeMetadata = (
 };
 
 const StorageService = {
-  fetchDocument: async (uri: string): Promise<any> => {
+  generateResourceURL(uri: string, filename: string): URL {
+    return new URL(`${uri}/${filename}`, gateway);
+  },
+
+  fetchIndexDocument: async (uri: string): Promise<UpdateIndexDocument> => {
     console.log(`Fetching ${new URL(uri, gateway)}`);
-    return fetch(new URL(uri, gateway), { method: "GET" }).then((res) => {
-      console.log(res.ok);
+    // return fetch(new URL(`${uri}`, gateway), {
+    return fetch(StorageService.generateResourceURL(uri, INDEX_FILE), {
+      method: "GET",
+    }).then((res) => {
       if (!res.ok) throw new Error(`Storage error: ${res.text()}`);
       return res.json();
     });
@@ -61,9 +71,8 @@ const StorageService = {
       method: "POST",
       body: formData,
     }).then(async (res) => {
-      console.log(res.ok);
       if (!res.ok) throw new Error(`Storage error: ${await res.text()}`);
-      return await res.text();
+      return await res.json();
     });
   },
 };

@@ -34,6 +34,10 @@ module.exports = {
           900: "#0f172a ",
         },
       },
+      padding: {
+        "1/3": "33.333333%",
+        "2/3": "66.666667%",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

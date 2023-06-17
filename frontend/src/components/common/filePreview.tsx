@@ -16,6 +16,7 @@ const FilePreview = ({ file, close }: FilePreviewProps) => {
           src={URL.createObjectURL(file)}
           alt={file.name}
           fill
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
           className="object-cover max-h-full rounded-lg"
         />
       );
@@ -32,9 +33,39 @@ const FilePreview = ({ file, close }: FilePreviewProps) => {
         );
       };
       reader.readAsText(file);
+    } else if (file.type.includes("video")) {
+      setFilePreview(
+        <video
+          className="aspect-video rounded-lg overflow-hidden"
+          loop
+          controls
+          muted
+        >
+          <source src={URL.createObjectURL(file)} />
+        </video>
+      );
     } else {
       // Placeholder for other file types
-      setFilePreview(<p>Preview not available</p>);
+      setFilePreview(
+        <div className="text-center p-2 text-bluegray-500 font-mono font-bold max-w-full text-ellipsis overflow-hidden">
+          <svg
+            className="h-16 w-16 m-auto"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            strokeWidth="1"
+            stroke="currentColor"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" />
+            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+          </svg>
+          <p>{file.type.split("/").pop()?.toUpperCase()}</p>
+        </div>
+      );
     }
   }, [file]);
 
@@ -48,7 +79,7 @@ const FilePreview = ({ file, close }: FilePreviewProps) => {
   }
 
   return (
-    <div className="flex flex-col bg-bluegray-200 p-4 rounded-lg w-full h-full">
+    <div className="flex flex-col justify-between bg-bluegray-200 p-4 rounded-lg w-full h-full">
       <div className="flex flex-row justify-between items-center w-full">
         <p className="font-mono text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap">
           {file.name}
@@ -70,7 +101,7 @@ const FilePreview = ({ file, close }: FilePreviewProps) => {
           </button>
         )}
       </div>
-      <div className="relative h-full my-2 overflow-hidden text-gray-400">
+      <div className="relative flex justify-center items-center h-full my-2 overflow-hidden text-gray-400">
         {filePreview}
       </div>
     </div>
