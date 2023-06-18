@@ -5,7 +5,6 @@ import BlockchainServices, {
   Transaction,
   Update,
 } from "@/services/BlockchainServices";
-import StorageService from "@/services/StorageService";
 import { useContext, useState } from "react";
 import DocumentContainer from "./documentContainer";
 

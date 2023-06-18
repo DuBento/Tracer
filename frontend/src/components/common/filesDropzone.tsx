@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import FilePreview from "./filePreview";
 
 interface FilesDropzoneProps {
@@ -9,6 +9,13 @@ interface FilesDropzoneProps {
 
 const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
   const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileInputClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -52,10 +59,10 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
       <div
         className={`py-2 px-4 border-[2px] border-red-300 border-dotted rounded-lg cursor-pointer
         ${dragging ? "bg-bluegray-200" : "bg-coolgray-100"}`}
-        onClick={() => document.getElementById("fileInput")?.click()}
+        onClick={handleFileInputClick}
       >
         <input
-          id="fileInput"
+          ref={fileInputRef}
           type="file"
           multiple
           className="hidden"

@@ -3,16 +3,13 @@
 import { formSubmit } from "@/app/batch/page";
 import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices, {
-  Batch,
-  BatchId,
-} from "@/services/BlockchainServices";
+import BlockchainServices, { BatchId } from "@/services/BlockchainServices";
 import { useContext, useEffect, useState } from "react";
 import DisplayBatch from "./displayBatch";
 
 const GetBatch = ({}) => {
   const [batchId, setBatchId] = useState<string>(
-    "69481545315357533314318464714618564425867746107952425533677118423758687210182"
+    "92745323514178019907773362325903485843892136726802412422915364420803763892721"
   );
   const { batch, setBatch } = useContext(BatchContext);
 

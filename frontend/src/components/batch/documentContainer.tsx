@@ -62,12 +62,10 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
         {data?.txt.map((filename, idx) => (
           <div
             key={`txt${idx}`}
-            className="col-span-2 aspect-video rounded-lg shadow-lg"
+            className="col-span-2 aspect-video rounded-lg shadow-lg
+            w-full h-full p-2 font-mono overflow-auto"
           >
-            <iframe
-              className="w-full h-full font-mono border border-gray-300 rounded-lg"
-              src={StorageService.generateResourceURL(uri, filename).toString()}
-            />
+            <DocumentText uri={uri} filename={filename} />
           </div>
         ))}
 
@@ -123,3 +121,26 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
 };
 
 export default DocumentContainer;
+
+interface DocumentTextProps {
+  uri: string;
+  filename: string;
+}
+
+const DocumentText = ({ uri, filename }: DocumentTextProps) => {
+  const fetcher = (url: string) => fetch(url).then((res) => res.text());
+  const { data, error, isLoading } = useSWR(
+    StorageService.generateResourceURL(uri, filename).toString(),
+    fetcher
+  );
+
+  if (error) return <pre>failed to load</pre>;
+  if (isLoading)
+    return (
+      <div role="status" className="max-w-sm animate-pulse">
+        <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>{" "}
+      </div>
+    );
+
+  return <pre className="whitespace-pre-wrap">{data}</pre>;
+};

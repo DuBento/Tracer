@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish, ethers } from "ethers";
 
-import { SupplyChain__factory, SupplyChain } from "@/contracts/";
+import { SupplyChain, SupplyChain__factory } from "@/contracts/";
 import { NewBatchEventObject } from "@/contracts/SupplyChain";
 import SupplyChainSCConfig from "@/contracts/SupplyChain.json";
 import { PromiseOrValue } from "@/contracts/common";
@@ -71,12 +71,9 @@ const BlockchainServices = {
     );
   },
 
-  newBatch: async (
-    description: string,
-    documentURI: string
-  ): Promise<BatchId> => {
+  newBatch: async (description: string): Promise<BatchId> => {
     return BlockchainServices.supplyChainContract().then(async (contract) => {
-      const tx = await contract.newBatch(description, documentURI);
+      const tx = await contract.newBatch(description);
       const receipt = await tx.wait();
 
       const newBatchEvent = receipt.events?.find(
@@ -112,7 +109,8 @@ const BlockchainServices = {
         console.log("Sending transaction:");
         console.log({ id, receiver, documentURI });
 
-        return contract.handleTransaction(id, receiver, documentURI);
+        const tx = await contract.handleTransaction(id, receiver, documentURI);
+        tx.wait();
       }
     );
   },

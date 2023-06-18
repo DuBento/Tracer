@@ -35,10 +35,7 @@ contract SupplyChain is Ownable {
         return batches[id_];
     }
 
-    function newBatch(
-        string memory description_,
-        string memory documentURI_
-    ) public returns (uint256) {
+    function newBatch(string memory description_) public returns (uint256) {
         uint256 batchId = generateId();
         Batch storage batch = batches[batchId];
         batch.id = batchId;
@@ -47,10 +44,7 @@ contract SupplyChain is Ownable {
         batch.state = ConformityState.Functioning;
 
         // handle create transaction
-        Transaction memory transaction = newTransaction(
-            msg.sender,
-            documentURI_
-        );
+        Transaction memory transaction = newTransaction(msg.sender, "");
         batch.transactions.push(transaction);
 
         emit NewBatch(msg.sender, batch.id);

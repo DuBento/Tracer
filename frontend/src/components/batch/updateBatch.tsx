@@ -1,11 +1,11 @@
 "use client";
 
-import BlockchainServices, { Batch } from "@/services/BlockchainServices";
-import { useContext, useState } from "react";
 import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
-import FilesDropzone from "../common/filesDropzone";
+import BlockchainServices from "@/services/BlockchainServices";
 import StorageService from "@/services/StorageService";
+import { useContext, useState } from "react";
+import FilesDropzone from "../common/filesDropzone";
 
 const UpdateBatch = ({}) => {
   const { batch } = useContext(BatchContext);
@@ -40,13 +40,9 @@ const UpdateBatch = ({}) => {
       <div>
         <h2 className="text-2xl font-mono">Push new event</h2>
 
-        <label htmlFor="fid" className="text-base leading-6">
-          Update description
-        </label>
+        <p className="text-base leading-6">Update description</p>
         <div className="my-2 ">
           <textarea
-            id="fUpdtDocument"
-            name="fUpdtDocument"
             autoComplete="off"
             className="block w-full rounded-md border-0 py-1.5 
               bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
@@ -62,7 +58,7 @@ const UpdateBatch = ({}) => {
 
         <button
           className="my-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
-          onClick={() => handlePushNewEventNotify()}
+          onClick={handlePushNewEventNotify}
         >
           Push new update
         </button>

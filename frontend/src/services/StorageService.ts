@@ -49,15 +49,20 @@ const StorageService = {
     return new URL(`${uri}/${filename}`, gateway);
   },
 
-  fetchIndexDocument: async (uri: string): Promise<UpdateIndexDocument> => {
-    console.log(`Fetching ${new URL(uri, gateway)}`);
-    // return fetch(new URL(`${uri}`, gateway), {
-    return fetch(StorageService.generateResourceURL(uri, INDEX_FILE), {
+  fetchDocument: async (uri: string, filename: string): Promise<any> => {
+    console.log(
+      `Fetching ${StorageService.generateResourceURL(uri, filename)}`
+    );
+    return fetch(StorageService.generateResourceURL(uri, filename), {
       method: "GET",
-    }).then((res) => {
-      if (!res.ok) throw new Error(`Storage error: ${res.text()}`);
+    }).then(async (res) => {
+      if (!res.ok) throw new Error(`${await res.text()}`);
       return res.json();
     });
+  },
+
+  fetchIndexDocument: async (uri: string): Promise<UpdateIndexDocument> => {
+    return StorageService.fetchDocument(uri, INDEX_FILE);
   },
 
   uploadDocuments: async (
@@ -71,7 +76,7 @@ const StorageService = {
       method: "POST",
       body: formData,
     }).then(async (res) => {
-      if (!res.ok) throw new Error(`Storage error: ${await res.text()}`);
+      if (!res.ok) throw new Error(`${await res.text()}`);
       return await res.json();
     });
   },

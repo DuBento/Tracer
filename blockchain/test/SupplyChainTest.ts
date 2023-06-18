@@ -1,12 +1,12 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { SupplyChain } from "../artifacts/frontend-artifacts";
-import * as Values from "./TestConfig";
 import { BigNumber } from "ethers";
+import { SupplyChain } from "../artifacts/frontend-artifacts";
 import { NewBatchEventObject } from "../artifacts/frontend-artifacts/SupplyChain";
+import * as Values from "./TestConfig";
 
 describe("SupplyChain", function () {
   let supplyChain: SupplyChain;
@@ -29,10 +29,9 @@ describe("SupplyChain", function () {
 
   async function createNewBatch(
     supplyChain: SupplyChain,
-    description: string,
-    hash: string
+    description: string
   ): Promise<BigNumber> {
-    const tx = await supplyChain.newBatch(description, hash);
+    const tx = await supplyChain.newBatch(description);
     const receipt = await tx.wait();
 
     const newBatchEvent = receipt.events?.find(
@@ -59,11 +58,7 @@ describe("SupplyChain", function () {
 
   describe("Batches", function () {
     it("New batch should be properly initialized", async function () {
-      const id = await createNewBatch(
-        supplyChain,
-        Values.BATCH_DESCRIPTION,
-        Values.UPDATE_DOCUMENT_URI
-      );
+      const id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
 
       const batch = await supplyChain.getBatch(id);
 
@@ -72,9 +67,7 @@ describe("SupplyChain", function () {
       expect(batch.transactions).to.have.lengthOf(1);
       expect(batch.transactions[0].receiver).to.equal(owner.address);
       expect(batch.transactions[0].info.owner).to.equal(owner.address);
-      expect(batch.transactions[0].info.documentURI).to.equal(
-        Values.UPDATE_DOCUMENT_URI
-      );
+      expect(batch.transactions[0].info.documentURI).to.equal("");
     });
   });
 
@@ -82,11 +75,7 @@ describe("SupplyChain", function () {
     let id: BigNumber;
 
     beforeEach(async function () {
-      id = await createNewBatch(
-        supplyChain,
-        Values.BATCH_DESCRIPTION,
-        Values.UPDATE_DOCUMENT_URI
-      );
+      id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
     });
 
     it("New update should be registered correctly", async function () {
@@ -167,11 +156,7 @@ describe("SupplyChain", function () {
     let batchTs: BigNumber;
 
     beforeEach(async function () {
-      id = await createNewBatch(
-        supplyChain,
-        Values.BATCH_DESCRIPTION,
-        Values.UPDATE_DOCUMENT_URI
-      );
+      id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
 
       const batch = await supplyChain.getBatch(id);
       batchTs = batch.transactions[0].info.ts;

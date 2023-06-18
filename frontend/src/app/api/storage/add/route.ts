@@ -1,4 +1,4 @@
-import { composeMetadata, INDEX_FILE } from "@/services/StorageService";
+import { INDEX_FILE, composeMetadata } from "@/services/StorageService";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -48,7 +48,14 @@ export async function POST(request: Request) {
       method: "POST",
       body: formData,
       headers: myHeaders,
+    }).catch((e) => {
+      throw new Error("Error interacting with storage server");
     });
+
+    if (!res.ok)
+      throw new Error(
+        `Received error from storage server: ${res.status} ${res.statusText}`
+      );
 
     const data = await res.text();
     for (const jsonString of data.split("\n")) {
@@ -59,6 +66,7 @@ export async function POST(request: Request) {
         return new NextResponse(JSON.stringify(json.Hash), { status: 200 });
       }
     }
+    // return new NextResponse(JSON.stringify(description), { status: 200 });
   } catch (e: any) {
     console.error(e);
     return new NextResponse(e.message, { status: 400 });

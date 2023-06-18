@@ -1,7 +1,6 @@
 import { ethers } from "hardhat";
 
 import { saveFrontendFiles } from "./deploy";
-import * as Values from "../test/TestConfig";
 
 async function main() {
   const SupplyChain = await ethers.getContractFactory("SupplyChain");
@@ -9,11 +8,6 @@ async function main() {
 
   await supplyChain.deployed();
   console.log(`SupplyChain smart contract: deployed!`);
-
-  await supplyChain.newBatch(
-    Values.BATCH_DESCRIPTION,
-    Values.UPDATE_DOCUMENT_URI
-  );
 
   saveFrontendFiles("SupplyChain", supplyChain);
 }
