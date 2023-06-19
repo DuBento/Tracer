@@ -37,7 +37,7 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="absolute object-cover inset-0 w-full h-full rounded-lg"
               placeholder="blur"
-              blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8s3RpPQAHsgLHRM/5kQAAAABJRU5ErkJggg=="
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8s3RpPQAHsgLHRM/5kQAAAABJRU5ErkJggg=="
               alt={filename}
             />
           </div>
