@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.19;
 
 import "./Common.sol";
 // DEBUG only
@@ -121,7 +121,7 @@ contract SupplyChain is Ownable {
                     abi.encodePacked(
                         msg.sender,
                         block.timestamp,
-                        block.difficulty
+                        block.prevrandao
                     )
                 )
             );

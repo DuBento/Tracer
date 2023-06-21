@@ -1,8 +1,8 @@
-import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import { HardhatUserConfig } from "hardhat/config";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: "0.8.19",
   typechain: {
     outDir: "./artifacts/frontend-artifacts/",
     target: "ethers-v5",
