@@ -118,11 +118,7 @@ contract SupplyChain is Ownable {
         return
             uint256(
                 keccak256(
-                    abi.encodePacked(
-                        msg.sender,
-                        block.timestamp,
-                        block.prevrandao
-                    )
+                    abi.encode(msg.sender, block.timestamp, block.prevrandao)
                 )
             );
     }
