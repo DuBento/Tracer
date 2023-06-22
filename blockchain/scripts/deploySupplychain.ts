@@ -1,11 +1,11 @@
-import { ethers, artifacts } from "hardhat";
-import { BaseContract, ContractFactory } from "ethers";
+import { BaseContract } from "ethers";
+import { artifacts, ethers } from "hardhat";
 
 async function main() {
   const SupplyChain = await ethers.getContractFactory("SupplyChain");
   const supplyChain = await SupplyChain.deploy();
 
-  await supplyChain.deployed();
+  await supplyChain.waitForDeployment();
 
   console.log(`SupplyChain smart contract: deployed!`);
 
@@ -16,8 +16,7 @@ export async function saveFrontendFiles(
   contractName: string,
   contract: BaseContract
 ) {
-  const fs = require("fs");
-  const fse = require("fs-extra");
+  const fs = require("fs-extra");
   const path = require("path");
 
   const contractsDir = path.join(
@@ -26,16 +25,17 @@ export async function saveFrontendFiles(
     "artifacts",
     "frontend-artifacts"
   );
-
-  if (!fs.existsSync(contractsDir)) {
-    fse.mkdirSync(contractsDir);
-  }
+  fs.ensureDirSync(contractsDir);
 
   const abi = await getContractAbi(contractName);
 
   fs.writeFileSync(
     path.join(contractsDir, contractName + ".json"),
-    JSON.stringify({ address: contract.address, abi: abi }, undefined, 2)
+    JSON.stringify(
+      { address: await contract.getAddress(), abi: abi },
+      undefined,
+      2
+    )
   );
 
   // Copy type + abi files to frontend dir
@@ -46,8 +46,8 @@ export async function saveFrontendFiles(
     "frontend",
     "contracts"
   );
-
-  fse.copySync(contractsDir, frontendOutDir, { overwrite: true });
+  fs.emptyDirSync(frontendOutDir);
+  fs.copySync(contractsDir, frontendOutDir, { overwrite: true });
 }
 
 async function getContractAbi(contractName: string) {

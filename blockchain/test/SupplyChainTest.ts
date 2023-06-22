@@ -1,18 +1,17 @@
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { BigNumber } from "ethers";
 import { SupplyChain } from "../artifacts/frontend-artifacts";
-import { NewBatchEventObject } from "../artifacts/frontend-artifacts/SupplyChain";
+import { NewBatchEvent } from "../artifacts/frontend-artifacts/supplychain/SupplyChain";
 import * as Values from "./TestConfig";
 
 describe("SupplyChain", function () {
   let supplyChain: SupplyChain;
-  let owner: SignerWithAddress;
-  let actor1: SignerWithAddress;
-  let actor2: SignerWithAddress;
+  let owner: HardhatEthersSigner;
+  let actor1: HardhatEthersSigner;
+  let actor2: HardhatEthersSigner;
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
@@ -30,13 +29,18 @@ describe("SupplyChain", function () {
   async function createNewBatch(
     supplyChain: SupplyChain,
     description: string
-  ): Promise<BigNumber> {
+  ): Promise<bigint> {
     const tx = await supplyChain.newBatch(description);
     const receipt = await tx.wait();
 
-    const newBatchEvent = receipt.events?.find(
-      (event) => event.event == "NewBatch"
-    )?.args as unknown as NewBatchEventObject;
+    if (receipt == null) throw new Error("Error completing transaction");
+
+    const newBatchEvent = (
+      receipt.logs.find(
+        (event) =>
+          event instanceof ethers.EventLog && event.eventName == "NewBatch"
+      ) as NewBatchEvent.Log
+    )?.args;
 
     return newBatchEvent.id;
   }
@@ -72,7 +76,7 @@ describe("SupplyChain", function () {
   });
 
   describe("Supplychain updates", function () {
-    let id: BigNumber;
+    let id: bigint;
 
     beforeEach(async function () {
       id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
@@ -152,14 +156,10 @@ describe("SupplyChain", function () {
   });
 
   describe("Supplychain transactions", function () {
-    let id: BigNumber;
-    let batchTs: BigNumber;
+    let id: bigint;
 
     beforeEach(async function () {
       id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
-
-      const batch = await supplyChain.getBatch(id);
-      batchTs = batch.transactions[0].info.ts;
     });
 
     it("New transaction between actors works correctly", async function () {
