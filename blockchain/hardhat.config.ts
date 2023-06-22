@@ -1,4 +1,5 @@
 import "@nomicfoundation/hardhat-toolbox";
+import "hardhat-deploy";
 import { HardhatUserConfig } from "hardhat/config";
 
 const config: HardhatUserConfig = {
@@ -13,7 +14,7 @@ const config: HardhatUserConfig = {
   },
   typechain: {
     outDir: "./artifacts/frontend-artifacts",
-    target: "ethers-v5",
+    target: "ethers-v6",
   },
 };
 

@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 
-import { saveFrontendFiles } from "./deploy";
+import { saveFrontendFiles } from "./deploySupplychain";
 
 async function main() {
   const SupplyChain = await ethers.getContractFactory("SupplyChain");
