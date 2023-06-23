@@ -18,6 +18,8 @@ typechain-types
 cache
 artifacts/
 
+# Hardhat deploy
+deployments/
 
 ## Frontend
 # dependencies
