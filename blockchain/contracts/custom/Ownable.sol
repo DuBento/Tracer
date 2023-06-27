@@ -1,14 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-// Type definitions
-
-enum ConformityState {
-    Functioning,
-    WaitingReview,
-    CorrectiveMeasureNeeded
-}
-
 contract Ownable {
     address private owner;
 
@@ -17,7 +9,7 @@ contract Ownable {
     }
 
     modifier onlyOwner() {
-        require(isOwner(), "Function accessible only by the owner !!");
+        require(isOwner(), "Function accessible only by the owner");
         _;
     }
 

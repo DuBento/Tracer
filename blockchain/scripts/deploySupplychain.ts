@@ -2,14 +2,14 @@ import { ethers } from "hardhat";
 import { saveFrontendFiles } from "./utils";
 
 async function main() {
-  const SupplyChain = await ethers.getContractFactory("SupplyChain");
-  const supplyChain = await SupplyChain.deploy();
+  const Supplychain = await ethers.getContractFactory("Supplychain");
+  const supplyChain = await Supplychain.deploy();
 
   await supplyChain.waitForDeployment();
 
-  console.log(`SupplyChain smart contract: deployed!`);
+  console.log(`Supplychain smart contract: deployed!`);
 
-  saveFrontendFiles("SupplyChain", supplyChain);
+  saveFrontendFiles("Supplychain", supplyChain);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

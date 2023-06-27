@@ -3,31 +3,31 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { SupplyChain } from "../artifacts/frontend-artifacts";
-import { NewBatchEvent } from "../artifacts/frontend-artifacts/supplychain/SupplyChain";
+import { Supplychain } from "../artifacts/frontend-artifacts";
+import { NewBatchEvent } from "../artifacts/frontend-artifacts/supplychain/Supplychain";
 import * as Values from "./TestConfig";
 
-describe("SupplyChain", function () {
-  let supplyChain: SupplyChain;
+describe("Supplychain", function () {
+  let supplyChain: Supplychain;
   let owner: HardhatEthersSigner;
   let actor1: HardhatEthersSigner;
   let actor2: HardhatEthersSigner;
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
-  async function deploySupplyChainFixture() {
+  async function deploySupplychainFixture() {
     // Contracts are deployed using the first signer/account by default
     const [primaryAccount, otherAccount1, otherAccount2] =
       await ethers.getSigners();
 
-    const SupplyChain = await ethers.getContractFactory("SupplyChain");
-    const contract = await SupplyChain.deploy();
+    const Supplychain = await ethers.getContractFactory("Supplychain");
+    const contract = await Supplychain.deploy();
 
     return { contract, primaryAccount, otherAccount1, otherAccount2 };
   }
 
   async function createNewBatch(
-    supplyChain: SupplyChain,
+    supplyChain: Supplychain,
     description: string
   ): Promise<bigint> {
     const tx = await supplyChain.newBatch(description);
@@ -47,7 +47,7 @@ describe("SupplyChain", function () {
 
   beforeEach(async function () {
     const { contract, primaryAccount, otherAccount1, otherAccount2 } =
-      await loadFixture(deploySupplyChainFixture);
+      await loadFixture(deploySupplychainFixture);
     supplyChain = contract;
     owner = primaryAccount;
     actor1 = otherAccount1;
@@ -98,7 +98,7 @@ describe("SupplyChain", function () {
 
     xit("New update with owner address different than tx sender", async function () {
       // Skipped
-      // const update: SupplyChain.UpdateStruct = {
+      // const update: Supplychain.UpdateStruct = {
       //   owner: actor2.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.add(1),
@@ -110,7 +110,7 @@ describe("SupplyChain", function () {
 
     xit("New update with invalid timestamp, lower than previous update", async function () {
       // Skipped
-      // const update: SupplyChain.UpdateStruct = {
+      // const update: Supplychain.UpdateStruct = {
       //   owner: owner.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.sub(1),
@@ -122,7 +122,7 @@ describe("SupplyChain", function () {
 
     xit("New update with invalid timestamp, higher than block ts", async function () {
       // Skiped
-      // const update: SupplyChain.UpdateStruct = {
+      // const update: Supplychain.UpdateStruct = {
       //   owner: owner.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.add(9999),
@@ -133,7 +133,7 @@ describe("SupplyChain", function () {
     });
 
     xit("New update with invalid timestamp, lower than batch genesis", async function () {
-      // const update: SupplyChain.UpdateStruct = {
+      // const update: Supplychain.UpdateStruct = {
       //   owner: owner.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.sub(9999),
