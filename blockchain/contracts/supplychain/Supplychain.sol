@@ -1,16 +1,21 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-import "./Common.sol";
+import "../custom/Ownable.sol";
+
 // DEBUG only
 import "hardhat/console.sol";
 
-contract SupplyChain is Ownable {
+contract Supplychain is Ownable {
+    uint8 public constant CONFORMITY_STATE_FUNCTIONING = 0;
+    uint8 public constant CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED = 1;
+    uint8 public constant CONFORMITY_STATE_WAITING_REVIEW = 2;
+
     struct Batch {
         uint256 id;
         string description;
         address currentOwner;
-        ConformityState state;
+        uint8 state;
         Update[] updates;
         Transaction[] transactions;
     }
@@ -41,7 +46,7 @@ contract SupplyChain is Ownable {
         batch.id = batchId;
         batch.description = description_;
         batch.currentOwner = msg.sender;
-        batch.state = ConformityState.Functioning;
+        batch.state = CONFORMITY_STATE_FUNCTIONING;
 
         // handle create transaction
         Transaction memory transaction = newTransaction(msg.sender, "");
@@ -125,9 +130,7 @@ contract SupplyChain is Ownable {
 
     // Admin
 
-    function changeConformityState(
-        ConformityState newState_
-    ) external onlyOwner {
+    function changeConformityState(uint8 newState_) external onlyOwner {
         // TODO
     }
 

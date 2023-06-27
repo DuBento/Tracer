@@ -1,21 +1,21 @@
 import { EventLog, ethers } from "ethers";
 
-import { SupplyChain, SupplyChain__factory } from "@/contracts/";
-import SupplyChainSCConfig from "@/contracts/SupplyChain.json";
-import { NewBatchEvent } from "@/contracts/supplychain/SupplyChain";
-const supplyChainAddress = SupplyChainSCConfig.address;
+import { Supplychain, Supplychain__factory } from "@/contracts/";
+import SupplychainSCConfig from "@/contracts/Supplychain.json";
+import { NewBatchEvent } from "@/contracts/supplychain/Supplychain";
+const supplyChainAddress = SupplychainSCConfig.address;
 
-let supplyChainContract: SupplyChain | undefined = undefined;
+let supplyChainContract: Supplychain | undefined = undefined;
 
 // Types
 
-export type Batch = SupplyChain.BatchStructOutput;
+export type Batch = Supplychain.BatchStructOutput;
 export type BatchId = ethers.BigNumberish;
 
-export type Update = SupplyChain.UpdateStructOutput;
+export type Update = Supplychain.UpdateStructOutput;
 export type PartialUpdate = Partial<Update>;
 
-export type Transaction = SupplyChain.TransactionStructOutput;
+export type Transaction = Supplychain.TransactionStructOutput;
 export type PartialTransaction = Partial<Transaction> & {
   info?: PartialUpdate;
 };
@@ -51,10 +51,10 @@ const connectHardhat = async () => {
 };
 
 const BlockchainServices = {
-  supplyChainContract: async (): Promise<SupplyChain> => {
+  supplyChainContract: async (): Promise<Supplychain> => {
     if (supplyChainContract) return supplyChainContract;
     else {
-      supplyChainContract = SupplyChain__factory.connect(
+      supplyChainContract = Supplychain__factory.connect(
         supplyChainAddress,
         await connectWallet()
       );
@@ -118,7 +118,7 @@ const BlockchainServices = {
 
   listenOnNewBatchEvent: async () => {
     BlockchainServices.supplyChainContract().then(
-      async (contract: SupplyChain) => {
+      async (contract: Supplychain) => {
         const currentAddress = await contract.getAddress();
         const filter = contract.filters.NewBatch(currentAddress);
 
