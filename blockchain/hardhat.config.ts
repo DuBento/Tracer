@@ -1,6 +1,19 @@
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
-import { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig, task } from "hardhat/config";
+
+export const FRONTEND_ARTIFACTS_PATH = "./artifacts-frontend";
+
+task(
+  "clean",
+  "Clears the cache and deletes all artifacts",
+  async function (args, hre, runSuper) {
+    const fs = require("fs-extra");
+    console.log(`Clean extended, deleting ${FRONTEND_ARTIFACTS_PATH}...`);
+    fs.removeSync(FRONTEND_ARTIFACTS_PATH);
+    await runSuper(args);
+  }
+);
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -13,7 +26,7 @@ const config: HardhatUserConfig = {
     },
   },
   typechain: {
-    outDir: "./artifacts/frontend-artifacts",
+    outDir: `${FRONTEND_ARTIFACTS_PATH}/typechain`,
     target: "ethers-v6",
   },
 
