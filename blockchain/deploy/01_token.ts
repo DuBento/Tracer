@@ -1,7 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { padCenter, scriptName } from "../scripts/utils";
+import { padCenter, scriptName, storeContractAddress } from "../scripts/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -18,6 +18,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // TODO verify if live on network
   });
 
+  storeContractAddress("GovernorToken", governorToken.address);
   log(`GovernorToken at ${governorToken.address}`);
 };
 

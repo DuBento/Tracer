@@ -1,7 +1,30 @@
-import { BaseContract } from "ethers";
-import { artifacts } from "hardhat";
+const fs = require("fs-extra");
+const path = require("path");
+
+const contractsDir = path.join(
+  __dirname,
+  "..",
+  "artifacts",
+  "frontend-artifacts"
+);
+const frontendOutDir = path.join(
+  __dirname,
+  "..",
+  "..",
+  "frontend",
+  "contracts"
+);
+
+const contractAddressesFile = path.join(
+  __dirname,
+  "..",
+  "artifacts",
+  "frontend-artifacts",
+  "deployedAddresses.json"
+);
 
 // general
+
 export function padCenter(str: string, length: number, paddingChar = "-") {
   const paddingLength = length - str.length;
   const paddingLeftLength = Math.floor(paddingLength / 2);
@@ -17,45 +40,23 @@ export function scriptName(filename: string) {
 
 // contracts
 
-export async function saveFrontendFiles(
-  contractName: string,
-  contract: BaseContract
-) {
-  const fs = require("fs-extra");
-  const path = require("path");
-
-  const contractsDir = path.join(
-    __dirname,
-    "..",
-    "artifacts",
-    "frontend-artifacts"
-  );
-  fs.ensureDirSync(contractsDir);
-
-  const abi = await getContractAbi(contractName);
-
-  fs.writeFileSync(
-    path.join(contractsDir, contractName + ".json"),
-    JSON.stringify(
-      { address: await contract.getAddress(), abi: abi },
-      undefined,
-      2
-    )
-  );
+export async function saveFrontendFiles() {
+  if (!fs.pathExistsSync(contractsDir))
+    throw new Error("Contract artifacts directory not found");
 
   // Copy type + abi files to frontend dir
-  const frontendOutDir = path.join(
-    __dirname,
-    "..",
-    "..",
-    "frontend",
-    "contracts"
-  );
   fs.emptyDirSync(frontendOutDir);
   fs.copySync(contractsDir, frontendOutDir, { overwrite: true });
 }
 
-async function getContractAbi(contractName: string) {
-  const contractArtifacts = await artifacts.readArtifact(contractName);
-  return contractArtifacts.abi;
+export async function storeContractAddress(name: string, address: string) {
+  let addresses: any;
+  if (!fs.pathExistsSync(contractAddressesFile)) addresses = {};
+  else addresses = JSON.parse(fs.readFileSync(contractAddressesFile, "utf8"));
+
+  fs.ensureFileSync(contractAddressesFile);
+
+  addresses[name] = address;
+
+  fs.writeFileSync(contractAddressesFile, JSON.stringify(addresses), "utf8");
 }
