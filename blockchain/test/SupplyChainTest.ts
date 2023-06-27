@@ -7,6 +7,11 @@ import { Supplychain } from "../artifacts/frontend-artifacts";
 import { NewBatchEvent } from "../artifacts/frontend-artifacts/supplychain/Supplychain";
 import * as Values from "./TestConfig";
 
+/* 
+ TODO:
+  - Test transfer ownership
+*/
+
 describe("Supplychain", function () {
   let supplyChain: Supplychain;
   let owner: HardhatEthersSigner;

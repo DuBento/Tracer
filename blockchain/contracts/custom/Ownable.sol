@@ -16,4 +16,9 @@ contract Ownable {
     function isOwner() public view returns (bool) {
         return msg.sender == owner;
     }
+
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(newOwner != address(0), "New owner cannot be the zero address");
+        owner = newOwner;
+    }
 }
