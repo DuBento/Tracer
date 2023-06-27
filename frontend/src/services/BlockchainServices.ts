@@ -1,9 +1,9 @@
 import { EventLog, ethers } from "ethers";
 
 import { Supplychain, Supplychain__factory } from "@/contracts/";
-import SupplychainSCConfig from "@/contracts/Supplychain.json";
+import deployedAddresses from "@/contracts/deployedAddresses.json";
 import { NewBatchEvent } from "@/contracts/supplychain/Supplychain";
-const supplyChainAddress = SupplychainSCConfig.address;
+const supplyChainAddress = deployedAddresses["Supplychain"];
 
 let supplyChainContract: Supplychain | undefined = undefined;
 

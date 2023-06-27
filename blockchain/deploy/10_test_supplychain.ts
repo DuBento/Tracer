@@ -2,7 +2,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ethers } from "hardhat";
-import { padCenter, saveFrontendFiles, scriptName } from "../scripts/utils";
+import { padCenter, scriptName, storeContractAddress } from "../scripts/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -15,7 +15,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   await supplychain.waitForDeployment();
 
-  saveFrontendFiles("Supplychain", supplychain);
+  storeContractAddress("Supplychain", await supplychain.getAddress());
 
   log("Supplychain smart contract: deployed!");
 };
