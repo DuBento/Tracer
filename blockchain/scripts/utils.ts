@@ -1,12 +1,11 @@
+import { ethers, network } from "hardhat";
+import { FRONTEND_ARTIFACTS_PATH } from "../hardhat.config";
+
 const fs = require("fs-extra");
 const path = require("path");
 
-const contractsDir = path.join(
-  __dirname,
-  "..",
-  "artifacts",
-  "frontend-artifacts"
-);
+const contractsDir = path.join(__dirname, "..", FRONTEND_ARTIFACTS_PATH);
+console.log(contractsDir);
 const frontendOutDir = path.join(
   __dirname,
   "..",
@@ -15,13 +14,7 @@ const frontendOutDir = path.join(
   "contracts"
 );
 
-const contractAddressesFile = path.join(
-  __dirname,
-  "..",
-  "artifacts",
-  "frontend-artifacts",
-  "deployedAddresses.json"
-);
+const contractAddressesFile = path.join(contractsDir, "deployedAddresses.json");
 
 // general
 
@@ -49,7 +42,7 @@ export async function saveFrontendFiles() {
   fs.copySync(contractsDir, frontendOutDir, { overwrite: true });
 }
 
-export async function storeContractAddress(name: string, address: string) {
+export function storeContractAddress(name: string, address: string) {
   let addresses: any;
   if (!fs.pathExistsSync(contractAddressesFile)) addresses = {};
   else addresses = JSON.parse(fs.readFileSync(contractAddressesFile, "utf8"));
@@ -58,5 +51,28 @@ export async function storeContractAddress(name: string, address: string) {
 
   addresses[name] = address;
 
-  fs.writeFileSync(contractAddressesFile, JSON.stringify(addresses), "utf8");
+  fs.writeFileSync(
+    contractAddressesFile,
+    JSON.stringify(addresses, null, 2),
+    "utf8"
+  );
+}
+
+export function getContractAddress(name: string): string {
+  if (!fs.pathExistsSync(contractAddressesFile))
+    throw new Error("Deployed contracts address file not found");
+
+  return JSON.parse(fs.readFileSync(contractAddressesFile, "utf8"))[name];
+}
+
+export async function getSignerByIndex(idx: number) {
+  const accounts = await ethers.getSigners();
+  return accounts[idx];
+}
+
+export async function incrementBlocks(nBlocks: number) {
+  for (let i = 0; i < nBlocks; i++) {
+    await network.provider.send("evm_mine");
+  }
+  console.log(`Incremented ${nBlocks} blocks`);
 }
