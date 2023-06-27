@@ -11,27 +11,31 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const governorContractDeployment = await get("GovernorContract");
   const governorTimelockDeployment = await get("GovernorTimelock");
+  const supplychainFactoryDeployment = await get("SupplychainFactory");
 
   const deployerSigner = await ethers.getSigner(deployer);
 
-  const governorContract = await ethers.getContractAt(
-    "GovernorContract",
-    governorContractDeployment.address,
-    deployerSigner
-  );
   const governorTimelock = await ethers.getContractAt(
     "GovernorTimelock",
     governorTimelockDeployment.address,
     deployerSigner
   );
 
+  const supplychainFactory = await ethers.getContractAt(
+    "SupplychainFactory",
+    supplychainFactoryDeployment.address,
+    deployerSigner
+  );
+
   log(padCenter(scriptName(__filename), 50));
-  log("Seting up governance...");
 
   const proposerRole = await governorTimelock.PROPOSER_ROLE();
   const executorRole = await governorTimelock.EXECUTOR_ROLE();
   const adminRole = await governorTimelock.DEFAULT_ADMIN_ROLE();
 
+  /* Timelock */
+  log("Seting up Timelock...");
+  // Grant proposer to governor contract
   const proposerTx = await governorTimelock.grantRole(
     proposerRole,
     governorContractDeployment.address
@@ -49,7 +53,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const revokeAdminTx = await governorTimelock.revokeRole(adminRole, deployer);
   await revokeAdminTx.wait();
 
-  log(padCenter("", 50));
+  /* Factory */
+  log("Seting up Supplychain Factory...");
+  // Transfer owner to timelock
+  const transferOwnershipTx = await supplychainFactory.transferOwnership(
+    governorTimelockDeployment.address
+  );
+  await transferOwnershipTx.wait();
 };
 
 export default func;

@@ -22,8 +22,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
 
   log(`GovernorContract at ${governorContract.address}`);
-
-  log(padCenter("", 50));
 };
 
 export default func;
