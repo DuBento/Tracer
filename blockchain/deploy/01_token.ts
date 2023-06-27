@@ -19,8 +19,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
 
   log(`GovernorToken at ${governorToken.address}`);
-
-  log(padCenter("", 50));
 };
 
 export default func;
