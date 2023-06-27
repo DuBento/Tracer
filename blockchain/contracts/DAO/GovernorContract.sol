@@ -25,7 +25,7 @@ contract GovernorContract is
     {}
 
     function votingDelay() public pure override returns (uint256) {
-        return 7200; // 1 day
+        return 1; // 1 block
     }
 
     function votingPeriod() public pure override returns (uint256) {
