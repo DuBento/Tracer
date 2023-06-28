@@ -7,19 +7,16 @@ import {
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
   developmentChains,
 } from "../properties";
-import { getContractAddress, incrementBlocks } from "./utils";
+import * as utils from "./utils";
 
 export async function propose(
   encodedCall: string,
   proposalDescription: string
 ): Promise<bigint> {
-  const governorAddress = getContractAddress("GovernorContract");
-  const supplychainFactoryAddress = getContractAddress("SupplychainFactory");
+  const supplychainFactoryAddress =
+    utils.getContractAddress("SupplychainFactory");
 
-  const governor = await ethers.getContractAt(
-    "GovernorContract",
-    governorAddress
-  );
+  const governor = await utils.getContract("GovernorContract");
 
   console.log(`Proposal Description:\n  ${proposalDescription}`);
   const proposeTx = await governor.propose(
@@ -34,7 +31,7 @@ export async function propose(
 
   const proposalId = (
     receipt.logs.find(
-      (event) =>
+      (event: any) =>
         event instanceof ethers.EventLog && event.eventName == "ProposalCreated"
     ) as ProposalCreatedEvent.Log
   )?.args.proposalId;
@@ -42,7 +39,7 @@ export async function propose(
 
   // If working on a development chain, we will push forward till we get to the voting period.
   if (developmentChains.includes(network.name)) {
-    await incrementBlocks(DEFAULT_VOTING_DELAY + 1);
+    await utils.incrementBlocks(DEFAULT_VOTING_DELAY + 1);
   }
 
   const proposalState = await governor.state(proposalId);
