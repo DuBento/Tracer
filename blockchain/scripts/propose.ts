@@ -1,10 +1,10 @@
 import { ProposalCreatedEvent } from "@/artifacts-frontend/typechain/DAO/GovernorContract";
 import { ethers, network } from "hardhat";
 import {
-  DEFAULT_VOTING_DELAY,
   SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE,
   SUPPLYCHAIN_CREATE_METHOD,
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
+  VOTING_DELAY,
   developmentChains,
 } from "../properties";
 import * as utils from "./utils";
@@ -39,7 +39,7 @@ export async function propose(
 
   // If working on a development chain, we will push forward till we get to the voting period.
   if (developmentChains.includes(network.name)) {
-    await utils.incrementBlocks(DEFAULT_VOTING_DELAY + 1);
+    await utils.incrementBlocks(VOTING_DELAY + 1);
   }
 
   const proposalState = await governor.state(proposalId);
