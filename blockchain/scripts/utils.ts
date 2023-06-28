@@ -58,6 +58,11 @@ export function storeContractAddress(name: string, address: string) {
   );
 }
 
+export function getContract(name: string) {
+  const address = getContractAddress(name);
+  return ethers.getContractAt(name, address);
+}
+
 export function getContractAddress(name: string): string {
   if (!fs.pathExistsSync(contractAddressesFile))
     throw new Error("Deployed contracts address file not found");
