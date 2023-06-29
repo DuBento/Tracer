@@ -1,11 +1,11 @@
 import { ProposalCreatedEvent } from "@/artifacts-frontend/typechain/DAO/GovernorContract";
-import { ethers, network } from "hardhat";
+import { ethers, getChainId, network } from "hardhat";
 import {
+  DEVELOPMENT_CHAINS,
   SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE,
   SUPPLYCHAIN_CREATE_METHOD,
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
   VOTING_DELAY,
-  developmentChains,
 } from "../properties";
 import * as utils from "./utils";
 
@@ -38,7 +38,7 @@ export async function propose(
   console.log(`Proposed with proposal ID:\n  ${proposalId}`);
 
   // If working on a development chain, we will push forward till we get to the voting period.
-  if (developmentChains.includes(network.name)) {
+  if (DEVELOPMENT_CHAINS.includes(network.name)) {
     await utils.incrementBlocks(VOTING_DELAY + 1);
   }
 
@@ -53,6 +53,8 @@ export async function propose(
   console.log(`Current Proposal Snapshot: ${proposalSnapShot}`);
   // The block number the proposal voting expires
   console.log(`Current Proposal Deadline: ${proposalDeadline}`);
+
+  utils.storeProposalId(proposalId.toString(), await getChainId());
 
   return proposalId;
 }
