@@ -1,20 +1,12 @@
 import { ethers, network } from "hardhat";
-import { FRONTEND_ARTIFACTS_PATH } from "../hardhat.config";
+import {
+  CONTRACTS_DIR,
+  CONTRACT_ADDRESS_FILE,
+  FRONTEND_OUTPUT_DIR,
+  PROPOSALS_FILE,
+} from "../properties";
 
 const fs = require("fs-extra");
-const path = require("path");
-
-const contractsDir = path.join(__dirname, "..", FRONTEND_ARTIFACTS_PATH);
-console.log(contractsDir);
-const frontendOutDir = path.join(
-  __dirname,
-  "..",
-  "..",
-  "frontend",
-  "contracts"
-);
-
-const contractAddressesFile = path.join(contractsDir, "deployedAddresses.json");
 
 // general
 
@@ -34,25 +26,23 @@ export function scriptName(filename: string) {
 // contracts
 
 export async function saveFrontendFiles() {
-  if (!fs.pathExistsSync(contractsDir))
+  if (!fs.pathExistsSync(CONTRACTS_DIR))
     throw new Error("Contract artifacts directory not found");
 
   // Copy type + abi files to frontend dir
-  fs.emptyDirSync(frontendOutDir);
-  fs.copySync(contractsDir, frontendOutDir, { overwrite: true });
+  fs.emptyDirSync(FRONTEND_OUTPUT_DIR);
+  fs.copySync(CONTRACTS_DIR, FRONTEND_OUTPUT_DIR, { overwrite: true });
 }
 
 export function storeContractAddress(name: string, address: string) {
   let addresses: any;
-  if (!fs.pathExistsSync(contractAddressesFile)) addresses = {};
-  else addresses = JSON.parse(fs.readFileSync(contractAddressesFile, "utf8"));
-
-  fs.ensureFileSync(contractAddressesFile);
+  if (!fs.pathExistsSync(CONTRACT_ADDRESS_FILE)) addresses = {};
+  else addresses = JSON.parse(fs.readFileSync(CONTRACT_ADDRESS_FILE, "utf8"));
 
   addresses[name] = address;
 
   fs.writeFileSync(
-    contractAddressesFile,
+    CONTRACT_ADDRESS_FILE,
     JSON.stringify(addresses, null, 2),
     "utf8"
   );
@@ -64,15 +54,14 @@ export function getContract(name: string) {
 }
 
 export function getContractAddress(name: string): string {
-  if (!fs.pathExistsSync(contractAddressesFile))
+  if (!fs.pathExistsSync(CONTRACT_ADDRESS_FILE))
     throw new Error("Deployed contracts address file not found");
 
-  return JSON.parse(fs.readFileSync(contractAddressesFile, "utf8"))[name];
+  return JSON.parse(fs.readFileSync(CONTRACT_ADDRESS_FILE, "utf8"))[name];
 }
 
 export async function getSignerByIndex(idx: number) {
-  const accounts = await ethers.getSigners();
-  return accounts[idx];
+  return ethers.getSigners().then((accounts) => accounts[idx]);
 }
 
 export async function incrementBlocks(nBlocks: number) {
@@ -80,4 +69,29 @@ export async function incrementBlocks(nBlocks: number) {
     await network.provider.send("evm_mine");
   }
   console.log(`Incremented ${nBlocks} blocks`);
+}
+
+// proposals
+
+export function getLastProposalId(chaindId: string) {
+  if (!fs.pathExistsSync(PROPOSALS_FILE))
+    throw new Error("Proposals file not found");
+
+  const proposals = JSON.parse(fs.readFileSync(PROPOSALS_FILE, "utf8"));
+
+  if (!proposals[chaindId]) throw new Error("No proposals for this network");
+
+  return proposals[chaindId].at(-1);
+}
+
+export function storeProposalId(proposalId: string, chainId: string) {
+  let proposals: any;
+  if (!fs.pathExistsSync(PROPOSALS_FILE)) proposals = {};
+  else proposals = JSON.parse(fs.readFileSync(PROPOSALS_FILE, "utf8"));
+
+  if (!proposals[chainId]) proposals[chainId] = [];
+
+  proposals[chainId].push(proposalId);
+
+  fs.writeFileSync(PROPOSALS_FILE, JSON.stringify(proposals, null, 2), "utf8");
 }
