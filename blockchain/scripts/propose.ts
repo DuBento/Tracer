@@ -1,5 +1,8 @@
-import { ProposalCreatedEvent } from "@/artifacts-frontend/typechain/DAO/GovernorContract";
 import { ethers, getChainId, network } from "hardhat";
+import {
+  GovernorContract,
+  ProposalCreatedEvent,
+} from "../artifacts-frontend/typechain/DAO/GovernorContract";
 import {
   DEVELOPMENT_CHAINS,
   SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE,
@@ -16,7 +19,9 @@ export async function propose(
   const supplychainFactoryAddress =
     utils.getContractAddress("SupplychainFactory");
 
-  const governor = await utils.getContract("GovernorContract");
+  const governor = await utils.getContract<GovernorContract>(
+    "GovernorContract"
+  );
 
   console.log(`Proposal Description:\n  ${proposalDescription}`);
   const proposeTx = await governor.propose(

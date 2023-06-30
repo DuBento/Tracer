@@ -48,9 +48,9 @@ export function storeContractAddress(name: string, address: string) {
   );
 }
 
-export function getContract(name: string) {
+export function getContract<TypedContract>(name: string) {
   const address = getContractAddress(name);
-  return ethers.getContractAt(name, address);
+  return ethers.getContractAt(name, address) as TypedContract;
 }
 
 export function getContractAddress(name: string): string {

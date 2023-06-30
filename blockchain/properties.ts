@@ -22,7 +22,7 @@ export const PROPOSALS_FILE = "proposals.json";
 // governor contract
 export const MIN_DELAY = 3600; // 1 hour
 export const VOTING_DELAY = 1; // 1 block
-export const VOTING_PERIOD = 50400; // 1 week
+export const VOTING_PERIOD = 5; // 5 blocks
 export const VOTING_QUORUM = 4; // porcentage
 
 export const SUPPLYCHAIN_CREATE_METHOD = "create";

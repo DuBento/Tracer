@@ -3,8 +3,8 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { Supplychain } from "@/artifacts-frontend/typechain";
-import { NewBatchEvent } from "@/artifacts-frontend/typechain/supplychain/Supplychain";
+import { Supplychain } from "../artifacts-frontend/typechain";
+import { NewBatchEvent } from "../artifacts-frontend/typechain/supplychain/Supplychain";
 import * as Values from "./TestConfig";
 
 /* 
