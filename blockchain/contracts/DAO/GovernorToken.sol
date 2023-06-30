@@ -6,7 +6,9 @@ import "../OpenZeppelin/token/ERC20/extensions/ERC20Permit.sol";
 import "../OpenZeppelin/token/ERC20/extensions/ERC20Votes.sol";
 
 contract GovernorToken is ERC20, ERC20Permit, ERC20Votes {
-    constructor() ERC20("GovernorToken", "GTK") ERC20Permit("GovernorToken") {}
+    constructor() ERC20("GovernorToken", "GTK") ERC20Permit("GovernorToken") {
+        _mint(msg.sender, 1000000000000000000000000000);
+    }
 
     // The functions below are overrides required by Solidity.
 

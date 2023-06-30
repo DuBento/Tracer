@@ -29,7 +29,7 @@ export async function vote(
 
   // Moving forward to the end of the voting period
   if (DEVELOPMENT_CHAINS.includes(network.name)) {
-    await utils.incrementBlocks(VOTING_PERIOD + 1);
+    await utils.increaseBlocks(VOTING_PERIOD + 1);
   }
 
   // Check the proposal state
