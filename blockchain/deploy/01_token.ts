@@ -1,6 +1,8 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import { ethers } from "hardhat";
+import { GovernorToken } from "../artifacts-frontend/typechain";
 import { padCenter, scriptName, storeContractAddress } from "../scripts/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -18,8 +20,29 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // TODO verify if live on network
   });
 
+  await delegateVotingPower(deployer, governorToken.address);
+
   storeContractAddress("GovernorToken", governorToken.address);
   log(`GovernorToken at ${governorToken.address}`);
+};
+
+const delegateVotingPower = async function (
+  account: string,
+  tokenAddress: string
+) {
+  const governorToken = (await ethers.getContractAt(
+    "GovernorToken",
+    tokenAddress
+  )) as unknown as GovernorToken;
+
+  const delegateResponse = await governorToken.delegate(account);
+  await delegateResponse.wait();
+
+  console.log(
+    `Current checkpoints (greater than 0 for delagate to be successful): ${await governorToken.numCheckpoints(
+      account
+    )}`
+  );
 };
 
 export default func;
