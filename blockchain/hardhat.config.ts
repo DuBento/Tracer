@@ -1,3 +1,4 @@
+import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
 import { HardhatUserConfig, task } from "hardhat/config";

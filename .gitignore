@@ -22,6 +22,7 @@ artifacts-frontend/
 
 # Hardhat deploy
 deployments/
+proposals.json
 
 ## Frontend
 # dependencies
