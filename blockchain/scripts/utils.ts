@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import { ethers, getChainId, network } from "hardhat";
 import {
   CONTRACTS_DIR,
   CONTRACT_ADDRESS_FILE,
@@ -64,14 +64,39 @@ export async function getSignerByIndex(idx: number) {
   return ethers.getSigners().then((accounts) => accounts[idx]);
 }
 
-export async function incrementBlocks(nBlocks: number) {
-  for (let i = 0; i < nBlocks; i++) {
-    await network.provider.send("evm_mine");
+export async function increaseBlocks(nBlocks: number) {
+  if ((await getChainId()) === "31337") {
+    // hardhat
+    await network.provider.send("hardhat_mine", ["0x" + nBlocks.toString(16)]);
+  } else {
+    // other test networks (ex. ganache)
+    for (let i = 0; i < nBlocks; i++) {
+      await network.provider.send("evm_mine");
+    }
   }
   console.log(`Incremented ${nBlocks} blocks`);
 }
 
+export async function increaseTime(seconds: number) {
+  await network.provider.send("evm_increaseTime", [seconds]);
+  console.log(`Time increase by ${seconds} seconds`);
+}
 // proposals
+
+export async function encodeFunctionCall(
+  contractName: string,
+  methodName: string,
+  args: string[]
+): Promise<string> {
+  const contractFactory = await ethers.getContractFactory(contractName);
+
+  console.log(`Encoding ${methodName} with args ${args} => on ${contractName}`);
+  const encodedFunctionCall = contractFactory.interface.encodeFunctionData(
+    methodName,
+    await args
+  );
+  return encodedFunctionCall;
+}
 
 export function getLastProposalId(chaindId: string) {
   if (!fs.pathExistsSync(PROPOSALS_FILE))

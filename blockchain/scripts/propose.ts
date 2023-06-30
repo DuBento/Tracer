@@ -13,19 +13,17 @@ import {
 import * as utils from "./utils";
 
 export async function propose(
+  proposalTarget: string,
   encodedCall: string,
   proposalDescription: string
 ): Promise<bigint> {
-  const supplychainFactoryAddress =
-    utils.getContractAddress("SupplychainFactory");
-
   const governor = await utils.getContract<GovernorContract>(
     "GovernorContract"
   );
 
   console.log(`Proposal Description:\n  ${proposalDescription}`);
   const proposeTx = await governor.propose(
-    [supplychainFactoryAddress],
+    [proposalTarget],
     [0],
     [encodedCall],
     proposalDescription
@@ -44,7 +42,7 @@ export async function propose(
 
   // If working on a development chain, we will push forward till we get to the voting period.
   if (DEVELOPMENT_CHAINS.includes(network.name)) {
-    await utils.incrementBlocks(VOTING_DELAY + 1);
+    await utils.increaseBlocks(VOTING_DELAY + 1);
   }
 
   const proposalState = await governor.state(proposalId);
@@ -64,27 +62,18 @@ export async function propose(
   return proposalId;
 }
 
-async function encodeFunctionCall(
-  contractName: string,
-  methodName: string,
-  args: string[]
-): Promise<string> {
-  const contractFactory = await ethers.getContractFactory(contractName);
-
-  console.log(`Encoding ${methodName} with args ${args} => on ${contractName}`);
-  const encodedFunctionCall = contractFactory.interface.encodeFunctionData(
-    methodName,
-    await args
-  );
-  return encodedFunctionCall;
-}
-
 async function proposeCreateSupplychain() {
-  return encodeFunctionCall("SupplychainFactory", SUPPLYCHAIN_CREATE_METHOD, [
-    (await SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE).address,
-  ]).then((encoded) =>
-    propose(encoded, SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION)
-  );
+  return utils
+    .encodeFunctionCall("SupplychainFactory", SUPPLYCHAIN_CREATE_METHOD, [
+      (await SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE).address,
+    ])
+    .then((encoded) =>
+      propose(
+        utils.getContractAddress("SupplychainFactory"),
+        encoded,
+        SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION
+      )
+    );
 }
 
 proposeCreateSupplychain()
