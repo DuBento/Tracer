@@ -68,9 +68,9 @@ async function proposeCreateSupplychain() {
     .encodeFunctionCall("SupplychainFactory", SUPPLYCHAIN_CREATE_METHOD, [
       supplychainManager,
     ])
-    .then((encoded) =>
+    .then(async (encoded) =>
       propose(
-        utils.getContractAddress("SupplychainFactory"),
+        await utils.getContractAddress("SupplychainFactory"),
         encoded,
         SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION
       )

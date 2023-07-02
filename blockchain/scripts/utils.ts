@@ -1,4 +1,4 @@
-import { ethers, getChainId, network } from "hardhat";
+import { deployments, ethers, getChainId, network } from "hardhat";
 import {
   CONTRACTS_DIR,
   CONTRACT_ADDRESS_FILE,
@@ -48,16 +48,13 @@ export function storeContractAddress(name: string, address: string) {
   );
 }
 
-export function getContract<TypedContract>(name: string) {
-  const address = getContractAddress(name);
+export async function getContract<TypedContract>(name: string) {
+  const address = await getContractAddress(name);
   return ethers.getContractAt(name, address) as TypedContract;
 }
 
-export function getContractAddress(name: string): string {
-  if (!fs.pathExistsSync(CONTRACT_ADDRESS_FILE))
-    throw new Error("Deployed contracts address file not found");
-
-  return JSON.parse(fs.readFileSync(CONTRACT_ADDRESS_FILE, "utf8"))[name];
+export async function getContractAddress(name: string): Promise<string> {
+  return (await deployments.get(name)).address;
 }
 
 export async function getSignerByIndex(idx: number) {
