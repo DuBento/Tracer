@@ -44,5 +44,5 @@ const delegateVotingPower = async function (
   );
 };
 
-export default func;
+module.exports = func;
 module.exports.tags = ["all", "dao", "token"];

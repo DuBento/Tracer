@@ -28,5 +28,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   log(`GovernorTimelock at ${governorTimelock.address}`);
 };
 
-export default func;
+module.exports = func;
 module.exports.tags = ["all", "dao", "timelock"];
