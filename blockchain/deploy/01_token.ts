@@ -3,7 +3,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ethers } from "hardhat";
 import { GovernorToken } from "../artifacts-frontend/typechain";
-import { padCenter, scriptName, storeContractAddress } from "../scripts/utils";
+import { padCenter, scriptName } from "../scripts/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -22,7 +22,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   await delegateVotingPower(deployer, governorToken.address);
 
-  storeContractAddress("GovernorToken", governorToken.address);
   log(`GovernorToken at ${governorToken.address}`);
 };
 
