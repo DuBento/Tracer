@@ -1,6 +1,7 @@
 import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
+import "hardhat-gas-reporter";
 import { HardhatUserConfig, task } from "hardhat/config";
 
 export const FRONTEND_ARTIFACTS_PATH = "./artifacts-frontend";
@@ -38,6 +39,13 @@ const config: HardhatUserConfig = {
       // can add specific chaibnId: address
       // see https://github.com/wighawag/hardhat-deploy/tree/master#1-namedaccounts-ability-to-name-addresses
     },
+    supplychainManager: {
+      default: 1,
+    },
+  },
+
+  gasReporter: {
+    enabled: true,
   },
 };
 

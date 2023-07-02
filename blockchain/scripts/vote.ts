@@ -1,5 +1,4 @@
-const fs = require("fs-extra");
-import { ethers, getChainId, network } from "hardhat";
+import { getChainId, network } from "hardhat";
 import { GovernorContract } from "../artifacts-frontend/typechain";
 import { DEVELOPMENT_CHAINS, VOTING_PERIOD } from "../properties";
 import * as utils from "./utils";
@@ -18,14 +17,9 @@ export async function vote(
     decision,
     reason
   );
-  const receipt = await voteTx.wait();
-
-  const event = receipt?.logs.find(
-    (event: any) => event instanceof ethers.EventLog
-  ) as unknown;
+  await voteTx.wait();
 
   console.log(`Proposed with proposal ID:\n  ${proposalId}`);
-  console.log({ event });
 
   // Moving forward to the end of the voting period
   if (DEVELOPMENT_CHAINS.includes(network.name)) {

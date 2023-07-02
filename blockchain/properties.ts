@@ -1,4 +1,3 @@
-import { ethers } from "hardhat";
 import { FRONTEND_ARTIFACTS_PATH } from "./hardhat.config";
 const path = require("path");
 
@@ -26,8 +25,5 @@ export const VOTING_PERIOD = 5; // 5 blocks
 export const VOTING_QUORUM = 4; // porcentage
 
 export const SUPPLYCHAIN_CREATE_METHOD = "create";
-export const SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE = ethers
-  .getSigners()
-  .then((signers) => signers[1]);
 export const SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION =
   "Create a new supplychain contract";
