@@ -20,4 +20,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   log("Supplychain smart contract: deployed!");
 };
 
-export default func;
+module.exports = func;
+module.exports.tags = ["all", "supplychain"];

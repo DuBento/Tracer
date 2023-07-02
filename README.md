@@ -18,3 +18,11 @@
 - _Install:_ `$npm i`
 - _ENV:_ `$cp .env.example .env` and fill necessary values
 - _Server:_ `$npm start dev`
+
+---
+
+### Report
+
+**Gas report**
+
+- hardhat gas-reporter: run test `npx hardhat test`

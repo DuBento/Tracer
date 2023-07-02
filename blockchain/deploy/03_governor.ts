@@ -31,5 +31,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   log(`GovernorContract at ${governorContract.address}`);
 };
 
-export default func;
+module.exports = func;
 module.exports.tags = ["all", "dao", "governor"];
