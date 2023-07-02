@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import { ethers, getNamedAccounts, network } from "hardhat";
 import {
   GovernorContract,
   SupplychainFactory,
@@ -6,7 +6,6 @@ import {
 import {
   DEVELOPMENT_CHAINS,
   MIN_DELAY,
-  SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE,
   SUPPLYCHAIN_CREATE_METHOD,
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
 } from "../properties";
@@ -51,9 +50,10 @@ export async function execute(
 }
 
 async function executeSupplychainContractCreation() {
+  const { supplychainManager } = await getNamedAccounts();
   return utils
     .encodeFunctionCall("SupplychainFactory", SUPPLYCHAIN_CREATE_METHOD, [
-      (await SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE).address,
+      supplychainManager,
     ])
     .then((encoded) =>
       execute(
@@ -69,9 +69,7 @@ async function executeSupplychainContractCreation() {
       );
       console.log(
         `Address of created contract: ${await supplychainFactory.supplychainContracts(
-          (
-            await SUPPLYCHAIN_CREATE_MANAGER_SIGNER_PROMISE
-          ).address
+          supplychainManager
         )}`
       );
     });
