@@ -2,7 +2,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ethers } from "hardhat";
-import { padCenter, scriptName, storeContractAddress } from "../scripts/utils";
+import { padCenter, scriptName, storeContractAddress } from "../lib/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;

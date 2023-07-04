@@ -6,7 +6,7 @@ import {
   saveFrontendFiles,
   scriptName,
   storeContractAddress,
-} from "../scripts/utils";
+} from "../lib/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments } = hre;

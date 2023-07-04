@@ -1,9 +1,9 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { ethers } from "hardhat";
+import { deployments, ethers } from "hardhat";
 import { GovernorToken } from "../artifacts-frontend/typechain";
-import { padCenter, scriptName } from "../scripts/utils";
+import { padCenter, scriptName } from "../lib/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -37,7 +37,7 @@ const delegateVotingPower = async function (
   const delegateResponse = await governorToken.delegate(account);
   await delegateResponse.wait();
 
-  console.log(
+  deployments.log(
     `Current checkpoints (greater than 0 for delagate to be successful): ${await governorToken.numCheckpoints(
       account
     )}`

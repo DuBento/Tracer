@@ -1,8 +1,8 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import { padCenter, scriptName } from "../lib/utils";
 import { VOTING_DELAY, VOTING_PERIOD, VOTING_QUORUM } from "../properties";
-import { padCenter, scriptName } from "../scripts/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
