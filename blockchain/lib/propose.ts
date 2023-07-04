@@ -1,15 +1,10 @@
-import { ethers, getChainId, getNamedAccounts, network } from "hardhat";
+import { ethers, getChainId, network } from "hardhat";
 import {
   GovernorContract,
   ProposalCreatedEvent,
 } from "../artifacts-frontend/typechain/DAO/GovernorContract";
-import {
-  DEVELOPMENT_CHAINS,
-  SUPPLYCHAIN_CREATE_METHOD,
-  SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
-  VOTING_DELAY,
-} from "../properties";
-import * as utils from "./utils";
+import * as utils from "../lib/utils";
+import { DEVELOPMENT_CHAINS, VOTING_DELAY } from "../properties";
 
 export async function propose(
   proposalTarget: string,
@@ -60,26 +55,3 @@ export async function propose(
 
   return proposalId;
 }
-
-async function proposeCreateSupplychain() {
-  const { supplychainManager } = await getNamedAccounts();
-
-  return utils
-    .encodeFunctionCall("SupplychainFactory", SUPPLYCHAIN_CREATE_METHOD, [
-      supplychainManager,
-    ])
-    .then(async (encoded) =>
-      propose(
-        await utils.getContractAddress("SupplychainFactory"),
-        encoded,
-        SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION
-      )
-    );
-}
-
-proposeCreateSupplychain()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });

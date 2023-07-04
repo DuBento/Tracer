@@ -1,7 +1,7 @@
 import { getChainId, network } from "hardhat";
 import { GovernorContract } from "../artifacts-frontend/typechain";
+import * as utils from "../lib/utils";
 import { DEVELOPMENT_CHAINS, VOTING_PERIOD } from "../properties";
-import * as utils from "./utils";
 
 export async function vote(
   proposalId: string,
@@ -12,6 +12,7 @@ export async function vote(
   const governor = await utils.getContract<GovernorContract>(
     "GovernorContract"
   );
+
   const voteTx = await governor.castVoteWithReason(
     proposalId,
     decision,
@@ -29,19 +30,13 @@ export async function vote(
   // Check the proposal state
   const proposalState = await governor.state(proposalId);
   console.log(`Current Proposal State: ${proposalState}`);
+  return proposalState;
 }
 
-async function main() {
+export async function voteLastProposal() {
   const proposalId = utils.getLastProposalId(await getChainId());
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
   const reason = "I like it!";
   await vote(proposalId, decision, reason);
 }
-
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
