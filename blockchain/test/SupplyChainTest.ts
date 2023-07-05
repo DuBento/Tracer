@@ -11,6 +11,24 @@ import * as Values from "./TestConfig";
  TODO:
   - Test transfer ownership
 */
+export async function createNewBatch(
+  supplyChain: Supplychain,
+  description: string
+): Promise<bigint> {
+  const tx = await supplyChain.newBatch(description);
+  const receipt = await tx.wait();
+
+  if (receipt == null) throw new Error("Error completing transaction");
+
+  const newBatchEvent = (
+    receipt.logs.find(
+      (event) =>
+        event instanceof ethers.EventLog && event.eventName == "NewBatch"
+    ) as NewBatchEvent.Log
+  )?.args;
+
+  return newBatchEvent.id;
+}
 
 describe("Supplychain", function () {
   let supplyChain: Supplychain;
@@ -26,28 +44,9 @@ describe("Supplychain", function () {
       await ethers.getSigners();
 
     const Supplychain = await ethers.getContractFactory("Supplychain");
-    const contract = await Supplychain.deploy();
+    const contract = (await Supplychain.deploy()) as unknown as Supplychain;
 
     return { contract, primaryAccount, otherAccount1, otherAccount2 };
-  }
-
-  async function createNewBatch(
-    supplyChain: Supplychain,
-    description: string
-  ): Promise<bigint> {
-    const tx = await supplyChain.newBatch(description);
-    const receipt = await tx.wait();
-
-    if (receipt == null) throw new Error("Error completing transaction");
-
-    const newBatchEvent = (
-      receipt.logs.find(
-        (event) =>
-          event instanceof ethers.EventLog && event.eventName == "NewBatch"
-      ) as NewBatchEvent.Log
-    )?.args;
-
-    return newBatchEvent.id;
   }
 
   beforeEach(async function () {
