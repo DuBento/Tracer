@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
+import "hardhat/console.sol";
+
 contract Ownable {
-    address private owner;
+    address public owner;
 
     constructor() {
         owner = msg.sender;
@@ -11,6 +13,14 @@ contract Ownable {
     modifier onlyOwner() {
         require(isOwner(), "Function accessible only by the owner");
         _;
+    }
+
+    /** 
+        @dev For use after cloning a contract, where initial memory is 0
+    */
+    function init(address sender_) external {
+        if (owner == address(0)) owner = sender_;
+        console.log("Ownable init called, owner:", owner);
     }
 
     function isOwner() public view returns (bool) {

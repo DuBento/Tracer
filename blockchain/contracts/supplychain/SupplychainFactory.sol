@@ -18,8 +18,8 @@ contract SupplychainFactory is Ownable {
     ) external onlyOwner returns (address) {
         address clone = Clones.clone(defaultImplementation);
 
-        // OPT: initialize the clone
-        // Supplychain(clone).initialize(...);
+        // initialize the clone
+        Supplychain(clone).init(msg.sender);
 
         supplychainContracts[supplychainManager] = clone;
         return clone;
