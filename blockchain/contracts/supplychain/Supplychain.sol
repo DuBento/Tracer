@@ -130,8 +130,11 @@ contract Supplychain is Ownable {
 
     // Admin
 
-    function changeConformityState(uint8 newState_) external onlyOwner {
-        // TODO
+    function changeConformityState(
+        uint256 batchId_,
+        uint8 newState_
+    ) external onlyOwner {
+        batches[batchId_].state = newState_;
     }
 
     // Asserts
