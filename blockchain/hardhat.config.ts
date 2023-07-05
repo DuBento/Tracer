@@ -3,6 +3,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
 import { HardhatUserConfig, task } from "hardhat/config";
+import secrets from "./secrets.json";
 
 export const FRONTEND_ARTIFACTS_PATH = "./artifacts-frontend";
 
@@ -48,6 +49,7 @@ const config: HardhatUserConfig = {
     enabled: true,
     currency: "EUR",
     gasPrice: 21,
+    coinmarketcap: secrets.COIN_MARKET_CAP_API_KEY,
   },
 };
 

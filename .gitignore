@@ -20,6 +20,8 @@ artifacts/
 
 artifacts-frontend/
 
+secrets.json
+
 # Hardhat deploy
 deployments/
 proposals.json
