@@ -21,12 +21,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     deployerSigner
   );
 
-  const supplychainFactory = await ethers.getContractAt(
-    "SupplychainFactory",
-    supplychainFactoryDeployment.address,
-    deployerSigner
-  );
-
   log(padCenter(scriptName(__filename), 50));
 
   const proposerRole = await governorTimelock.PROPOSER_ROLE();
@@ -52,14 +46,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // Revoke admin acces from deployer
   const revokeAdminTx = await governorTimelock.revokeRole(adminRole, deployer);
   await revokeAdminTx.wait();
-
-  /* Factory */
-  log("Seting up Supplychain Factory...");
-  // Transfer owner to timelock
-  const transferOwnershipTx = await supplychainFactory.transferOwnership(
-    governorTimelockDeployment.address
-  );
-  await transferOwnershipTx.wait();
 };
 
 module.exports = func;
