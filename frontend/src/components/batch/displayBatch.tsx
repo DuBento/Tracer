@@ -44,7 +44,9 @@ const DisplayBatch = ({}) => {
                   <dt className="text-sm font-medium text-gray-500">
                     Current State
                   </dt>
-                  <dd className="mt-1 text-sm text-gray-900">{batch.state}</dd>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {batch.state.toString()}
+                  </dd>
                 </div>
               </dl>
             </div>
