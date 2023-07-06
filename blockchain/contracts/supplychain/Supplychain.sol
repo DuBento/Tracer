@@ -2,20 +2,15 @@
 pragma solidity ^0.8.19;
 
 import "../custom/Ownable.sol";
-
-// DEBUG only
-import "hardhat/console.sol";
+import "../ConformityState.sol";
 
 contract Supplychain is Ownable {
-    uint8 public constant CONFORMITY_STATE_FUNCTIONING = 0;
-    uint8 public constant CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED = 1;
-    uint8 public constant CONFORMITY_STATE_WAITING_REVIEW = 2;
-
+    // Type declarations
     struct Batch {
         uint256 id;
         string description;
         address currentOwner;
-        uint8 state;
+        ConformityState.State state;
         Update[] updates;
         Transaction[] transactions;
     }
@@ -31,10 +26,48 @@ contract Supplychain is Ownable {
         Update info;
     }
 
+    // State variables
     mapping(uint256 => Batch) batches;
 
-    //events
+    // Events
     event NewBatch(address indexed owner, uint256 id);
+
+    // Errors
+    error UserIsNotCurrentBatchOwner();
+    error BatchDoesNotExist();
+
+    // Modifiers
+    modifier isValidUpdate(uint256 id_) {
+        assertBatchExists(id_);
+        assertCurrentOwner(id_);
+        _;
+    }
+
+    // Functions
+
+    //* constructor
+
+    //* receive function
+
+    //* fallback function (if exists)
+
+    /** 
+        @dev mitigate metamask node errors
+    */
+    fallback() external {}
+
+    //* external
+
+    function changeConformityState(
+        uint256 batchId_,
+        ConformityState.State newState_
+    ) external onlyOwner {
+        ConformityState.assertValidConformityState(newState_);
+
+        batches[batchId_].state = newState_;
+    }
+
+    //* public
 
     function getBatch(uint256 id_) public view returns (Batch memory) {
         return batches[id_];
@@ -46,14 +79,13 @@ contract Supplychain is Ownable {
         batch.id = batchId;
         batch.description = description_;
         batch.currentOwner = msg.sender;
-        batch.state = CONFORMITY_STATE_FUNCTIONING;
+        batch.state = ConformityState.CONFORMITY_STATE_FUNCTIONING;
 
         // handle create transaction
-        Transaction memory transaction = newTransaction(msg.sender, "");
+        Transaction memory transaction = _newTransaction(msg.sender, "");
         batch.transactions.push(transaction);
 
         emit NewBatch(msg.sender, batch.id);
-        console.log("batchId:", batchId);
 
         return batchId;
     }
@@ -64,11 +96,8 @@ contract Supplychain is Ownable {
     ) public isValidUpdate(id_) {
         // Send BCEvent
         // Record Update
-        Update memory update = newUpdate(documentURI_);
+        Update memory update = _newUpdate(documentURI_);
         batches[id_].updates.push(update);
-
-        console.log("Event pushed successfully in id: ");
-        console.log(id_);
     }
 
     function handleTransaction(
@@ -78,7 +107,7 @@ contract Supplychain is Ownable {
     ) public isValidUpdate(id_) {
         Batch storage batch = batches[id_];
 
-        Transaction memory transaction = newTransaction(
+        Transaction memory transaction = _newTransaction(
             receiver_,
             documentURI_
         );
@@ -88,18 +117,22 @@ contract Supplychain is Ownable {
         // TODO: check if receiver in DAO?
     }
 
-    function newUpdate(
+    //* internal
+
+    function _newUpdate(
         string memory documentURI_
     ) internal view returns (Update memory) {
         return Update(msg.sender, documentURI_, block.timestamp);
     }
 
-    function newTransaction(
+    function _newTransaction(
         address receiver_,
         string memory documentURI_
     ) internal view returns (Transaction memory) {
-        return Transaction(receiver_, newUpdate(documentURI_));
+        return Transaction(receiver_, _newUpdate(documentURI_));
     }
+
+    //* private
 
     function getLastElement(
         Update[] storage updates_
@@ -128,59 +161,14 @@ contract Supplychain is Ownable {
             );
     }
 
-    // Admin
-
-    function changeConformityState(
-        uint256 batchId_,
-        uint8 newState_
-    ) external onlyOwner {
-        batches[batchId_].state = newState_;
-    }
-
-    // Asserts
-
-    modifier isValidUpdate(uint256 id_) {
-        // assertUpdateOwner(update_);
-        assertBatchExists(id_);
-        assertCurrentOwner(id_);
-        // assertValidUpdateTimestamp(id_, update_);
-        _;
-    }
-
-    function assertUpdateOwner(Update memory update_) private view {
-        require(
-            update_.owner == msg.sender,
-            "Update owner differs from message sender"
-        );
-    }
+    //* asserts
 
     function assertCurrentOwner(uint256 id_) private view {
-        require(
-            batches[id_].currentOwner == msg.sender,
-            "Trying to update batch while not being the current owner"
-        );
+        if (batches[id_].currentOwner != msg.sender)
+            revert UserIsNotCurrentBatchOwner();
     }
 
     function assertBatchExists(uint256 id_) private view {
-        require(batches[id_].id != 0, "Address for nonexistent batch");
+        if (batches[id_].id == 0) revert BatchDoesNotExist();
     }
-
-    function assertValidUpdateTimestamp(
-        uint256 id_,
-        Update memory update_
-    ) private view {
-        Update[] storage updates = batches[id_].updates;
-        Transaction[] storage transactions = batches[id_].transactions;
-        require(
-            update_.ts <= block.timestamp &&
-                ((updates.length > 0 &&
-                    getLastElement(updates).ts < update_.ts) ||
-                    (transactions.length > 0 &&
-                        getLastElement(transactions).info.ts < update_.ts)),
-            "Invalid update timestamp"
-        );
-    }
-
-    // @developement mitigate metamask node errors
-    fallback() external {}
 }
