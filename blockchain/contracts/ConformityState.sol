@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-library ConformityState {
+contract ConformityState {
     enum State {
         FUNCTIONING,
         CORRECTIVE_MEASURE_NEEDED,
@@ -19,9 +19,9 @@ library ConformityState {
 
     function assertValidConformityState(State state_) internal pure {
         if (
-            state_ != CONFORMITY_STATE_FUNCTIONING ||
-            state_ != CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED ||
-            state_ != CONFORMITY_STATE_WAITING_REVIEW
+            state_ != State.FUNCTIONING &&
+            state_ != State.CORRECTIVE_MEASURE_NEEDED &&
+            state_ != State.WAITING_REVIEW
         ) revert InvalidConformityState();
     }
 }

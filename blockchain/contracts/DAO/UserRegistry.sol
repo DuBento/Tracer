@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
 
-contract UserRegistry is Ownable {
+contract UserRegistry is Ownable, ConformityState {
     // Type declarations
     struct Member {
         address addr;

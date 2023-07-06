@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
 
-contract Supplychain is Ownable {
+contract Supplychain is Ownable, ConformityState {
     // Type declarations
     struct Batch {
         uint256 id;
