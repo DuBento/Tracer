@@ -38,8 +38,8 @@ contract Supplychain is Ownable {
 
     // Modifiers
     modifier isValidUpdate(uint256 id_) {
-        assertBatchExists(id_);
-        assertCurrentOwner(id_);
+        _assertBatchExists(id_);
+        _assertCurrentOwner(id_);
         _;
     }
 
@@ -74,7 +74,7 @@ contract Supplychain is Ownable {
     }
 
     function newBatch(string memory description_) public returns (uint256) {
-        uint256 batchId = generateId();
+        uint256 batchId = _generateId();
         Batch storage batch = batches[batchId];
         batch.id = batchId;
         batch.description = description_;
@@ -134,25 +134,7 @@ contract Supplychain is Ownable {
 
     //* private
 
-    function getLastElement(
-        Update[] storage updates_
-    ) private view returns (Update storage) {
-        uint256 arrayLen = updates_.length;
-        require(arrayLen > 0, "Accessing empty array");
-
-        return updates_[arrayLen - 1];
-    }
-
-    function getLastElement(
-        Transaction[] storage transactions_
-    ) private view returns (Transaction storage) {
-        uint256 arrayLen = transactions_.length;
-        require(arrayLen > 0, "Accessing empty array");
-
-        return transactions_[arrayLen - 1];
-    }
-
-    function generateId() public view returns (uint256) {
+    function _generateId() private view returns (uint256) {
         return
             uint256(
                 keccak256(
@@ -163,12 +145,12 @@ contract Supplychain is Ownable {
 
     //* asserts
 
-    function assertCurrentOwner(uint256 id_) private view {
+    function _assertCurrentOwner(uint256 id_) private view {
         if (batches[id_].currentOwner != msg.sender)
             revert UserIsNotCurrentBatchOwner();
     }
 
-    function assertBatchExists(uint256 id_) private view {
+    function _assertBatchExists(uint256 id_) private view {
         if (batches[id_].id == 0) revert BatchDoesNotExist();
     }
 }
