@@ -153,8 +153,9 @@ describe("Supplychain", function () {
 
       await expect(
         supplyChain.handleUpdate(id, Values.UPDATE_DOCUMENT_URI)
-      ).to.be.revertedWith(
-        "Trying to update batch while not being the current owner"
+      ).to.be.revertedWithCustomError(
+        supplyChain,
+        "UserIsNotCurrentBatchOwner"
       );
     });
   });
@@ -197,8 +198,9 @@ describe("Supplychain", function () {
           actor2.address,
           Values.UPDATE_DOCUMENT_URI
         )
-      ).to.be.revertedWith(
-        "Trying to update batch while not being the current owner"
+      ).to.be.revertedWithCustomError(
+        supplyChain,
+        "UserIsNotCurrentBatchOwner"
       );
     });
   });
