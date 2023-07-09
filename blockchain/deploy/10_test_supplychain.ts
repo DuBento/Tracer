@@ -6,10 +6,12 @@ import { padCenter, scriptName, storeContractAddress } from "../lib/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
-  const { log } = deployments;
+  const { log, get } = deployments;
+
+  const supplychainManagement = await get("SupplychainManagement");
 
   const Supplychain = await ethers.getContractFactory("Supplychain");
-  const supplychain = await Supplychain.deploy();
+  const supplychain = await Supplychain.deploy(supplychainManagement.address);
 
   log(padCenter(scriptName(__filename), 50));
 
