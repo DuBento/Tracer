@@ -39,6 +39,7 @@ contract Supplychain is Ownable, ConformityState {
     error UserIsNotCurrentBatchOwner();
     error BatchDoesNotExist();
     error UserNotAllowedToTransact();
+    error BatchFunctioningPause();
 
     // Modifiers
     modifier allowedActor() {
@@ -49,6 +50,11 @@ contract Supplychain is Ownable, ConformityState {
     modifier isValidUpdate(uint256 id_) {
         _assertBatchExists(id_);
         _assertCurrentOwner(id_);
+        _;
+    }
+
+    modifier onlyFunctioningBatch(uint256 id_) {
+        _assertBatchFunctioning(id_);
         _;
     }
 
@@ -118,7 +124,7 @@ contract Supplychain is Ownable, ConformityState {
         uint256 id_,
         address receiver_,
         string memory documentURI_
-    ) public allowedActor isValidUpdate(id_) {
+    ) public allowedActor onlyFunctioningBatch(id_) isValidUpdate(id_) {
         _assertAllowedActor(receiver_);
 
         Batch storage batch = batches[id_];
@@ -172,5 +178,10 @@ contract Supplychain is Ownable, ConformityState {
     function _assertAllowedActor(address addr_) private view {
         if (!supplychainManagement.checkAccess(address(this), addr_))
             revert UserNotAllowedToTransact();
+    }
+
+    function _assertBatchFunctioning(uint256 id_) private view {
+        if (batches[id_].state != ConformityState.CONFORMITY_STATE_FUNCTIONING)
+            revert BatchFunctioningPause();
     }
 }
