@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-import "hardhat/console.sol";
+import "../../node_modules/hardhat/console.sol";
 
 contract Ownable {
     address public owner;

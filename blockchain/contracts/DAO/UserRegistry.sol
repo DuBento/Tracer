@@ -23,8 +23,8 @@ contract UserRegistry is Ownable, ConformityState {
     }
 
     // State variables
-    mapping(address => Member) members;
-    mapping(address => Actor) actors;
+    mapping(address => Member) public members;
+    mapping(address => Actor) public actors;
 
     // Events
 
@@ -130,6 +130,12 @@ contract UserRegistry is Ownable, ConformityState {
         _assertActorExists(addr_);
 
         actors[addr_].state = newState_;
+    }
+
+    function getManagingContractAddress(
+        address addr_
+    ) public view returns (address) {
+        return members[addr_].managingContractAddress;
     }
 
     //* internal
