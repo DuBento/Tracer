@@ -31,6 +31,7 @@ contract UserRegistry is Ownable, ConformityState {
     // Errors
     error UserAlreadyExists();
     error UserDoesNotExist();
+    error TransactionNotFromOriginalActorAddress();
 
     // Modifiers
 
@@ -45,6 +46,11 @@ contract UserRegistry is Ownable, ConformityState {
     //* external
 
     //* public
+    function getManagingContractAddress(
+        address addr_
+    ) public view returns (address) {
+        return members[addr_].managingContractAddress;
+    }
 
     function addMember(
         address addr_,
@@ -99,7 +105,7 @@ contract UserRegistry is Ownable, ConformityState {
         address addr_,
         string calldata name_,
         string calldata infoURI_
-    ) public onlyOwner {
+    ) public {
         _assertActorDoesNotExist(addr_);
 
         Actor memory actor = Actor(
@@ -115,8 +121,9 @@ contract UserRegistry is Ownable, ConformityState {
         address addr_,
         string calldata name_,
         string calldata infoURI_
-    ) public onlyOwner {
+    ) public {
         _assertActorExists(addr_);
+        _assertSenderIsActor(addr_);
 
         actors[addr_].name = name_;
         actors[addr_].infoURI = infoURI_;
@@ -130,12 +137,6 @@ contract UserRegistry is Ownable, ConformityState {
         _assertActorExists(addr_);
 
         actors[addr_].state = newState_;
-    }
-
-    function getManagingContractAddress(
-        address addr_
-    ) public view returns (address) {
-        return members[addr_].managingContractAddress;
     }
 
     //* internal
@@ -157,5 +158,10 @@ contract UserRegistry is Ownable, ConformityState {
 
     function _assertActorExists(address addr_) internal view {
         if (actors[addr_].addr == address(0)) revert UserDoesNotExist();
+    }
+
+    function _assertSenderIsActor(address addr_) internal view {
+        if (actors[addr_].addr != msg.sender)
+            revert TransactionNotFromOriginalActorAddress();
     }
 }
