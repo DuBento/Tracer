@@ -3,6 +3,7 @@ pragma solidity ^0.8.19;
 
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
+import "../DAO/SupplychainManagement.sol";
 
 contract Supplychain is Ownable, ConformityState {
     // Type declarations
@@ -29,14 +30,22 @@ contract Supplychain is Ownable, ConformityState {
     // State variables
     mapping(uint256 => Batch) batches;
 
+    SupplychainManagement private supplychainManagement;
+
     // Events
     event NewBatch(address indexed owner, uint256 id);
 
     // Errors
     error UserIsNotCurrentBatchOwner();
     error BatchDoesNotExist();
+    error UserNotAllowedToTransact();
 
     // Modifiers
+    modifier allowedActor() {
+        _assertAllowedActor(msg.sender);
+        _;
+    }
+
     modifier isValidUpdate(uint256 id_) {
         _assertBatchExists(id_);
         _assertCurrentOwner(id_);
@@ -46,6 +55,9 @@ contract Supplychain is Ownable, ConformityState {
     // Functions
 
     //* constructor
+    constructor(address supplychainManagement_) {
+        supplychainManagement = SupplychainManagement(supplychainManagement_);
+    }
 
     //* receive function
 
@@ -73,7 +85,9 @@ contract Supplychain is Ownable, ConformityState {
         return batches[id_];
     }
 
-    function newBatch(string memory description_) public returns (uint256) {
+    function newBatch(
+        string memory description_
+    ) public allowedActor returns (uint256) {
         uint256 batchId = _generateId();
         Batch storage batch = batches[batchId];
         batch.id = batchId;
@@ -93,7 +107,7 @@ contract Supplychain is Ownable, ConformityState {
     function handleUpdate(
         uint256 id_,
         string memory documentURI_
-    ) public isValidUpdate(id_) {
+    ) public allowedActor isValidUpdate(id_) {
         // Send BCEvent
         // Record Update
         Update memory update = _newUpdate(documentURI_);
@@ -104,7 +118,9 @@ contract Supplychain is Ownable, ConformityState {
         uint256 id_,
         address receiver_,
         string memory documentURI_
-    ) public isValidUpdate(id_) {
+    ) public allowedActor isValidUpdate(id_) {
+        _assertAllowedActor(receiver_);
+
         Batch storage batch = batches[id_];
 
         Transaction memory transaction = _newTransaction(
@@ -114,7 +130,6 @@ contract Supplychain is Ownable, ConformityState {
         batch.transactions.push(transaction);
 
         batch.currentOwner = receiver_;
-        // TODO: check if receiver in DAO?
     }
 
     //* internal
@@ -152,5 +167,10 @@ contract Supplychain is Ownable, ConformityState {
 
     function _assertBatchExists(uint256 id_) private view {
         if (batches[id_].id == 0) revert BatchDoesNotExist();
+    }
+
+    function _assertAllowedActor(address addr_) private view {
+        if (!supplychainManagement.checkAccess(address(this), addr_))
+            revert UserNotAllowedToTransact();
     }
 }

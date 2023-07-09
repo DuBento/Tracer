@@ -13,9 +13,10 @@ contract SupplychainManagement {
     // Events
     // Errors
     error UserCannotManageContract();
+
     // Modifiers
     modifier onlyContractManager(address contractAddress_) {
-        assertOpFromContractManager(msg.sender, contractAddress_);
+        _assertOpFromContractManager(msg.sender, contractAddress_);
         _;
     }
 
@@ -36,10 +37,23 @@ contract SupplychainManagement {
         allowedActors[contract_].push(actor_);
     }
 
+    function checkAccess(
+        address contract_,
+        address addr_
+    ) public view returns (bool) {
+        address[] memory actors = allowedActors[contract_];
+        for (uint i = 0; i < actors.length; i++) {
+            if (actors[i] == addr_) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //* internal
     //* private
     //* asserts
-    function assertOpFromContractManager(
+    function _assertOpFromContractManager(
         address sender_,
         address contractAddress_
     ) internal view {

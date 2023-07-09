@@ -9,8 +9,10 @@ contract SupplychainFactory is Ownable {
     mapping(address => address) public supplychainContracts;
     address immutable defaultImplementation;
 
-    constructor() {
-        defaultImplementation = address(new Supplychain());
+    constructor(address supplychainManagingContract_) {
+        defaultImplementation = address(
+            new Supplychain(supplychainManagingContract_)
+        );
     }
 
     function create(
