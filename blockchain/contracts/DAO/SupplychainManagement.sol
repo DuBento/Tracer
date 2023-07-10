@@ -8,7 +8,7 @@ contract SupplychainManagement {
     // State variables
     UserRegistry private userRegistry;
 
-    mapping(address => address[]) public allowedActors;
+    mapping(address => address[]) public participatingContracts;
 
     // Events
     // Errors
@@ -30,20 +30,20 @@ contract SupplychainManagement {
     //* fallback function (if exists)
     //* external
     //* public
-    function addActor(
+    function addContractToActor(
         address contract_,
         address actor_
     ) public onlyContractManager(contract_) {
-        allowedActors[contract_].push(actor_);
+        participatingContracts[actor_].push(contract_);
     }
 
     function checkAccess(
         address contract_,
         address addr_
     ) public view returns (bool) {
-        address[] memory actors = allowedActors[contract_];
-        for (uint i = 0; i < actors.length; i++) {
-            if (actors[i] == addr_) {
+        address[] memory contracts = participatingContracts[addr_];
+        for (uint i = 0; i < contracts.length; i++) {
+            if (contracts[i] == contract_) {
                 return true;
             }
         }
