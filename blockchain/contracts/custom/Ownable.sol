@@ -6,12 +6,15 @@ import "../../node_modules/hardhat/console.sol";
 contract Ownable {
     address public owner;
 
+    error UserNotOwner();
+    error ForbiddenTransferToZeroAddress();
+
     constructor() {
         owner = msg.sender;
     }
 
     modifier onlyOwner() {
-        require(isOwner(), "Function accessible only by the owner");
+        if (!isOwner()) revert UserNotOwner();
         _;
     }
 
@@ -28,7 +31,7 @@ contract Ownable {
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0), "New owner cannot be the zero address");
+        if (newOwner == address(0)) revert ForbiddenTransferToZeroAddress();
         owner = newOwner;
     }
 }
