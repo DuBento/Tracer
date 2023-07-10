@@ -11,7 +11,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const governorContractDeployment = await get("GovernorContract");
   const governorTimelockDeployment = await get("GovernorTimelock");
-  const supplychainFactoryDeployment = await get("SupplychainFactory");
 
   const deployerSigner = await ethers.getSigner(deployer);
 

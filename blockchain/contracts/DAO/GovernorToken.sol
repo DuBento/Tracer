@@ -4,10 +4,16 @@ pragma solidity ^0.8.19;
 import "../OpenZeppelin/token/ERC20/ERC20.sol";
 import "../OpenZeppelin/token/ERC20/extensions/ERC20Permit.sol";
 import "../OpenZeppelin/token/ERC20/extensions/ERC20Votes.sol";
+import "../custom/Ownable.sol";
 
-contract GovernorToken is ERC20, ERC20Permit, ERC20Votes {
+contract GovernorToken is ERC20, ERC20Permit, ERC20Votes, Ownable {
     constructor() ERC20("GovernorToken", "GTK") ERC20Permit("GovernorToken") {
-        _mint(msg.sender, 1000000000000000000000000000);
+        _mint(msg.sender, 10);
+    }
+
+    function addMember(address member_) external onlyOwner {
+        _mint(member_, 10);
+        delegate(member_);
     }
 
     // The functions below are overrides required by Solidity.
