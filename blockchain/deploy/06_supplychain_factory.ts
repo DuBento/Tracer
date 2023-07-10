@@ -13,10 +13,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   log("Deploying SupplychainFactory...");
 
   const supplychainManagement = await get("SupplychainManagement");
+  const userRegistry = await get("UserRegistry");
 
   const supplychainFactory = await deploy("SupplychainFactory", {
     from: deployer,
-    args: [supplychainManagement.address],
+    args: [userRegistry.address, supplychainManagement.address],
     log: true,
     // TODO verify if live on network
   });
