@@ -3,7 +3,9 @@ pragma solidity ^0.8.19;
 
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
-import "../DAO/SupplychainManagement.sol";
+import "../DAO/UserRegistry.sol";
+
+// import "../../node_modules/hardhat/console.sol";
 
 contract Supplychain is Ownable, ConformityState {
     // Type declarations
@@ -30,7 +32,7 @@ contract Supplychain is Ownable, ConformityState {
     // State variables
     mapping(uint256 => Batch) batches;
 
-    SupplychainManagement private supplychainManagement;
+    UserRegistry private userRegistry;
 
     // Events
     event NewBatch(address indexed owner, uint256 id);
@@ -61,10 +63,6 @@ contract Supplychain is Ownable, ConformityState {
     // Functions
 
     //* constructor
-    constructor(address supplychainManagement_) {
-        supplychainManagement = SupplychainManagement(supplychainManagement_);
-    }
-
     //* receive function
 
     //* fallback function (if exists)
@@ -75,6 +73,13 @@ contract Supplychain is Ownable, ConformityState {
     fallback() external {}
 
     //* external
+
+    function init(UserRegistry userRegistry_, address owner_) external {
+        if (address(userRegistry) == address(0)) {
+            userRegistry = UserRegistry(userRegistry_);
+            super.init(owner_);
+        }
+    }
 
     function changeConformityState(
         uint256 batchId_,
@@ -176,7 +181,11 @@ contract Supplychain is Ownable, ConformityState {
     }
 
     function _assertAllowedActor(address addr_) private view {
-        if (!supplychainManagement.checkAccess(address(this), addr_))
+        // console.log("Supplychain: assertAllowedActor");
+        // console.log("Supplychain: userRegistry");
+        // console.logAddress(address(userRegistry));
+
+        if (!userRegistry.checkAccess(address(this), addr_))
             revert UserNotAllowedToTransact();
     }
 

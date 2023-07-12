@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-import "../../node_modules/hardhat/console.sol";
-
 contract Ownable {
     address public owner;
 
@@ -14,16 +12,15 @@ contract Ownable {
     }
 
     modifier onlyOwner() {
-        if (!isOwner()) revert UserNotOwner();
+        _assertIsOwner();
         _;
     }
 
     /** 
         @dev For use after cloning a contract, where initial memory is 0
     */
-    function init(address sender_) external {
+    function init(address sender_) public {
         if (owner == address(0)) owner = sender_;
-        console.log("Ownable init called, owner:", owner);
     }
 
     function isOwner() public view returns (bool) {
@@ -33,5 +30,9 @@ contract Ownable {
     function transferOwnership(address newOwner) public onlyOwner {
         if (newOwner == address(0)) revert ForbiddenTransferToZeroAddress();
         owner = newOwner;
+    }
+
+    function _assertIsOwner() internal view {
+        if (!isOwner()) revert UserNotOwner();
     }
 }
