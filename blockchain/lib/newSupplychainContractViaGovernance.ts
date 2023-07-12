@@ -1,5 +1,5 @@
 import { getNamedAccounts } from "hardhat";
-import { SupplychainFactory } from "../artifacts-frontend/typechain";
+import { UserRegistry } from "../artifacts-frontend/typechain";
 import { execute } from "../lib/execute";
 import { propose } from "../lib/propose";
 import * as utils from "../lib/utils";
@@ -49,12 +49,9 @@ async function executeSupplychainContractCreation(): Promise<string> {
   );
 
   // check that the contract was created
-  const supplychainFactory = await utils.getContract<SupplychainFactory>(
-    "SupplychainFactory"
-  );
-  const contractAddress = await supplychainFactory.supplychainContracts(
-    supplychainManager
-  );
+  const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
+  const contractAddress = (await userRegistry.members(supplychainManager))
+    .managingContractAddress;
   return contractAddress;
 }
 

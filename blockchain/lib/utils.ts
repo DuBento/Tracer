@@ -48,9 +48,18 @@ export function storeContractAddress(name: string, address: string) {
   );
 }
 
-export async function getContract<TypedContract>(name: string) {
-  const address = await getContractAddress(name);
-  return ethers.getContractAt(name, address) as TypedContract;
+export async function getContract<TypedContract>(
+  name: string,
+  options: { contractAddress?: string; signerAddress?: string } = {}
+) {
+  let signer = undefined;
+  if (options.signerAddress)
+    signer = await ethers.getSigner(options.signerAddress);
+
+  let address = options.contractAddress;
+  if (!address) address = await getContractAddress(name);
+
+  return ethers.getContractAt(name, address, signer) as TypedContract;
 }
 
 export async function getContractAddress(name: string): Promise<string> {

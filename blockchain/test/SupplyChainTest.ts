@@ -1,10 +1,14 @@
-import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { deployments, ethers, getNamedAccounts } from "hardhat";
 
-import { Supplychain } from "../artifacts-frontend/typechain";
+import {
+  Supplychain,
+  SupplychainFactory,
+  UserRegistry,
+} from "../artifacts-frontend/typechain";
 import { NewBatchEvent } from "../artifacts-frontend/typechain/supplychain/Supplychain";
+import * as utils from "../lib/utils";
 import * as Values from "./TestConfig";
 
 /* 
@@ -31,36 +35,81 @@ export async function createNewBatch(
 }
 
 describe("Supplychain", function () {
-  let supplyChain: Supplychain;
-  let owner: HardhatEthersSigner;
-  let actor1: HardhatEthersSigner;
-  let actor2: HardhatEthersSigner;
+  var supplyChain: Supplychain;
+  var supplyChainAddress: string;
+  var deployer: string;
+  var manager: string;
+  var batchOwner: string;
+  var actor1: string;
+  var actor2: string;
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
   async function deploySupplychainFixture() {
     // Contracts are deployed using the first signer/account by default
-    const [primaryAccount, otherAccount1, otherAccount2] =
-      await ethers.getSigners();
+    const { deployer, supplychainManager, actor1, actor2, actor3 } =
+      await getNamedAccounts();
 
-    const Supplychain = await ethers.getContractFactory("Supplychain");
-    const contract = (await Supplychain.deploy()) as unknown as Supplychain;
+    await deployments.fixture("dao_addons");
 
-    return { contract, primaryAccount, otherAccount1, otherAccount2 };
+    // Add supplychain manager as memeber to user registry
+    const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
+    await userRegistry.addMember(
+      supplychainManager,
+      Values.MEMBER_NAME,
+      Values.MEMBER_INFO_URI,
+      Values.MEMBER_VOTING_POWER
+    );
+
+    // Create new supplychain contract
+    const supplychainFactory = await utils.getContract<SupplychainFactory>(
+      "SupplychainFactory",
+      { signerAddress: deployer }
+    );
+    await supplychainFactory.create(supplychainManager);
+
+    const contractAddress = (await userRegistry.members(supplychainManager))
+      .managingContractAddress;
+
+    // Add allowed actor
+    await Promise.all([
+      userRegistry.addContractToActor(contractAddress, actor1),
+      userRegistry.addContractToActor(contractAddress, actor1),
+      userRegistry.addContractToActor(contractAddress, actor2),
+    ]);
+
+    // await userRegistry.actors;
+
+    const contract = await utils.getContract<Supplychain>("Supplychain", {
+      contractAddress: contractAddress,
+      signerAddress: actor1,
+    });
+
+    return {
+      contract,
+      contractAddress,
+      deployer,
+      supplychainManager,
+      actor1,
+      actor2,
+      actor3,
+    };
   }
 
   beforeEach(async function () {
-    const { contract, primaryAccount, otherAccount1, otherAccount2 } =
-      await loadFixture(deploySupplychainFixture);
-    supplyChain = contract;
-    owner = primaryAccount;
-    actor1 = otherAccount1;
-    actor2 = otherAccount2;
+    const values = await loadFixture(deploySupplychainFixture);
+    supplyChain = values.contract;
+    supplyChainAddress = values.contractAddress;
+    deployer = values.deployer;
+    manager = values.supplychainManager;
+    batchOwner = values.actor1;
+    actor1 = values.actor2;
+    actor2 = values.actor3;
   });
 
   describe("Deployment", function () {
     it("Should set the right owner", async function () {
-      expect(await supplyChain.isOwner()).to.equal(true);
+      expect(await supplyChain.owner()).to.equal(deployer);
     });
   });
 
@@ -73,8 +122,8 @@ describe("Supplychain", function () {
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
       expect(batch.transactions).to.have.lengthOf(1);
-      expect(batch.transactions[0].receiver).to.equal(owner.address);
-      expect(batch.transactions[0].info.owner).to.equal(owner.address);
+      expect(batch.transactions[0].receiver).to.equal(batchOwner);
+      expect(batch.transactions[0].info.owner).to.equal(batchOwner);
       expect(batch.transactions[0].info.documentURI).to.equal("");
     });
   });
@@ -94,7 +143,7 @@ describe("Supplychain", function () {
 
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
-      expect(batch.updates[updateIdx].owner).to.equal(owner.address);
+      expect(batch.updates[updateIdx].owner).to.equal(batchOwner);
       expect(batch.updates[updateIdx].documentURI).to.equal(
         Values.UPDATE_DOCUMENT_URI
       );
@@ -149,7 +198,7 @@ describe("Supplychain", function () {
 
     it("New update from actor that is not the current owner", async function () {
       // Change sender to normal actor
-      supplyChain = supplyChain.connect(actor1);
+      supplyChain = supplyChain.connect(await ethers.getSigner(actor1));
 
       await expect(
         supplyChain.handleUpdate(id, Values.UPDATE_DOCUMENT_URI)
@@ -170,7 +219,7 @@ describe("Supplychain", function () {
     it("New transaction between actors works correctly", async function () {
       await supplyChain.handleTransaction(
         id,
-        actor1.address,
+        actor1,
         Values.UPDATE_DOCUMENT_URI
       );
 
@@ -178,26 +227,20 @@ describe("Supplychain", function () {
       const transactionIdx = batch.transactions.length - 1;
 
       expect(batch.id).to.equal(id);
-      expect(batch.currentOwner).to.equal(actor1.address);
+      expect(batch.currentOwner).to.equal(actor1);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
-      expect(batch.transactions[transactionIdx].receiver).to.equal(
-        actor1.address
-      );
+      expect(batch.transactions[transactionIdx].receiver).to.equal(actor1);
       expect(batch.transactions[transactionIdx].info.owner).to.equal(
-        owner.address
+        batchOwner
       );
     });
 
     it("New transaction from actor that is not the current owner", async function () {
       // Change sender to normal actor
-      supplyChain = supplyChain.connect(actor1);
+      supplyChain = supplyChain.connect(await ethers.getSigner(actor1));
 
       await expect(
-        supplyChain.handleTransaction(
-          id,
-          actor2.address,
-          Values.UPDATE_DOCUMENT_URI
-        )
+        supplyChain.handleTransaction(id, actor2, Values.UPDATE_DOCUMENT_URI)
       ).to.be.revertedWithCustomError(
         supplyChain,
         "UserIsNotCurrentBatchOwner"

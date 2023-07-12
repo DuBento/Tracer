@@ -4,6 +4,8 @@ pragma solidity ^0.8.19;
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
 
+// import "../../node_modules/hardhat/console.sol";
+
 contract UserRegistry is Ownable, ConformityState {
     // Type declarations
     struct Member {
@@ -20,11 +22,14 @@ contract UserRegistry is Ownable, ConformityState {
         string name;
         string infoURI;
         ConformityState.State state;
+        address[] participatingContracts;
     }
 
     // State variables
     mapping(address => Member) public members;
     mapping(address => Actor) public actors;
+
+    address private supplychainFactory;
 
     // Events
 
@@ -32,8 +37,23 @@ contract UserRegistry is Ownable, ConformityState {
     error UserAlreadyExists();
     error UserDoesNotExist();
     error TransactionNotFromOriginalActorAddress();
+    error UserCannotManageContract();
 
     // Modifiers
+    modifier onlyOwnerOrFactoryContract() {
+        if (!isOwner() && msg.sender != supplychainFactory)
+            revert UserNotOwner();
+        _;
+    }
+
+    modifier onlyOwnerOrFactoryOrManager(address contract_) {
+        if (
+            !isOwner() &&
+            msg.sender != supplychainFactory &&
+            members[msg.sender].managingContractAddress != contract_
+        ) revert UserNotOwner();
+        _;
+    }
 
     // Functions
 
@@ -44,6 +64,9 @@ contract UserRegistry is Ownable, ConformityState {
     //* fallback function (if exists)
 
     //* external
+    function setSupplychainFactoryAddress(address addr_) external onlyOwner {
+        supplychainFactory = addr_;
+    }
 
     //* public
     function getManagingContractAddress(
@@ -60,15 +83,12 @@ contract UserRegistry is Ownable, ConformityState {
     ) public onlyOwner {
         _assertMemberDoesNotExist(addr_);
 
-        Member memory member = Member(
-            addr_,
-            name_,
-            infoURI_,
-            votingPower_,
-            ConformityState.CONFORMITY_STATE_FUNCTIONING,
-            address(0)
-        );
-        members[addr_] = member;
+        Member storage member = members[addr_];
+        member.addr = addr_;
+        member.name = name_;
+        member.infoURI = infoURI_;
+        member.votingPower = votingPower_;
+        member.state = ConformityState.CONFORMITY_STATE_FUNCTIONING;
     }
 
     function updateMember(
@@ -85,7 +105,7 @@ contract UserRegistry is Ownable, ConformityState {
     function updateMember(
         address addr_,
         address managingContractAddress_
-    ) public onlyOwner {
+    ) public onlyOwnerOrFactoryContract {
         _assertMemberExists(addr_);
 
         members[addr_].managingContractAddress = managingContractAddress_;
@@ -108,13 +128,11 @@ contract UserRegistry is Ownable, ConformityState {
     ) public {
         _assertActorDoesNotExist(addr_);
 
-        Actor memory actor = Actor(
-            addr_,
-            name_,
-            infoURI_,
-            ConformityState.CONFORMITY_STATE_FUNCTIONING
-        );
-        actors[addr_] = actor;
+        Actor storage actor = actors[addr_];
+        actor.addr = addr_;
+        actor.name = name_;
+        actor.infoURI = infoURI_;
+        actor.state = ConformityState.CONFORMITY_STATE_FUNCTIONING;
     }
 
     function updateActor(
@@ -139,11 +157,39 @@ contract UserRegistry is Ownable, ConformityState {
         actors[addr_].state = newState_;
     }
 
+    function addContractToActor(
+        address contract_,
+        address actor_
+    ) public onlyOwnerOrFactoryOrManager(contract_) {
+        actors[actor_].participatingContracts.push(contract_);
+    }
+
+    function checkAccess(
+        address contract_,
+        address addr_
+    ) public view returns (bool) {
+        address[] memory contracts = actors[addr_].participatingContracts;
+        for (uint i = 0; i < contracts.length; i++) {
+            if (contracts[i] == contract_) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //* internal
 
     //* private
 
     //* asserts
+    function assertOpFromContractManager(
+        address sender_,
+        address contractAddress_
+    ) public view {
+        if (getManagingContractAddress(sender_) != contractAddress_)
+            revert("UserCannotManageContract();");
+    }
+
     function _assertMemberDoesNotExist(address addr_) internal view {
         if (members[addr_].addr != address(0)) revert UserAlreadyExists();
     }
