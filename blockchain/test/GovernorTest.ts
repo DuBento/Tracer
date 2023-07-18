@@ -7,14 +7,18 @@ import {
   Supplychain,
   SupplychainFactory,
   Supplychain__factory,
+  UserRegistry,
 } from "../artifacts-frontend/typechain";
 import { execute } from "../lib/execute";
+import { newMemberViaGovernance } from "../lib/newMemberViaGovernance";
 import { newSupplychainContractViaGovernance } from "../lib/newSupplychainContractViaGovernance";
 import { propose } from "../lib/propose";
 import * as utils from "../lib/utils";
 import { vote } from "../lib/vote";
 import { createNewBatch } from "./SupplyChainTest";
 import {
+  ACTOR_INFO_URI,
+  ACTOR_NAME,
   BATCH_DESCRIPTION,
   PROPOSAL_DESCRIPTION,
   PROPOSAL_VOTE_DESCRIPTION,
@@ -25,6 +29,7 @@ describe("Governor", function () {
   let governorToken: GovernorToken;
   let governorTimelock: GovernorTimelock;
   let supplychainFactory: SupplychainFactory;
+  let userRegistry: UserRegistry;
 
   beforeEach(async function () {
     await deployments.fixture("dao");
@@ -38,6 +43,7 @@ describe("Governor", function () {
     supplychainFactory = await utils.getContract<SupplychainFactory>(
       "SupplychainFactory"
     );
+    userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
   });
 
   it("Succesfully deploys and Timelock is the correct owner", async function () {
@@ -48,7 +54,11 @@ describe("Governor", function () {
   });
 
   describe("Supplychain factory", function () {
-    let supplychain: Supplychain;
+    let supplychainContractAddress: string;
+    let supplychainContractAsManager: Supplychain;
+    let supplychainContractAsActor1: Supplychain;
+    let supplychainManager: string;
+    let actor1: string;
 
     // async function newSupplychainThroughGovernorFixture() {
     //   const { proposalId, contractAddress } =
@@ -56,14 +66,48 @@ describe("Governor", function () {
     //   return { proposalId, contractAddress };
     // }
 
+    // async function setupUserRegisterFixture() {
+    //   const { supplychainManager } = await getNamedAccounts();
+    //   const { member } = await newMemberViaGovernance(supplychainManager);
+
+    //   await userRegistry.addActor(actor1, ACTOR_NAME, ACTOR_INFO_URI);
+
+    //   return { member };
+    // }
+
     beforeEach(async function () {
-      const { contractAddress } = await newSupplychainContractViaGovernance();
+      const accounts = await getNamedAccounts();
+      supplychainManager = accounts.supplychainManager;
+      actor1 = accounts.actor1;
+
+      const { member } = await newMemberViaGovernance(supplychainManager);
+
+      await userRegistry.addActor(actor1, ACTOR_NAME, ACTOR_INFO_URI);
+
+      console.log(
+        `### Address of supplychainManager: ${supplychainManager}
+        ###UserReg member: ${await userRegistry.members(supplychainManager)}`
+      );
+      const { contractAddress, proposalId } =
+        await newSupplychainContractViaGovernance(supplychainManager);
+      supplychainContractAddress = contractAddress;
+
+      console.log(`###User Registry addContract to actor...`);
+      await userRegistry
+        .connect(await ethers.getSigner(supplychainManager))
+        .addContractToActor(contractAddress, actor1);
+
+      console.log(`###User Registry ${await userRegistry.actors(actor1)}`);
       const { deployer } = await getNamedAccounts();
       console.log("deployer address :", deployer);
 
-      supplychain = Supplychain__factory.connect(
+      supplychainContractAsManager = Supplychain__factory.connect(
         contractAddress,
-        await ethers.getSigner(deployer)
+        await ethers.getSigner(supplychainManager)
+      );
+      supplychainContractAsActor1 = Supplychain__factory.connect(
+        contractAddress,
+        await ethers.getSigner(actor1)
       );
     });
 
@@ -73,16 +117,19 @@ describe("Governor", function () {
         "SupplychainFactory address:",
         await supplychainFactory.getAddress()
       );
-      expect(await supplychain.owner()).to.equal(
+      expect(await supplychainContractAsManager.owner()).to.equal(
         await governorTimelock.getAddress()
       );
     });
 
     it("Interact with onlyOwner functions of the new supplychain contract (via governace)", async function () {
-      const batchId = await createNewBatch(supplychain, BATCH_DESCRIPTION);
+      const batchId = await createNewBatch(
+        supplychainContractAsActor1,
+        BATCH_DESCRIPTION
+      );
 
       const nextState =
-        await supplychain.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
+        await supplychainContractAsManager.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
 
       const encodedFunctionCall = await utils.encodeFunctionCall(
         "Supplychain",
@@ -91,7 +138,7 @@ describe("Governor", function () {
       );
 
       const proposalId = await propose(
-        await supplychain.getAddress(),
+        supplychainContractAddress,
         encodedFunctionCall,
         PROPOSAL_DESCRIPTION
       );
@@ -103,12 +150,14 @@ describe("Governor", function () {
       );
 
       await execute(
-        await supplychain.getAddress(),
+        supplychainContractAddress,
         encodedFunctionCall,
         PROPOSAL_DESCRIPTION
       );
 
-      expect((await supplychain.getBatch(batchId)).state).to.equal(nextState);
+      expect(
+        (await supplychainContractAsManager.getBatch(batchId)).state
+      ).to.equal(nextState);
     });
   });
 });

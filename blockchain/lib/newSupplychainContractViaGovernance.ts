@@ -1,4 +1,3 @@
-import { getNamedAccounts } from "hardhat";
 import { UserRegistry } from "../artifacts-frontend/typechain";
 import { execute } from "../lib/execute";
 import { propose } from "../lib/propose";
@@ -9,13 +8,11 @@ import {
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
 } from "../properties";
 
-async function proposeCreateSupplychain() {
-  const { supplychainManager } = await getNamedAccounts();
-
+async function proposeCreateSupplychain(memberAddress: string) {
   const encodedFunctionCall = await utils.encodeFunctionCall(
     "SupplychainFactory",
     SUPPLYCHAIN_CREATE_METHOD,
-    [supplychainManager]
+    [memberAddress]
   );
 
   const proposalId = await propose(
@@ -34,12 +31,13 @@ async function voteFor(proposalId: string) {
   await vote(proposalId, decision, reason);
 }
 
-async function executeSupplychainContractCreation(): Promise<string> {
-  const { supplychainManager } = await getNamedAccounts();
+async function executeSupplychainContractCreation(
+  memberAddress: string
+): Promise<string> {
   const encodedFunctionCall = await utils.encodeFunctionCall(
     "SupplychainFactory",
     SUPPLYCHAIN_CREATE_METHOD,
-    [supplychainManager]
+    [memberAddress]
   );
 
   await execute(
@@ -50,17 +48,21 @@ async function executeSupplychainContractCreation(): Promise<string> {
 
   // check that the contract was created
   const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
-  const contractAddress = (await userRegistry.members(supplychainManager))
+  const contractAddress = (await userRegistry.members(memberAddress))
     .managingContractAddress;
   return contractAddress;
 }
 
-export async function newSupplychainContractViaGovernance() {
-  const proposalId = await proposeCreateSupplychain();
+export async function newSupplychainContractViaGovernance(
+  memberAddress: string
+) {
+  const proposalId = await proposeCreateSupplychain(memberAddress);
 
   await voteFor(proposalId.toString());
 
-  const contractAddress = await executeSupplychainContractCreation();
+  const contractAddress = await executeSupplychainContractCreation(
+    memberAddress
+  );
   console.log(`Address of created contract: ${contractAddress}`);
 
   return { proposalId, contractAddress };
