@@ -35,7 +35,8 @@ contract UserRegistry is Ownable, ConformityState {
 
     // Errors
     error UserAlreadyExists();
-    error UserDoesNotExist();
+    error MemberDoesNotExist();
+    error ActorDoesNotExist();
     error TransactionNotFromOriginalActorAddress();
     error UserCannotManageContract();
 
@@ -199,11 +200,11 @@ contract UserRegistry is Ownable, ConformityState {
     }
 
     function _assertMemberExists(address addr_) internal view {
-        if (members[addr_].addr == address(0)) revert UserDoesNotExist();
+        if (members[addr_].addr == address(0)) revert MemberDoesNotExist();
     }
 
     function _assertActorExists(address addr_) internal view {
-        if (actors[addr_].addr == address(0)) revert UserDoesNotExist();
+        if (actors[addr_].addr == address(0)) revert ActorDoesNotExist();
     }
 
     function _assertSenderIsActor(address addr_) internal view {

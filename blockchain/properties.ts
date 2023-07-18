@@ -27,3 +27,7 @@ export const VOTING_QUORUM = 4; // porcentage
 export const SUPPLYCHAIN_CREATE_METHOD = "create";
 export const SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION =
   "Create a new supplychain contract";
+
+export const USER_REGISTRY_ADD_MEMBER_METHOD = "addMember";
+export const USER_REGISTRY_ADD_MEMBER_DESCRIPTION =
+  "Add a new member to the user registry";

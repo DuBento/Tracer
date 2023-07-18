@@ -7,7 +7,10 @@ export const PROPOSAL_VOTE_FOR = 1;
 export const PROPOSAL_VOTE_DESCRIPTION = "Vote for test proposal";
 
 export const MEMBER_NAME = "Test member";
-export const MEMBER_INFO_URI = "<test uri>";
+export const MEMBER_INFO_URI = "<member test uri>";
 export const MEMBER_VOTING_POWER = 1;
+
+export const ACTOR_NAME = "Test actor";
+export const ACTOR_INFO_URI = "<actor test uri>";
 
 export const tsNow = () => BigInt(Math.floor(Date.now() / 1000));
