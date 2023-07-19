@@ -26,13 +26,17 @@ const getEncodedFunctionCall = async (addr: string) =>
     ]
   );
 
-export async function proposeNewMember(memberAddress: string) {
+export async function proposeNewMember(
+  memberAddress: string,
+  signerAddress?: string
+) {
   const encodedFunctionCall = await getEncodedFunctionCall(memberAddress);
 
   const proposalId = await propose(
     await utils.getContractAddress("GovernorToken"),
     encodedFunctionCall,
-    USER_REGISTRY_ADD_MEMBER_DESCRIPTION
+    USER_REGISTRY_ADD_MEMBER_DESCRIPTION,
+    signerAddress
   );
 
   return proposalId;

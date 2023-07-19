@@ -9,10 +9,12 @@ import { DEVELOPMENT_CHAINS, VOTING_DELAY } from "../properties";
 export async function propose(
   proposalTarget: string,
   encodedCall: string,
-  proposalDescription: string
+  proposalDescription: string,
+  signerAddress?: string
 ): Promise<bigint> {
   const governor = await utils.getContract<GovernorContract>(
-    "GovernorContract"
+    "GovernorContract",
+    { signerAddress }
   );
 
   console.log(`Proposal Description:\n  ${proposalDescription}`);
