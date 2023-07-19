@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
+import "hardhat/console.sol";
+
 contract Ownable {
     address public owner;
 
@@ -12,6 +14,9 @@ contract Ownable {
     }
 
     modifier onlyOwner() {
+        console.log("== Contract Address:", address(this));
+        console.log("Owner:", owner);
+        console.log("Msg sender:", msg.sender);
         _assertIsOwner();
         _;
     }

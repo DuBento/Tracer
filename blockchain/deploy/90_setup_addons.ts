@@ -1,6 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import {
+  GovernorToken,
   SupplychainFactory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
@@ -20,13 +21,23 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
 
   const supplychainFactory = await utils.getContract<SupplychainFactory>(
-    "SupplychainFactory",
-    { signerAddress: deployer }
+    "SupplychainFactory"
   );
 
   await userRegistry.setSupplychainFactoryAddress(
     await supplychainFactory.getAddress()
   );
+
+  try {
+    const governorToken = await utils.getContract<GovernorToken>(
+      "GovernorToken"
+    );
+    await userRegistry.setGovernorTokenAddress(
+      await governorToken.getAddress()
+    );
+  } catch (e) {
+    log("GovernorToken not deployed yet, skipping");
+  }
 };
 
 module.exports = func;

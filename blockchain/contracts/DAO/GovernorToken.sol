@@ -5,15 +5,23 @@ import "../OpenZeppelin/token/ERC20/ERC20.sol";
 import "../OpenZeppelin/token/ERC20/extensions/ERC20Permit.sol";
 import "../OpenZeppelin/token/ERC20/extensions/ERC20Votes.sol";
 import "../custom/Ownable.sol";
+import "./UserRegistry.sol";
 
 contract GovernorToken is ERC20, ERC20Permit, ERC20Votes, Ownable {
     constructor() ERC20("GovernorToken", "GTK") ERC20Permit("GovernorToken") {
-        _mint(msg.sender, 10);
+        _mint(msg.sender, 1);
     }
 
-    function addMember(address member_) external onlyOwner {
-        _mint(member_, 10);
-        delegate(member_);
+    function addMember(
+        UserRegistry userRegistry_,
+        address member_,
+        string calldata name_,
+        string calldata infoURI_,
+        uint256 votingPower_
+    ) external onlyOwner {
+        _mint(member_, votingPower_);
+        _delegate(member_, member_);
+        userRegistry_.addMember(member_, name_, infoURI_, votingPower_);
     }
 
     // The functions below are overrides required by Solidity.

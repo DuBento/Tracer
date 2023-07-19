@@ -4,8 +4,6 @@ pragma solidity ^0.8.19;
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
 
-// import "../../node_modules/hardhat/console.sol";
-
 contract UserRegistry is Ownable, ConformityState {
     // Type declarations
     struct Member {
@@ -30,6 +28,7 @@ contract UserRegistry is Ownable, ConformityState {
     mapping(address => Actor) public actors;
 
     address private supplychainFactory;
+    address private governorToken;
 
     // Events
 
@@ -44,6 +43,11 @@ contract UserRegistry is Ownable, ConformityState {
     modifier onlyOwnerOrFactoryContract() {
         if (!isOwner() && msg.sender != supplychainFactory)
             revert UserNotOwner();
+        _;
+    }
+
+    modifier onlyOwnerOrTokenContract() {
+        if (!isOwner() && msg.sender != governorToken) revert UserNotOwner();
         _;
     }
 
@@ -69,6 +73,10 @@ contract UserRegistry is Ownable, ConformityState {
         supplychainFactory = addr_;
     }
 
+    function setGovernorTokenAddress(address addr_) external onlyOwner {
+        governorToken = addr_;
+    }
+
     //* public
     function getManagingContractAddress(
         address addr_
@@ -81,7 +89,7 @@ contract UserRegistry is Ownable, ConformityState {
         string calldata name_,
         string calldata infoURI_,
         uint256 votingPower_
-    ) public onlyOwner {
+    ) public onlyOwnerOrTokenContract {
         _assertMemberDoesNotExist(addr_);
 
         Member storage member = members[addr_];
