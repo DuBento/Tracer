@@ -1,8 +1,7 @@
-import { ethers } from "hardhat";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import {
-  GovernorTimelock,
+  GovernorContract,
   GovernorToken,
   SupplychainFactory,
   UserRegistry,
@@ -20,58 +19,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const governorContractDeployment = await get("GovernorContract");
 
-  const governorTimelock = await utils.getContract<GovernorTimelock>(
-    "GovernorTimelock",
+  const governorContract = await utils.getContract<GovernorContract>(
+    "GovernorContract",
     { signerAddress: deployer }
   );
 
   log(padCenter(scriptName(__filename), 50));
 
-  await setupTimelock(
-    governorTimelock,
-    governorContractDeployment.address,
-    deployer
-  );
-
-  await setupGovernorToken(governorTimelock, deployer);
-  await setupUserRegistry(governorTimelock, deployer);
-  await setupSupplychainFactory(governorTimelock, deployer);
-};
-
-const setupTimelock = async function (
-  governorTimelock: GovernorTimelock,
-  governorAddress: string,
-  deployerAddress: string
-) {
-  const proposerRole = await governorTimelock.PROPOSER_ROLE();
-  const executorRole = await governorTimelock.EXECUTOR_ROLE();
-  const adminRole = await governorTimelock.DEFAULT_ADMIN_ROLE();
-
-  log("Setting up Timelock...");
-  // Grant proposer to governor contract
-  const proposerTx = await governorTimelock.grantRole(
-    proposerRole,
-    governorAddress
-  );
-  await proposerTx.wait();
-
-  // Allow all to execute (zero address)
-  const executorTx = await governorTimelock.grantRole(
-    executorRole,
-    ethers.ZeroAddress
-  );
-  await executorTx.wait();
-
-  // Revoke admin acces from deployer
-  const revokeAdminTx = await governorTimelock.revokeRole(
-    adminRole,
-    deployerAddress
-  );
-  await revokeAdminTx.wait();
+  await setupGovernorToken(governorContract, deployer);
+  await setupUserRegistry(governorContract, deployer);
+  await setupSupplychainFactory(governorContract, deployer);
 };
 
 const setupGovernorToken = async function (
-  governorTimelock: GovernorTimelock,
+  governorContract: GovernorContract,
   deployer: string
 ) {
   log("Setting up GovernorToken...");
@@ -86,7 +47,7 @@ const setupGovernorToken = async function (
 
   // Transfer owner to timelock
   const transferOwnershipTx = await governorTokenContract.transferOwnership(
-    await governorTimelock.getAddress()
+    await governorContract.getAddress()
   );
   await transferOwnershipTx.wait();
 };
@@ -106,7 +67,7 @@ const delegateVotingPower = async function (
 };
 
 const setupUserRegistry = async function (
-  governorTimelock: GovernorTimelock,
+  governorContract: GovernorContract,
   deployer: string
 ) {
   log("Setting up UserRegistry...");
@@ -118,13 +79,13 @@ const setupUserRegistry = async function (
   );
 
   const transferOwnershipTx = await userRegistryContract.transferOwnership(
-    await governorTimelock.getAddress()
+    await governorContract.getAddress()
   );
   await transferOwnershipTx.wait();
 };
 
 const setupSupplychainFactory = async function (
-  governorTimelock: GovernorTimelock,
+  governorContract: GovernorContract,
   deployer: string
 ) {
   log("Setting up SupplychainFactory...");
@@ -137,7 +98,7 @@ const setupSupplychainFactory = async function (
 
   const transferOwnershipTx =
     await supplychainFactoryContract.transferOwnership(
-      await governorTimelock.getAddress()
+      await governorContract.getAddress()
     );
   await transferOwnershipTx.wait();
 };

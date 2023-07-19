@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { deployments, ethers, getNamedAccounts } from "hardhat";
 import {
   GovernorContract,
-  GovernorTimelock,
   GovernorToken,
   Supplychain,
   SupplychainFactory,
@@ -35,7 +34,6 @@ import {
 describe("Governor", function () {
   let governorContract: GovernorContract;
   let governorToken: GovernorToken;
-  let governorTimelock: GovernorTimelock;
   let supplychainFactory: SupplychainFactory;
   let userRegistry: UserRegistry;
 
@@ -45,9 +43,6 @@ describe("Governor", function () {
       "GovernorContract"
     );
     governorToken = await utils.getContract<GovernorToken>("GovernorToken");
-    governorTimelock = await utils.getContract<GovernorTimelock>(
-      "GovernorTimelock"
-    );
     supplychainFactory = await utils.getContract<SupplychainFactory>(
       "SupplychainFactory"
     );
@@ -56,7 +51,6 @@ describe("Governor", function () {
     console.log(`#####
     GovernorContract: ${await governorContract.getAddress()}
     GovernorToken: ${await governorToken.getAddress()}
-    GovernorTimelock: ${await governorTimelock.getAddress()}
     SupplychainFactory: ${await supplychainFactory.getAddress()}
     UserRegistry: ${await userRegistry.getAddress()}
     #####`);
@@ -65,7 +59,7 @@ describe("Governor", function () {
   it("Succesfully deploys and Timelock is the correct owner", async function () {
     // used to show gas report for deplpoyment
     expect(await supplychainFactory.owner()).to.equal(
-      await governorTimelock.getAddress()
+      await governorContract.getAddress()
     );
   });
 
@@ -266,13 +260,8 @@ describe("Governor", function () {
     });
 
     it("Propose, vote and execute a new supplychain contract", async function () {
-      console.log("Timelock address:", await governorTimelock.getAddress());
-      console.log(
-        "SupplychainFactory address:",
-        await supplychainFactory.getAddress()
-      );
       expect(await supplychainContractAsManager.owner()).to.equal(
-        await governorTimelock.getAddress()
+        await governorContract.getAddress()
       );
     });
 
