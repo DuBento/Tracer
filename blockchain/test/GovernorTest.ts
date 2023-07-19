@@ -31,8 +31,7 @@ import {
   PROPOSAL_VOTE_DESCRIPTION,
 } from "./TestConfig";
 
-console.log = () => {};
-
+// console.log = () => {};
 describe("Governor", function () {
   let governorContract: GovernorContract;
   let governorToken: GovernorToken;
