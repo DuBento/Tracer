@@ -27,7 +27,7 @@
 
 - hardhat gas-reporter: run test `npx hardhat test`
 
-*For DAO with Openzeppelin Governance Release [v0.2-dev](github.com/DuBento/Thesis/releases/tag/v0.2-dev)*
+*For DAO with Openzeppelin Governance Release [v0.2-dev](http://github.com/DuBento/Thesis/releases/tag/v0.2-dev)*
 
 ```
 ·-------------------------------------------------------|----------------------------|-------------|-----------------------------·
