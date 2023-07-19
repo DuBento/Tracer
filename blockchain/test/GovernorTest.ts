@@ -10,7 +10,10 @@ import {
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import { execute } from "../lib/execute";
-import { newMemberViaGovernance } from "../lib/newMemberViaGovernance";
+import {
+  newMemberViaGovernance,
+  proposeNewMember,
+} from "../lib/newMemberViaGovernance";
 import { newSupplychainContractViaGovernance } from "../lib/newSupplychainContractViaGovernance";
 import { propose } from "../lib/propose";
 import * as utils from "../lib/utils";
@@ -27,6 +30,8 @@ import {
   PROPOSAL_DESCRIPTION,
   PROPOSAL_VOTE_DESCRIPTION,
 } from "./TestConfig";
+
+console.log = () => {};
 
 describe("Governor", function () {
   let governorContract: GovernorContract;
@@ -113,6 +118,7 @@ describe("Governor", function () {
   });
 
   describe("Proposals", function () {
+    let actor1: string;
     const encodeFunctionCall = async (addr: string, state: string) =>
       await utils.encodeFunctionCall(
         "UserRegistry",
@@ -120,9 +126,47 @@ describe("Governor", function () {
         [addr, state]
       );
 
+    beforeEach(async function () {
+      actor1 = (await getNamedAccounts()).actor1;
+    });
+
+    it("Propose new member from unregistered account", async function () {
+      const proposalId = await proposeNewMember(actor1, actor1);
+
+      const proposalState = await governorContract.state(proposalId);
+      expect(proposalState).to.equal(1); // 1 = Active
+    });
+
     it("Vote proposal with new member succesfully", async function () {
-      const { actor1 } = await getNamedAccounts();
-      await newMemberViaGovernance(actor1);
+      const newMember = actor1;
+      await newMemberViaGovernance(newMember);
+
+      const newState =
+        await userRegistry.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
+      const encodedCall = await encodeFunctionCall(
+        newMember,
+        newState.toString()
+      );
+
+      const proposalId = await propose(
+        await utils.getContractAddress("UserRegistry"),
+        encodedCall,
+        USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION,
+        newMember
+      );
+
+      let state = await vote(
+        proposalId.toString(),
+        1,
+        PROPOSAL_VOTE_DESCRIPTION,
+        newMember
+      );
+
+      expect(state).to.equal(4); // 4 = Succeeded
+    });
+
+    it("Propose with registered actor succesfully", async function () {
+      await userRegistry.addActor(actor1, ACTOR_NAME, ACTOR_INFO_URI);
 
       const newState =
         await userRegistry.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
@@ -131,7 +175,26 @@ describe("Governor", function () {
       const proposalId = await propose(
         await utils.getContractAddress("UserRegistry"),
         encodedCall,
-        USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION
+        USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION,
+        actor1
+      );
+
+      const proposalState = await governorContract.state(proposalId);
+      expect(proposalState).to.equal(1); // 1 = Active
+    });
+
+    it("Vote with actor, unsuccesfully", async function () {
+      await userRegistry.addActor(actor1, ACTOR_NAME, ACTOR_INFO_URI);
+
+      const newState =
+        await userRegistry.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
+      const encodedCall = await encodeFunctionCall(actor1, newState.toString());
+
+      const proposalId = await propose(
+        await utils.getContractAddress("UserRegistry"),
+        encodedCall,
+        USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION,
+        actor1
       );
 
       let state = await vote(
@@ -141,12 +204,8 @@ describe("Governor", function () {
         actor1
       );
 
-      expect(state).to.equal(4); // 4 = Succeeded
+      expect(state).to.equal(3); // 3 = Defeated
     });
-
-    it("Propose with registered actor succesfully", async function () {});
-    it("Propose with unregistered actor, unsuccesfully", async function () {});
-    it("Vote with actor, unsuccesfully", async function () {});
   });
 
   describe("Supplychain factory", function () {
