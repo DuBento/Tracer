@@ -6,11 +6,13 @@ import { DEVELOPMENT_CHAINS, VOTING_PERIOD } from "../properties";
 export async function vote(
   proposalId: string,
   decision: number, // 0 = Against, 1 = For, 2 = Abstain
-  reason: string
+  reason: string,
+  signerAddress?: string
 ) {
   console.log("Voting...");
   const governor = await utils.getContract<GovernorContract>(
-    "GovernorContract"
+    "GovernorContract",
+    { signerAddress }
   );
 
   const voteTx = await governor.castVoteWithReason(

@@ -31,3 +31,7 @@ export const SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION =
 export const USER_REGISTRY_ADD_MEMBER_METHOD = "addMember";
 export const USER_REGISTRY_ADD_MEMBER_DESCRIPTION =
   "Add a new member to the user registry";
+
+export const USER_REGISTRY_UPDATE_MEMBER_STATE_METHOD = "updateMemberState";
+export const USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION =
+  "Update a member in the user registry";
