@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.9.1) (governance/Governor.sol)
+// SPDX-License-Identifier: Apache-2.0
+// Based on Openzeppelin Contracts (last updated v4.9.1)
 
 pragma solidity ^0.8.19;
 
@@ -12,6 +12,7 @@ import "../../OpenZeppelin/utils/math/SafeCast.sol";
 import "../../OpenZeppelin/utils/Address.sol";
 import "../../OpenZeppelin/utils/Context.sol";
 import "./IGovernor.sol";
+
 /**
  * @dev Core of the governance system, designed to be extended though various modules.
  *
@@ -21,7 +22,7 @@ import "./IGovernor.sol";
  * - A voting module must implement {_getVotes}
  * - Additionally, {votingPeriod} must also be implemented
  *
- * _Available since v4.3._
+ * Modified version of governance contracts from OpenZeppelin v4.9.1
  */
 abstract contract Governor is
     Context,
@@ -31,8 +32,6 @@ abstract contract Governor is
     IERC721Receiver,
     IERC1155Receiver
 {
-    using DoubleEndedQueue for DoubleEndedQueue.Bytes32Deque;
-
     bytes32 public constant BALLOT_TYPEHASH =
         keccak256("Ballot(uint256 proposalId,uint8 support)");
     bytes32 public constant EXTENDED_BALLOT_TYPEHASH =
@@ -62,12 +61,6 @@ abstract contract Governor is
     /// @custom:oz-retyped-from mapping(uint256 => Governor.ProposalCore)
     mapping(uint256 => ProposalCore) private _proposals;
 
-    // This queue keeps track of the governor operating on itself. Calls to functions protected by the
-    // {onlyGovernance} modifier needs to be whitelisted in this queue. Whitelisting is set in {_beforeExecute},
-    // consumed by the {onlyGovernance} modifier and eventually reset in {_afterExecute}. This ensures that the
-    // execution of {onlyGovernance} protected calls can only be achieved through successful proposals.
-    DoubleEndedQueue.Bytes32Deque private _governanceCall;
-
     /**
      * @dev Restricts a function so it can only be executed through governance proposals. For example, governance
      * parameter setters in {GovernorSettings} are protected using this modifier.
@@ -81,11 +74,6 @@ abstract contract Governor is
     modifier onlyGovernance() {
         if (_executor() != _msgSender()) {
             revert GovernorOnlyExecutor(_msgSender());
-        }
-        if (_executor() != address(this)) {
-            bytes32 msgDataHash = keccak256(_msgData());
-            // loop until popping the expected operation - throw if deque is empty (operation not authorized)
-            while (_governanceCall.popFront() != msgDataHash) {}
         }
         _;
     }
@@ -418,9 +406,7 @@ abstract contract Governor is
 
         emit ProposalExecuted(proposalId);
 
-        _beforeExecute(proposalId, targets, values, calldatas, descriptionHash);
         _execute(proposalId, targets, values, calldatas, descriptionHash);
-        _afterExecute(proposalId, targets, values, calldatas, descriptionHash);
 
         return proposalId;
     }
@@ -472,41 +458,43 @@ abstract contract Governor is
         }
     }
 
-    /**
-     * @dev Hook before execution is triggered.
-     */
-    function _beforeExecute(
-        uint256 /* proposalId */,
-        address[] memory targets,
-        uint256[] memory /* values */,
-        bytes[] memory calldatas,
-        bytes32 /*descriptionHash*/
-    ) internal virtual {
-        if (_executor() != address(this)) {
-            for (uint256 i = 0; i < targets.length; ++i) {
-                if (targets[i] == address(this)) {
-                    _governanceCall.pushBack(keccak256(calldatas[i]));
-                }
-            }
-        }
-    }
+    // TODO remove
 
-    /**
-     * @dev Hook after execution is triggered.
-     */
-    function _afterExecute(
-        uint256 /* proposalId */,
-        address[] memory /* targets */,
-        uint256[] memory /* values */,
-        bytes[] memory /* calldatas */,
-        bytes32 /*descriptionHash*/
-    ) internal virtual {
-        if (_executor() != address(this)) {
-            if (!_governanceCall.empty()) {
-                _governanceCall.clear();
-            }
-        }
-    }
+    // /**
+    //  * @dev Hook before execution is triggered.
+    //  */
+    // function _beforeExecute(
+    //     uint256 /* proposalId */,
+    //     address[] memory targets,
+    //     uint256[] memory /* values */,
+    //     bytes[] memory calldatas,
+    //     bytes32 /*descriptionHash*/
+    // ) internal virtual {
+    //     if (_executor() != address(this)) {
+    //         for (uint256 i = 0; i < targets.length; ++i) {
+    //             if (targets[i] == address(this)) {
+    //                 _governanceCall.pushBack(keccak256(calldatas[i]));
+    //             }
+    //         }
+    //     }
+    // }
+
+    // /**
+    //  * @dev Hook after execution is triggered.
+    //  */
+    // function _afterExecute(
+    //     uint256 /* proposalId */,
+    //     address[] memory /* targets */,
+    //     uint256[] memory /* values */,
+    //     bytes[] memory /* calldatas */,
+    //     bytes32 /*descriptionHash*/
+    // ) internal virtual {
+    //     if (_executor() != address(this)) {
+    //         if (!_governanceCall.empty()) {
+    //             _governanceCall.clear();
+    //         }
+    //     }
+    // }
 
     /**
      * @dev Internal cancel mechanism: locks up the proposal timer, preventing it from being re-submitted. Marks it as
@@ -731,6 +719,7 @@ abstract contract Governor is
         Address.verifyCallResult(success, returndata);
     }
 
+    // TODO remove
     /**
      * @dev Address through which the governor executes action. Will be overloaded by module that execute actions
      * through another contract such as a timelock.

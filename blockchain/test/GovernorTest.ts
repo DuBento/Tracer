@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { deployments, ethers, getNamedAccounts } from "hardhat";
 import {
+  Executor,
   GovernorContract,
   GovernorToken,
   Supplychain,
@@ -34,6 +35,7 @@ import {
 describe("Governor", function () {
   let governorContract: GovernorContract;
   let governorToken: GovernorToken;
+  let executor: Executor;
   let supplychainFactory: SupplychainFactory;
   let userRegistry: UserRegistry;
 
@@ -42,6 +44,7 @@ describe("Governor", function () {
     governorContract = await utils.getContract<GovernorContract>(
       "GovernorContract"
     );
+    executor = await utils.getContract<Executor>("Executor");
     governorToken = await utils.getContract<GovernorToken>("GovernorToken");
     supplychainFactory = await utils.getContract<SupplychainFactory>(
       "SupplychainFactory"
@@ -50,16 +53,17 @@ describe("Governor", function () {
 
     console.log(`#####
     GovernorContract: ${await governorContract.getAddress()}
+    Executor: ${await executor.getAddress()}
     GovernorToken: ${await governorToken.getAddress()}
     SupplychainFactory: ${await supplychainFactory.getAddress()}
     UserRegistry: ${await userRegistry.getAddress()}
     #####`);
   });
 
-  it("Succesfully deploys and Timelock is the correct owner", async function () {
+  it("Succesfully deploys and Executor contract is the correct owner", async function () {
     // used to show gas report for deplpoyment
     expect(await supplychainFactory.owner()).to.equal(
-      await governorContract.getAddress()
+      await executor.getAddress()
     );
   });
 
@@ -261,7 +265,7 @@ describe("Governor", function () {
 
     it("Propose, vote and execute a new supplychain contract", async function () {
       expect(await supplychainContractAsManager.owner()).to.equal(
-        await governorContract.getAddress()
+        await executor.getAddress()
       );
     });
 
