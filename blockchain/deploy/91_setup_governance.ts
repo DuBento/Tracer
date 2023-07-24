@@ -1,6 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import {
+  Executor,
   GovernorContract,
   GovernorToken,
   SupplychainFactory,
@@ -17,22 +18,36 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await getNamedAccounts();
   log = deployments.log;
 
-  const governorContractDeployment = await get("GovernorContract");
+  const executorContract = await utils.getContract<Executor>("Executor", {
+    signerAddress: deployer,
+  });
+
+  log(padCenter(scriptName(__filename), 50));
+
+  await Promise.all([
+    setupExecutor(executorContract, deployer),
+    setupGovernorToken(executorContract, deployer),
+    setupUserRegistry(executorContract, deployer),
+    setupSupplychainFactory(executorContract, deployer),
+  ]);
+};
+
+const setupExecutor = async function (
+  executorContract: Executor,
+  deployer: string
+) {
+  log("Setting up Executor...");
 
   const governorContract = await utils.getContract<GovernorContract>(
     "GovernorContract",
     { signerAddress: deployer }
   );
 
-  log(padCenter(scriptName(__filename), 50));
-
-  await setupGovernorToken(governorContract, deployer);
-  await setupUserRegistry(governorContract, deployer);
-  await setupSupplychainFactory(governorContract, deployer);
+  executorContract.transferOwnership(await governorContract.getAddress());
 };
 
 const setupGovernorToken = async function (
-  governorContract: GovernorContract,
+  executorContract: Executor,
   deployer: string
 ) {
   log("Setting up GovernorToken...");
@@ -47,7 +62,7 @@ const setupGovernorToken = async function (
 
   // Transfer owner to timelock
   const transferOwnershipTx = await governorTokenContract.transferOwnership(
-    await governorContract.getAddress()
+    await executorContract.getAddress()
   );
   await transferOwnershipTx.wait();
 };
@@ -67,7 +82,7 @@ const delegateVotingPower = async function (
 };
 
 const setupUserRegistry = async function (
-  governorContract: GovernorContract,
+  executorContract: Executor,
   deployer: string
 ) {
   log("Setting up UserRegistry...");
@@ -79,13 +94,13 @@ const setupUserRegistry = async function (
   );
 
   const transferOwnershipTx = await userRegistryContract.transferOwnership(
-    await governorContract.getAddress()
+    await executorContract.getAddress()
   );
   await transferOwnershipTx.wait();
 };
 
 const setupSupplychainFactory = async function (
-  governorContract: GovernorContract,
+  executorContract: Executor,
   deployer: string
 ) {
   log("Setting up SupplychainFactory...");
@@ -98,7 +113,7 @@ const setupSupplychainFactory = async function (
 
   const transferOwnershipTx =
     await supplychainFactoryContract.transferOwnership(
-      await governorContract.getAddress()
+      await executorContract.getAddress()
     );
   await transferOwnershipTx.wait();
 };

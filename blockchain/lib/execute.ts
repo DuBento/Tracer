@@ -16,7 +16,6 @@ export async function execute(
   );
 
   console.log("Executing...");
-  // this will fail on a testnet because you need to wait for the MIN_DELAY!
   const executeTx = await governor.execute(
     [proposalTarget],
     [0],

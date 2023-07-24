@@ -1,3 +1,4 @@
+import { EventLog } from "ethers";
 import { getChainId, network } from "hardhat";
 import { GovernorContract } from "../artifacts-frontend/typechain";
 import * as utils from "../lib/utils";
@@ -15,14 +16,28 @@ export async function vote(
     { signerAddress }
   );
 
+  let proposalState = await governor.state(proposalId);
+  console.log(`Before - Proposal State: ${proposalState}`);
+
   const voteTx = await governor.castVoteWithReason(
     proposalId,
     decision,
     reason
   );
-  await voteTx.wait();
+  const receipt = await voteTx.wait();
 
-  console.log(`Proposed with proposal ID:\n  ${proposalId}`);
+  const events = receipt!.logs.filter(
+    (log) => log instanceof EventLog
+  ) as EventLog[];
+
+  console.log(
+    `Events reveived: ${JSON.stringify(events.map((event) => event.eventName))}`
+  );
+  console.log(
+    `Events args: ${JSON.stringify(
+      events.map((event) => event.args.toString())
+    )}`
+  );
 
   // Moving forward to the end of the voting period
   if (DEVELOPMENT_CHAINS.includes(network.name)) {
@@ -30,8 +45,8 @@ export async function vote(
   }
 
   // Check the proposal state
-  const proposalState = await governor.state(proposalId);
-  console.log(`Current Proposal State: ${proposalState}`);
+  proposalState = await governor.state(proposalId);
+  console.log(`After - Proposal State: ${proposalState}`);
   return proposalState;
 }
 
