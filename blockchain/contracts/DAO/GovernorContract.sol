@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-import "../OpenZeppelin/governance/Governor.sol";
-import "../OpenZeppelin/governance/extensions/GovernorCountingSimple.sol";
-import "../OpenZeppelin/governance/extensions/GovernorVotes.sol";
-import "../OpenZeppelin/governance/extensions/GovernorVotesQuorumFraction.sol";
-import "../OpenZeppelin/governance/extensions/GovernorSettings.sol";
+import "./governance/extensions/GovernorCountingSimple.sol";
+import "./governance/extensions/GovernorVotes.sol";
+import "./governance/extensions/GovernorVotesQuorumFraction.sol";
+import "./governance/extensions/GovernorSettings.sol";
+import "./governance/Governor.sol";
 
 contract GovernorContract is
     Governor,
     GovernorSettings,
     GovernorCountingSimple,
     GovernorVotes,
-    GovernorVotesQuorumFraction
+    GovernorVotesQuorumFraction,
 {
     constructor(
         IVotes _token,

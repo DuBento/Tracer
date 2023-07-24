@@ -1,19 +1,17 @@
-// SPDX-License-Identifier: Apache-2.0
-// Based on Openzeppelin Contracts (last updated v4.9.1)
+// SPDX-License-Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.1) (governance/Governor.sol)
 
 pragma solidity ^0.8.19;
 
-import "../OpenZeppelin/token/ERC721/IERC721Receiver.sol";
-import "../OpenZeppelin/token/ERC1155/IERC1155Receiver.sol";
-import "../OpenZeppelin/utils/cryptography/ECDSA.sol";
-import "../OpenZeppelin/utils/cryptography/EIP712.sol";
-import "../OpenZeppelin/utils/introspection/ERC165.sol";
-import "../OpenZeppelin/utils/math/SafeCast.sol";
-import "../OpenZeppelin/utils/structs/DoubleEndedQueue.sol";
-import "../OpenZeppelin/utils/Address.sol";
-import "../OpenZeppelin/utils/Context.sol";
-import "../OpenZeppelin/governance/IGovernor.sol";
-
+import "../../OpenZeppelin/token/ERC721/IERC721Receiver.sol";
+import "../../OpenZeppelin/token/ERC1155/IERC1155Receiver.sol";
+import "../../OpenZeppelin/utils/cryptography/ECDSA.sol";
+import "../../OpenZeppelin/utils/cryptography/EIP712.sol";
+import "../../OpenZeppelin/utils/introspection/ERC165.sol";
+import "../../OpenZeppelin/utils/math/SafeCast.sol";
+import "../../OpenZeppelin/utils/Address.sol";
+import "../../OpenZeppelin/utils/Context.sol";
+import "./IGovernor.sol";
 /**
  * @dev Core of the governance system, designed to be extended though various modules.
  *
@@ -23,7 +21,7 @@ import "../OpenZeppelin/governance/IGovernor.sol";
  * - A voting module must implement {_getVotes}
  * - Additionally, {votingPeriod} must also be implemented
  *
- * Modified version of governance contracts from OpenZeppelin v4.9.1
+ * _Available since v4.3._
  */
 abstract contract Governor is
     Context,
