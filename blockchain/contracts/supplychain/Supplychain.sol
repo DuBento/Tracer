@@ -4,10 +4,12 @@ pragma solidity ^0.8.19;
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
 import "../DAO/UserRegistry.sol";
+import "../OpenZeppelin/interfaces/IERC6372.sol";
+import "../OpenZeppelin/utils/math/SafeCast.sol";
 
 // import "../../node_modules/hardhat/console.sol";
 
-contract Supplychain is Ownable, ConformityState {
+contract Supplychain is Ownable, ConformityState, IERC6372 {
     // Type declarations
     struct Batch {
         uint256 id;
@@ -21,7 +23,7 @@ contract Supplychain is Ownable, ConformityState {
     struct Update {
         address owner;
         string documentURI;
-        uint256 ts;
+        uint48 ts; // as specified in EIP-6372
     }
 
     struct Transaction {
@@ -143,12 +145,26 @@ contract Supplychain is Ownable, ConformityState {
         batch.currentOwner = receiver_;
     }
 
+    /**
+     * @dev Clock (as specified in EIP-6372) is set to timestamp.
+     */
+    function clock() public view virtual override returns (uint48) {
+        return SafeCast.toUint48(block.timestamp);
+    }
+
+    /**
+     * @dev Machine-readable description of the clock as specified in EIP-6372.
+     */
+    function CLOCK_MODE() public view virtual override returns (string memory) {
+        return "mode=timestamp";
+    }
+
     //* internal
 
     function _newUpdate(
         string memory documentURI_
     ) internal view returns (Update memory) {
-        return Update(msg.sender, documentURI_, block.timestamp);
+        return Update(msg.sender, documentURI_, clock());
     }
 
     function _newTransaction(
