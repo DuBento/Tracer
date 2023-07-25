@@ -11,6 +11,7 @@ import "../../OpenZeppelin/utils/introspection/ERC165.sol";
 import "../../OpenZeppelin/utils/math/SafeCast.sol";
 import "../../OpenZeppelin/utils/Address.sol";
 import "../../OpenZeppelin/utils/Context.sol";
+import "./extensions/GovernorExecutor.sol";
 import "./IGovernor.sol";
 
 /**
@@ -25,6 +26,7 @@ import "./IGovernor.sol";
  * Modified version of governance contracts from OpenZeppelin v4.9.1
  */
 abstract contract Governor is
+    GovernorExecutor,
     Context,
     ERC165,
     EIP712,
@@ -81,7 +83,10 @@ abstract contract Governor is
     /**
      * @dev Sets the value for {name} and {version}
      */
-    constructor(string memory name_) EIP712(name_, version()) {
+    constructor(
+        string memory name_,
+        Executor executor_
+    ) EIP712(name_, version()) GovernorExecutor(executor_) {
         _name = name_;
     }
 
@@ -441,62 +446,6 @@ abstract contract Governor is
     }
 
     /**
-     * @dev Internal execution mechanism. Can be overridden to implement different execution mechanism
-     */
-    function _execute(
-        uint256 /* proposalId */,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 /*descriptionHash*/
-    ) internal virtual {
-        for (uint256 i = 0; i < targets.length; ++i) {
-            (bool success, bytes memory returndata) = targets[i].call{
-                value: values[i]
-            }(calldatas[i]);
-            Address.verifyCallResult(success, returndata);
-        }
-    }
-
-    // TODO remove
-
-    // /**
-    //  * @dev Hook before execution is triggered.
-    //  */
-    // function _beforeExecute(
-    //     uint256 /* proposalId */,
-    //     address[] memory targets,
-    //     uint256[] memory /* values */,
-    //     bytes[] memory calldatas,
-    //     bytes32 /*descriptionHash*/
-    // ) internal virtual {
-    //     if (_executor() != address(this)) {
-    //         for (uint256 i = 0; i < targets.length; ++i) {
-    //             if (targets[i] == address(this)) {
-    //                 _governanceCall.pushBack(keccak256(calldatas[i]));
-    //             }
-    //         }
-    //     }
-    // }
-
-    // /**
-    //  * @dev Hook after execution is triggered.
-    //  */
-    // function _afterExecute(
-    //     uint256 /* proposalId */,
-    //     address[] memory /* targets */,
-    //     uint256[] memory /* values */,
-    //     bytes[] memory /* calldatas */,
-    //     bytes32 /*descriptionHash*/
-    // ) internal virtual {
-    //     if (_executor() != address(this)) {
-    //         if (!_governanceCall.empty()) {
-    //             _governanceCall.clear();
-    //         }
-    //     }
-    // }
-
-    /**
      * @dev Internal cancel mechanism: locks up the proposal timer, preventing it from being re-submitted. Marks it as
      * canceled to allow distinguishing it from executed proposals.
      *
@@ -717,15 +666,6 @@ abstract contract Governor is
             data
         );
         Address.verifyCallResult(success, returndata);
-    }
-
-    // TODO remove
-    /**
-     * @dev Address through which the governor executes action. Will be overloaded by module that execute actions
-     * through another contract such as a timelock.
-     */
-    function _executor() internal view virtual returns (address) {
-        return address(this);
     }
 
     /**
