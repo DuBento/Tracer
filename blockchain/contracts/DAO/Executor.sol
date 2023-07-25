@@ -50,6 +50,11 @@ contract Executor is Ownable {
     // Functions
     //* constructor
     //* receive function
+    /**
+     * @dev Contract might receive/hold ETH as part of the maintenance process.
+     */
+    receive() external payable {}
+
     //* fallback function (if exists)
     //* external
     //* public
