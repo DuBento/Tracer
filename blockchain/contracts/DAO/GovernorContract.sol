@@ -5,7 +5,6 @@ import "./governance/extensions/GovernorCountingSimple.sol";
 import "./governance/extensions/GovernorVotes.sol";
 import "./governance/extensions/GovernorVotesQuorumFraction.sol";
 import "./governance/extensions/GovernorSettings.sol";
-import "./governance/extensions/GovernorExecutor.sol";
 import "./governance/Governor.sol";
 
 contract GovernorContract is
@@ -13,8 +12,7 @@ contract GovernorContract is
     GovernorSettings,
     GovernorCountingSimple,
     GovernorVotes,
-    GovernorVotesQuorumFraction,
-    GovernorExecutor
+    GovernorVotesQuorumFraction
 {
     constructor(
         IVotes token_,
@@ -23,11 +21,10 @@ contract GovernorContract is
         uint256 votingPeriod_,
         uint256 quorumFraction_
     )
-        Governor("GovernorContract")
+        Governor("GovernorContract", executor_)
         GovernorSettings(votingDelay_, votingPeriod_, 0)
         GovernorVotes(token_)
         GovernorVotesQuorumFraction(quorumFraction_)
-        GovernorExecutor(executor_)
     {}
 
     // The following functions are overrides required by Solidity.
@@ -68,24 +65,5 @@ contract GovernorContract is
         returns (uint256)
     {
         return super.proposalThreshold();
-    }
-
-    function _execute(
-        uint256 proposalId,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
-    ) internal override(Governor, GovernorExecutor) {
-        super._execute(proposalId, targets, values, calldatas, descriptionHash);
-    }
-
-    function _executor()
-        internal
-        view
-        override(Governor, GovernorExecutor)
-        returns (address)
-    {
-        return super._executor();
     }
 }

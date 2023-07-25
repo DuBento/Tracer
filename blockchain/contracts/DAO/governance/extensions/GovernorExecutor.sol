@@ -3,9 +3,7 @@
 
 pragma solidity ^0.8.19;
 
-import "../../../custom/Ownable.sol";
 import "../../Executor.sol";
-import "../Governor.sol";
 
 /**
  * @dev Extension of {Governor} that binds the execution process to an instance of {Executer}.
@@ -13,7 +11,7 @@ import "../Governor.sol";
  * Using this model means the proposal will be operated by the {Executor} and not by the {Governor}. Thus,
  * the assets and permissions must be attached to the {Executor}
  */
-abstract contract GovernorExecutor is Governor, Ownable {
+abstract contract GovernorExecutor {
     Executor private _executorContract;
 
     // Type declarations
@@ -45,7 +43,7 @@ abstract contract GovernorExecutor is Governor, Ownable {
     /**
      * @dev Address through which the governor executes action. In this case, the timelock.
      */
-    function _executor() internal view virtual override returns (address) {
+    function _executor() internal view virtual returns (address) {
         return address(_executorContract);
     }
 
@@ -58,7 +56,7 @@ abstract contract GovernorExecutor is Governor, Ownable {
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) internal virtual override {
+    ) internal virtual {
         // execute
         _executorContract.executeBatch{value: msg.value}(
             targets,
@@ -69,6 +67,9 @@ abstract contract GovernorExecutor is Governor, Ownable {
         );
     }
 
+    /**
+     * @dev Update executor contract address.
+     */
     function _updateExecutor(Executor newExecutor) internal {
         emit ExecutorChange(address(_executorContract), address(newExecutor));
         _executorContract = newExecutor;
