@@ -5,8 +5,6 @@ pragma solidity ^0.8.19;
 
 import "../../OpenZeppelin/token/ERC721/IERC721Receiver.sol";
 import "../../OpenZeppelin/token/ERC1155/IERC1155Receiver.sol";
-import "../../OpenZeppelin/utils/cryptography/ECDSA.sol";
-import "../../OpenZeppelin/utils/cryptography/EIP712.sol";
 import "../../OpenZeppelin/utils/introspection/ERC165.sol";
 import "../../OpenZeppelin/utils/math/SafeCast.sol";
 import "../../OpenZeppelin/utils/Address.sol";
@@ -27,18 +25,10 @@ import "./IGovernor.sol";
 abstract contract Governor is
     GovernorExecutor,
     ERC165,
-    EIP712,
     IGovernor,
     IERC721Receiver,
     IERC1155Receiver
 {
-    bytes32 public constant BALLOT_TYPEHASH =
-        keccak256("Ballot(uint256 proposalId,uint8 support)");
-    bytes32 public constant EXTENDED_BALLOT_TYPEHASH =
-        keccak256(
-            "ExtendedBallot(uint256 proposalId,uint8 support,string reason,bytes params)"
-        );
-
     struct ProposalCore {
         uint64 voteStart;
         address proposer;
@@ -78,7 +68,7 @@ abstract contract Governor is
     constructor(
         string memory name_,
         IExecutor executor_
-    ) EIP712(name_, version()) GovernorExecutor(executor_) {
+    ) GovernorExecutor(executor_) {
         _name = name_;
     }
 
@@ -125,13 +115,6 @@ abstract contract Governor is
      */
     function name() public view virtual override returns (string memory) {
         return _name;
-    }
-
-    /**
-     * @dev See {IGovernor-version}.
-     */
-    function version() public view virtual override returns (string memory) {
-        return "1";
     }
 
     /**
@@ -449,27 +432,6 @@ abstract contract Governor is
     ) public virtual override returns (uint256) {
         address voter = msg.sender;
         return _castVote(proposalId, voter, support, reason);
-    }
-
-    /**
-     * @dev See {IGovernor-castVoteBySig}.
-     */
-    function castVoteBySig(
-        uint256 proposalId,
-        uint8 support,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public virtual override returns (uint256) {
-        address voter = ECDSA.recover(
-            _hashTypedDataV4(
-                keccak256(abi.encode(BALLOT_TYPEHASH, proposalId, support))
-            ),
-            v,
-            r,
-            s
-        );
-        return _castVote(proposalId, voter, support, "");
     }
 
     /**
