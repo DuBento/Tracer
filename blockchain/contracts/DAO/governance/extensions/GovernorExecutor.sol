@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.19;
 
-import "../../Executor.sol";
+import "../../IExecutor.sol";
 
 /**
  * @dev Extension of {Governor} that binds the execution process to an instance of {Executer}.
@@ -12,7 +12,7 @@ import "../../Executor.sol";
  * the assets and permissions must be attached to the {Executor}
  */
 abstract contract GovernorExecutor {
-    Executor private _executorContract;
+    IExecutor private _executorContract;
 
     // Type declarations
     // State variables
@@ -30,7 +30,7 @@ abstract contract GovernorExecutor {
     /**
      * @dev Set the executor.
      */
-    constructor(Executor executorAddress) {
+    constructor(IExecutor executorAddress) {
         _executorContract = executorAddress;
     }
 
@@ -51,7 +51,6 @@ abstract contract GovernorExecutor {
      * @dev Execute function that run the ready proposal through the executor.
      */
     function _execute(
-        uint256 proposalId,
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
@@ -70,7 +69,7 @@ abstract contract GovernorExecutor {
     /**
      * @dev Update executor contract address.
      */
-    function _updateExecutor(Executor newExecutor) internal {
+    function _updateExecutor(IExecutor newExecutor) internal {
         emit ExecutorChange(address(_executorContract), address(newExecutor));
         _executorContract = newExecutor;
     }

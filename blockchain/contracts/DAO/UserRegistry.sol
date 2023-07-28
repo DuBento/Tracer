@@ -3,14 +3,15 @@ pragma solidity ^0.8.19;
 
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
+import "./IUserRegistry.sol";
 
-contract UserRegistry is Ownable, ConformityState {
+contract UserRegistry is IUserRegistry, Ownable, ConformityState {
     // Type declarations
     struct Member {
         address addr;
         string name;
         string infoURI;
-        uint256 votingPower;
+        uint8 votingPower;
         ConformityState.State state;
         address managingContractAddress;
     }
@@ -24,30 +25,17 @@ contract UserRegistry is Ownable, ConformityState {
     }
 
     // State variables
+    uint256 public memberCount;
+
     mapping(address => Member) public members;
     mapping(address => Actor) public actors;
 
     address private supplychainFactory;
-    address private governorToken;
-
-    // Events
-
-    // Errors
-    error UserAlreadyExists();
-    error MemberDoesNotExist();
-    error ActorDoesNotExist();
-    error TransactionNotFromOriginalActorAddress();
-    error UserCannotManageContract();
 
     // Modifiers
     modifier onlyOwnerOrFactoryContract() {
         if (!isOwner() && msg.sender != supplychainFactory)
             revert UserNotOwner();
-        _;
-    }
-
-    modifier onlyOwnerOrTokenContract() {
-        if (!isOwner() && msg.sender != governorToken) revert UserNotOwner();
         _;
     }
 
@@ -69,18 +57,21 @@ contract UserRegistry is Ownable, ConformityState {
     //* fallback function (if exists)
 
     //* external
-    function setSupplychainFactoryAddress(address addr_) external onlyOwner {
+    function setSupplychainFactoryAddress(
+        address addr_
+    ) external override onlyOwner {
         supplychainFactory = addr_;
     }
 
-    function setGovernorTokenAddress(address addr_) external onlyOwner {
-        governorToken = addr_;
+    //* public
+
+    function getVotes(address member_) public view override returns (uint8) {
+        return members[member_].votingPower;
     }
 
-    //* public
     function getManagingContractAddress(
         address addr_
-    ) public view returns (address) {
+    ) public view override returns (address) {
         return members[addr_].managingContractAddress;
     }
 
@@ -88,9 +79,12 @@ contract UserRegistry is Ownable, ConformityState {
         address addr_,
         string calldata name_,
         string calldata infoURI_,
-        uint256 votingPower_
-    ) public onlyOwnerOrTokenContract {
+        uint8 votingPower_
+    ) public override onlyOwner {
         _assertMemberDoesNotExist(addr_);
+        _assertValidVotingPower(votingPower_);
+
+        memberCount++;
 
         Member storage member = members[addr_];
         member.addr = addr_;
@@ -104,7 +98,7 @@ contract UserRegistry is Ownable, ConformityState {
         address addr_,
         string calldata name_,
         string calldata infoURI_
-    ) public onlyOwner {
+    ) public override onlyOwner {
         _assertMemberExists(addr_);
 
         members[addr_].name = name_;
@@ -114,7 +108,7 @@ contract UserRegistry is Ownable, ConformityState {
     function updateMember(
         address addr_,
         address managingContractAddress_
-    ) public onlyOwnerOrFactoryContract {
+    ) public override onlyOwnerOrFactoryContract {
         _assertMemberExists(addr_);
 
         members[addr_].managingContractAddress = managingContractAddress_;
@@ -123,7 +117,7 @@ contract UserRegistry is Ownable, ConformityState {
     function updateMemberState(
         address addr_,
         ConformityState.State newState_
-    ) public onlyOwner {
+    ) public override onlyOwner {
         ConformityState.assertValidConformityState(newState_);
         _assertMemberExists(addr_);
 
@@ -134,7 +128,7 @@ contract UserRegistry is Ownable, ConformityState {
         address addr_,
         string calldata name_,
         string calldata infoURI_
-    ) public {
+    ) public override {
         _assertActorDoesNotExist(addr_);
 
         Actor storage actor = actors[addr_];
@@ -148,7 +142,7 @@ contract UserRegistry is Ownable, ConformityState {
         address addr_,
         string calldata name_,
         string calldata infoURI_
-    ) public {
+    ) public override {
         _assertActorExists(addr_);
         _assertSenderIsActor(addr_);
 
@@ -159,7 +153,7 @@ contract UserRegistry is Ownable, ConformityState {
     function updateActorState(
         address addr_,
         ConformityState.State newState_
-    ) public onlyOwner {
+    ) public override onlyOwner {
         ConformityState.assertValidConformityState(newState_);
         _assertActorExists(addr_);
 
@@ -169,14 +163,14 @@ contract UserRegistry is Ownable, ConformityState {
     function addContractToActor(
         address contract_,
         address actor_
-    ) public onlyOwnerOrFactoryOrManager(contract_) {
+    ) public override onlyOwnerOrFactoryOrManager(contract_) {
         actors[actor_].participatingContracts.push(contract_);
     }
 
     function checkAccess(
         address contract_,
         address addr_
-    ) public view returns (bool) {
+    ) public view override returns (bool) {
         address[] memory contracts = actors[addr_].participatingContracts;
         for (uint i = 0; i < contracts.length; i++) {
             if (contracts[i] == contract_) {
@@ -218,5 +212,10 @@ contract UserRegistry is Ownable, ConformityState {
     function _assertSenderIsActor(address addr_) internal view {
         if (actors[addr_].addr != msg.sender)
             revert TransactionNotFromOriginalActorAddress();
+    }
+
+    function _assertValidVotingPower(uint8 votingPower_) internal pure {
+        if (votingPower_ > MAX_VOTING_POWER)
+            revert InvalidVotingPower(votingPower_);
     }
 }

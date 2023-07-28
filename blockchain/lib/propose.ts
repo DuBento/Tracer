@@ -1,10 +1,9 @@
-import { ethers, getChainId, network } from "hardhat";
+import { ethers, getChainId } from "hardhat";
 import {
   GovernorContract,
   ProposalCreatedEvent,
 } from "../artifacts-frontend/typechain/DAO/GovernorContract";
 import * as utils from "../lib/utils";
-import { DEVELOPMENT_CHAINS, VOTING_DELAY } from "../properties";
 
 export async function propose(
   proposalTarget: string,
@@ -35,11 +34,6 @@ export async function propose(
     ) as ProposalCreatedEvent.Log
   )?.args.proposalId;
   console.log(`Proposed with proposal ID:\n  ${proposalId}`);
-
-  // If working on a development chain, we will push forward till we get to the voting period.
-  if (DEVELOPMENT_CHAINS.includes(network.name)) {
-    await utils.increaseBlocks(VOTING_DELAY + 1);
-  }
 
   const proposalState = await governor.state(proposalId);
   const proposalSnapShot = await governor.proposalSnapshot(proposalId);

@@ -15,15 +15,9 @@ import { vote } from "./vote";
 
 const getEncodedFunctionCall = async (addr: string) =>
   await utils.encodeFunctionCall(
-    "GovernorToken",
+    "UserRegistry",
     USER_REGISTRY_ADD_MEMBER_METHOD,
-    [
-      await utils.getContractAddress("UserRegistry"),
-      addr,
-      MEMBER_NAME,
-      MEMBER_INFO_URI,
-      MEMBER_VOTING_POWER.toString(),
-    ]
+    [addr, MEMBER_NAME, MEMBER_INFO_URI, MEMBER_VOTING_POWER.toString()]
   );
 
 export async function proposeNewMember(
@@ -33,7 +27,7 @@ export async function proposeNewMember(
   const encodedFunctionCall = await getEncodedFunctionCall(memberAddress);
 
   const proposalId = await propose(
-    await utils.getContractAddress("GovernorToken"),
+    await utils.getContractAddress("UserRegistry"),
     encodedFunctionCall,
     USER_REGISTRY_ADD_MEMBER_DESCRIPTION,
     signerAddress
@@ -53,7 +47,7 @@ async function executeNewMemberProposal(memberAddress: string) {
   const encodedFunctionCall = await getEncodedFunctionCall(memberAddress);
 
   await execute(
-    await utils.getContractAddress("GovernorToken"),
+    await utils.getContractAddress("UserRegistry"),
     encodedFunctionCall,
     USER_REGISTRY_ADD_MEMBER_DESCRIPTION
   );
