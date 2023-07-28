@@ -8,7 +8,8 @@ export const PROPOSAL_VOTE_DESCRIPTION = "Vote for test proposal";
 
 export const MEMBER_NAME = "Test member";
 export const MEMBER_INFO_URI = "<member test uri>";
-export const MEMBER_VOTING_POWER = 1;
+// bigger than quorum and less than max voting power. For development, able to pass proposals with only one member
+export const MEMBER_VOTING_POWER = 49;
 
 export const ACTOR_NAME = "Test actor";
 export const ACTOR_INFO_URI = "<actor test uri>";

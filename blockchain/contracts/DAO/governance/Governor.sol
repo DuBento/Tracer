@@ -10,7 +10,6 @@ import "../../OpenZeppelin/utils/cryptography/EIP712.sol";
 import "../../OpenZeppelin/utils/introspection/ERC165.sol";
 import "../../OpenZeppelin/utils/math/SafeCast.sol";
 import "../../OpenZeppelin/utils/Address.sol";
-import "../../OpenZeppelin/utils/Context.sol";
 import "./extensions/GovernorExecutor.sol";
 import "./IGovernor.sol";
 
@@ -27,7 +26,6 @@ import "./IGovernor.sol";
  */
 abstract contract Governor is
     GovernorExecutor,
-    Context,
     ERC165,
     EIP712,
     IGovernor,
@@ -41,16 +39,10 @@ abstract contract Governor is
             "ExtendedBallot(uint256 proposalId,uint8 support,string reason,bytes params)"
         );
 
-    // solhint-disable var-name-mixedcase
     struct ProposalCore {
-        // --- start retyped from Timers.BlockNumber at offset 0x00 ---
         uint64 voteStart;
         address proposer;
-        bytes4 __gap_unused0;
-        // --- start retyped from Timers.BlockNumber at offset 0x20 ---
         uint64 voteEnd;
-        bytes24 __gap_unused1;
-        // --- Remaining fields starting at offset 0x40 ---------------
         bool executed;
         bool canceled;
     }
@@ -74,8 +66,8 @@ abstract contract Governor is
      * governance protocol (since v4.6).
      */
     modifier onlyGovernance() {
-        if (_executor() != _msgSender()) {
-            revert GovernorOnlyExecutor(_msgSender());
+        if (_executor() != msg.sender) {
+            revert GovernorOnlyExecutor(msg.sender);
         }
         _;
     }
@@ -85,7 +77,7 @@ abstract contract Governor is
      */
     constructor(
         string memory name_,
-        Executor executor_
+        IExecutor executor_
     ) EIP712(name_, version()) GovernorExecutor(executor_) {
         _name = name_;
     }
@@ -109,8 +101,7 @@ abstract contract Governor is
             this.proposalProposer.selector;
 
         bytes4 governorParamsId = this.castVoteWithReasonAndParams.selector ^
-            this.castVoteWithReasonAndParamsBySig.selector ^
-            this.getVotesWithParams.selector;
+            this.castVoteWithReasonAndParamsBySig.selector;
 
         // The original interface id in v4.3.
         bytes4 governor43Id = type(IGovernor).interfaceId ^
@@ -197,29 +188,21 @@ abstract contract Governor is
         }
 
         uint256 currentTimepoint = clock();
-
-        if (snapshot >= currentTimepoint) {
-            return ProposalState.Pending;
-        }
-
         uint256 deadline = proposalDeadline(proposalId);
 
-        if (deadline >= currentTimepoint) {
+        if (deadline < currentTimepoint) {
+            return ProposalState.Expired;
+        }
+
+        if (_quorumReached(proposalId)) {
+            if (_voteSucceeded(proposalId)) {
+                return ProposalState.Succeeded;
+            } else {
+                return ProposalState.Defeated;
+            }
+        } else {
             return ProposalState.Active;
         }
-
-        if (_quorumReached(proposalId) && _voteSucceeded(proposalId)) {
-            return ProposalState.Succeeded;
-        } else {
-            return ProposalState.Defeated;
-        }
-    }
-
-    /**
-     * @dev Part of the Governor Bravo's interface: _"The number of votes required in order for a voter to become a proposer"_.
-     */
-    function proposalThreshold() public view virtual returns (uint256) {
-        return 0;
     }
 
     /**
@@ -264,13 +247,9 @@ abstract contract Governor is
     ) internal view virtual returns (bool);
 
     /**
-     * @dev Get the voting weight of `account` at a specific `timepoint`, for a vote as described by `params`.
+     * @dev Get the voting weight of `account`.
      */
-    function _getVotes(
-        address account,
-        uint256 timepoint,
-        bytes memory params
-    ) internal view virtual returns (uint256);
+    function _getVotes(address account) internal view virtual returns (uint8);
 
     /**
      * @dev Register a vote for `proposalId` by `account` with a given `support`, voting `weight` and voting `params`.
@@ -304,26 +283,9 @@ abstract contract Governor is
         bytes[] memory calldatas,
         string memory description
     ) public virtual override returns (uint256) {
-        address proposer = _msgSender();
-        require(
-            _isValidDescriptionForProposer(proposer, description),
-            "Governor: proposer restricted"
-        );
+        address proposer = msg.sender;
 
         uint256 currentTimepoint = clock();
-
-        // Avoid stack too deep
-        {
-            uint256 proposerVotes = getVotes(proposer, currentTimepoint - 1);
-            uint256 votesThreshold = proposalThreshold();
-            if (proposerVotes < votesThreshold) {
-                revert GovernorInsufficientProposerVotes(
-                    proposer,
-                    proposerVotes,
-                    votesThreshold
-                );
-            }
-        }
 
         uint256 proposalId = hashProposal(
             targets,
@@ -351,17 +313,14 @@ abstract contract Governor is
             );
         }
 
-        uint256 snapshot = currentTimepoint + votingDelay();
-        uint256 deadline = snapshot + votingPeriod();
+        uint256 deadline = currentTimepoint + votingPeriod();
 
         _proposals[proposalId] = ProposalCore({
             proposer: proposer,
-            voteStart: SafeCast.toUint64(snapshot),
+            voteStart: SafeCast.toUint64(currentTimepoint),
             voteEnd: SafeCast.toUint64(deadline),
             executed: false,
-            canceled: false,
-            __gap_unused0: 0,
-            __gap_unused1: 0
+            canceled: false
         });
 
         emit ProposalCreated(
@@ -371,7 +330,7 @@ abstract contract Governor is
             values,
             new string[](targets.length),
             calldatas,
-            snapshot,
+            currentTimepoint,
             deadline,
             description
         );
@@ -396,22 +355,18 @@ abstract contract Governor is
         );
 
         ProposalState currentState = state(proposalId);
-        if (
-            currentState != ProposalState.Succeeded &&
-            currentState != ProposalState.Queued
-        ) {
+        if (currentState != ProposalState.Succeeded) {
             revert GovernorUnexpectedProposalState(
                 proposalId,
                 currentState,
-                _encodeStateBitmap(ProposalState.Succeeded) |
-                    _encodeStateBitmap(ProposalState.Queued)
+                _encodeStateBitmap(ProposalState.Succeeded)
             );
         }
         _proposals[proposalId].executed = true;
 
         emit ProposalExecuted(proposalId);
 
-        _execute(proposalId, targets, values, calldatas, descriptionHash);
+        _execute(targets, values, calldatas, descriptionHash);
 
         return proposalId;
     }
@@ -431,16 +386,12 @@ abstract contract Governor is
             calldatas,
             descriptionHash
         );
-        ProposalState currentState = state(proposalId);
-        if (currentState != ProposalState.Pending) {
-            revert GovernorUnexpectedProposalState(
-                proposalId,
-                currentState,
-                _encodeStateBitmap(ProposalState.Pending)
-            );
+        uint256 voteCount = getProposalVotesCount(proposalId);
+        if (voteCount != 0) {
+            revert GovernorProposalAlreadyVotedOn(proposalId, voteCount);
         }
-        if (_msgSender() != proposalProposer(proposalId)) {
-            revert GovernorOnlyProposer(_msgSender());
+        if (msg.sender != proposalProposer(proposalId)) {
+            revert GovernorOnlyProposer(msg.sender);
         }
         return _cancel(targets, values, calldatas, descriptionHash);
     }
@@ -487,21 +438,9 @@ abstract contract Governor is
      * @dev See {IGovernor-getVotes}.
      */
     function getVotes(
-        address account,
-        uint256 timepoint
-    ) public view virtual override returns (uint256) {
-        return _getVotes(account, timepoint, _defaultParams());
-    }
-
-    /**
-     * @dev See {IGovernor-getVotesWithParams}.
-     */
-    function getVotesWithParams(
-        address account,
-        uint256 timepoint,
-        bytes memory params
-    ) public view virtual override returns (uint256) {
-        return _getVotes(account, timepoint, params);
+        address account
+    ) public view virtual override returns (uint8) {
+        return _getVotes(account);
     }
 
     /**
@@ -511,7 +450,7 @@ abstract contract Governor is
         uint256 proposalId,
         uint8 support
     ) public virtual override returns (uint256) {
-        address voter = _msgSender();
+        address voter = msg.sender;
         return _castVote(proposalId, voter, support, "");
     }
 
@@ -523,7 +462,7 @@ abstract contract Governor is
         uint8 support,
         string calldata reason
     ) public virtual override returns (uint256) {
-        address voter = _msgSender();
+        address voter = msg.sender;
         return _castVote(proposalId, voter, support, reason);
     }
 
@@ -536,7 +475,7 @@ abstract contract Governor is
         string calldata reason,
         bytes memory params
     ) public virtual override returns (uint256) {
-        address voter = _msgSender();
+        address voter = msg.sender;
         return _castVote(proposalId, voter, support, reason, params);
     }
 
@@ -622,7 +561,6 @@ abstract contract Governor is
         string memory reason,
         bytes memory params
     ) internal virtual returns (uint256) {
-        ProposalCore storage proposal = _proposals[proposalId];
         ProposalState currentState = state(proposalId);
         if (currentState != ProposalState.Active) {
             revert GovernorUnexpectedProposalState(
@@ -632,7 +570,7 @@ abstract contract Governor is
             );
         }
 
-        uint256 weight = _getVotes(account, proposal.voteStart, params);
+        uint256 weight = _getVotes(account);
         _countVote(proposalId, account, support, weight, params);
 
         if (params.length == 0) {
@@ -734,65 +672,6 @@ abstract contract Governor is
         ProposalState proposalState
     ) internal pure returns (bytes32) {
         return bytes32(1 << uint8(proposalState));
-    }
-
-    /*
-     * @dev Check if the proposer is authorized to submit a proposal with the given description.
-     *
-     * If the proposal description ends with `#proposer=0x???`, where `0x???` is an address written as a hex string
-     * (case insensitive), then the submission of this proposal will only be authorized to said address.
-     *
-     * This is used for frontrunning protection. By adding this pattern at the end of their proposal, one can ensure
-     * that no other address can submit the same proposal. An attacker would have to either remove or change that part,
-     * which would result in a different proposal id.
-     *
-     * If the description does not match this pattern, it is unrestricted and anyone can submit it. This includes:
-     * - If the `0x???` part is not a valid hex string.
-     * - If the `0x???` part is a valid hex string, but does not contain exactly 40 hex digits.
-     * - If it ends with the expected suffix followed by newlines or other whitespace.
-     * - If it ends with some other similar suffix, e.g. `#other=abc`.
-     * - If it does not end with any such suffix.
-     */
-    function _isValidDescriptionForProposer(
-        address proposer,
-        string memory description
-    ) internal view virtual returns (bool) {
-        uint256 len = bytes(description).length;
-
-        // Length is too short to contain a valid proposer suffix
-        if (len < 52) {
-            return true;
-        }
-
-        // Extract what would be the `#proposer=0x` marker beginning the suffix
-        bytes12 marker;
-        assembly {
-            // - Start of the string contents in memory = description + 32
-            // - First character of the marker = len - 52
-            //   - Length of "#proposer=0x0000000000000000000000000000000000000000" = 52
-            // - We read the memory word starting at the first character of the marker:
-            //   - (description + 32) + (len - 52) = description + (len - 20)
-            // - Note: Solidity will ignore anything past the first 12 bytes
-            marker := mload(add(description, sub(len, 20)))
-        }
-
-        // If the marker is not found, there is no proposer suffix to check
-        if (marker != bytes12("#proposer=0x")) {
-            return true;
-        }
-
-        // Parse the 40 characters following the marker as uint160
-        uint160 recovered = 0;
-        for (uint256 i = len - 40; i < len; ++i) {
-            (bool isHex, uint8 value) = _tryHexToUint(bytes(description)[i]);
-            // If any of the characters is not a hex digit, ignore the suffix entirely
-            if (!isHex) {
-                return true;
-            }
-            recovered = (recovered << 4) | value;
-        }
-
-        return recovered == uint160(proposer);
     }
 
     /**

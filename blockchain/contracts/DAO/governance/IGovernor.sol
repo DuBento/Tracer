@@ -13,12 +13,10 @@ import "../../OpenZeppelin/interfaces/IERC6372.sol";
  */
 abstract contract IGovernor is IERC165, IERC6372 {
     enum ProposalState {
-        Pending,
         Active,
         Canceled,
         Defeated,
         Succeeded,
-        Queued,
         Expired,
         Executed
     }
@@ -79,13 +77,9 @@ abstract contract IGovernor is IERC165, IERC6372 {
     error GovernorInvalidVotingPeriod(uint256 votingPeriod);
 
     /**
-     * @dev The `proposer` does not have the required votes to operate on a proposal.
+     * @dev Cannot cancel proposal because it has been voted on.
      */
-    error GovernorInsufficientProposerVotes(
-        address proposer,
-        uint256 votes,
-        uint256 threshold
-    );
+    error GovernorProposalAlreadyVotedOn(uint256 proposalId, uint256 votes);
 
     /**
      * @dev The vote type used is not valid for the corresponding counting module.
@@ -243,16 +237,6 @@ abstract contract IGovernor is IERC165, IERC6372 {
 
     /**
      * @notice module:user-config
-     * @dev Delay, between the proposal is created and the vote starts. The unit this duration is expressed in depends
-     * on the clock (see EIP-6372) this contract uses.
-     *
-     * This can be increased to leave time for users to buy voting power, or delegate it, before the voting of a
-     * proposal starts.
-     */
-    function votingDelay() public view virtual returns (uint256);
-
-    /**
-     * @notice module:user-config
      * @dev Delay between the vote start and vote end. The unit this duration is expressed in depends on the clock
      * (see EIP-6372) this contract uses.
      *
@@ -264,33 +248,17 @@ abstract contract IGovernor is IERC165, IERC6372 {
     /**
      * @notice module:user-config
      * @dev Minimum number of cast voted required for a proposal to be successful.
-     *
-     * NOTE: The `timepoint` parameter corresponds to the snapshot used for counting vote. This allows to scale the
-     * quorum depending on values such as the totalSupply of a token at this timepoint (see {ERC20Votes}).
      */
-    function quorum(uint256 timepoint) public view virtual returns (uint256);
+    function quorum() public view virtual returns (uint8);
 
     /**
      * @notice module:reputation
-     * @dev Voting power of an `account` at a specific `timepoint`.
+     * @dev Voting power of an `account`.
      *
      * Note: this can be implemented in a number of ways, for example by reading the delegated balance from one (or
      * multiple), {ERC20Votes} tokens.
      */
-    function getVotes(
-        address account,
-        uint256 timepoint
-    ) public view virtual returns (uint256);
-
-    /**
-     * @notice module:reputation
-     * @dev Voting power of an `account` at a specific `timepoint` given additional encoded parameters.
-     */
-    function getVotesWithParams(
-        address account,
-        uint256 timepoint,
-        bytes memory params
-    ) public view virtual returns (uint256);
+    function getVotes(address account) public view virtual returns (uint8);
 
     /**
      * @notice module:voting
@@ -300,6 +268,14 @@ abstract contract IGovernor is IERC165, IERC6372 {
         uint256 proposalId,
         address account
     ) public view virtual returns (bool);
+
+    /**
+     * @notice module:voting
+     * @dev Total votes for proposal `proposalId`.
+     */
+    function getProposalVotesCount(
+        uint256 proposalId
+    ) public view virtual returns (uint256);
 
     /**
      * @dev Create a new proposal. Vote start after a delay specified by {IGovernor-votingDelay} and lasts for a
@@ -330,8 +306,7 @@ abstract contract IGovernor is IERC165, IERC6372 {
     ) public payable virtual returns (uint256 proposalId);
 
     /**
-     * @dev Cancel a proposal. A proposal is cancellable by the proposer, but only while it is Pending state, i.e.
-     * before the vote starts.
+     * @dev Cancel a proposal. A proposal is cancellable by the proposer but only before it has got any votes.
      *
      * Emits a {ProposalCanceled} event.
      */

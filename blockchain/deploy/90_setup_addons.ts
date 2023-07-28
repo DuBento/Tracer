@@ -1,12 +1,16 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import {
-  GovernorToken,
   SupplychainFactory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import * as utils from "../lib/utils";
 import { padCenter, scriptName } from "../lib/utils";
+import {
+  MEMBER_DEV_INFO_URI,
+  MEMBER_DEV_NAME,
+  MEMBER_DEV_VOTING_POWER,
+} from "../properties";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -28,16 +32,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await supplychainFactory.getAddress()
   );
 
-  try {
-    const governorToken = await utils.getContract<GovernorToken>(
-      "GovernorToken"
-    );
-    await userRegistry.setGovernorTokenAddress(
-      await governorToken.getAddress()
-    );
-  } catch (e) {
-    log("GovernorToken not deployed yet, skipping");
-  }
+  // @dev Add member for development
+  await userRegistry.addMember(
+    deployer,
+    MEMBER_DEV_NAME,
+    MEMBER_DEV_INFO_URI,
+    MEMBER_DEV_VOTING_POWER
+  );
 };
 
 module.exports = func;

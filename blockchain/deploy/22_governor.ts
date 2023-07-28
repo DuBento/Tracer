@@ -2,24 +2,28 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { padCenter, scriptName } from "../lib/utils";
+import { VOTING_PERIOD } from "../properties";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
   const { deploy, log, get } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  log(padCenter(scriptName(__filename), 50));
-  log("Deploying GovernorToken...");
+  const userRegistry = await get("UserRegistry");
+  const executor = await get("Executor");
 
-  const governorToken = await deploy("GovernorToken", {
+  log(padCenter(scriptName(__filename), 50));
+  log("Deploying GovernorContract...");
+
+  const governorContract = await deploy("GovernorContract", {
     from: deployer,
-    args: [],
+    args: [executor.address, userRegistry.address, VOTING_PERIOD],
     log: true,
     // TODO verify if live on network
   });
 
-  log(`GovernorToken at ${governorToken.address}`);
+  log(`GovernorContract at ${governorContract.address}`);
 };
 
 module.exports = func;
-module.exports.tags = ["all", "dao", "token"];
+module.exports.tags = ["all", "dao", "governor"];

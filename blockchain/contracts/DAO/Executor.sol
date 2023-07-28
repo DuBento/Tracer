@@ -5,39 +5,12 @@ pragma solidity ^0.8.19;
 
 import "../custom/Ownable.sol";
 import "../OpenZeppelin/utils/Address.sol";
+import "./IExecutor.sol";
 
-contract Executor is Ownable {
+contract Executor is IExecutor, Ownable {
     // Type declarations
     // State variables
     bool private locked;
-
-    // Events
-
-    /**
-     * @dev Emitted when a call is performed as part of operation `id`.
-     */
-    event CallExecuted(
-        bytes32 indexed id,
-        uint256 indexed index,
-        address target,
-        uint256 value,
-        bytes data
-    );
-
-    // Errors
-    /**
-     * @dev Prevent reentrant calls.
-     */
-    error ReentrantCall();
-
-    /**
-     * @dev Mismatch between the parameters length for an operation call.
-     */
-    error ExecutorInvalidOperationLength(
-        uint256 targets,
-        uint256 payloads,
-        uint256 values
-    );
 
     // Modifiers
     modifier nonReentrant() {
@@ -53,7 +26,7 @@ contract Executor is Ownable {
     /**
      * @dev Contract might receive/hold ETH as part of the maintenance process.
      */
-    receive() external payable {}
+    receive() external payable override {}
 
     //* fallback function (if exists)
     //* external
@@ -71,7 +44,7 @@ contract Executor is Ownable {
         bytes calldata payload,
         bytes32 predecessor,
         bytes32 salt
-    ) public payable virtual nonReentrant onlyOwner {
+    ) public payable override nonReentrant onlyOwner {
         bytes32 id = hashOperation(target, value, payload, predecessor, salt);
 
         _execute(target, value, payload);
@@ -91,7 +64,7 @@ contract Executor is Ownable {
         bytes[] calldata payloads,
         bytes32 predecessor,
         bytes32 salt
-    ) public payable virtual nonReentrant onlyOwner {
+    ) public payable override nonReentrant onlyOwner {
         if (
             targets.length != values.length || targets.length != payloads.length
         ) {
@@ -119,35 +92,6 @@ contract Executor is Ownable {
         }
     }
 
-    /**
-     * @dev Returns the identifier of an operation containing a single
-     * transaction.
-     */
-    function hashOperation(
-        address target,
-        uint256 value,
-        bytes calldata data,
-        bytes32 predecessor,
-        bytes32 salt
-    ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encode(target, value, data, predecessor, salt));
-    }
-
-    /**
-     * @dev Returns the identifier of an operation containing a batch of
-     * transactions.
-     */
-    function hashOperationBatch(
-        address[] calldata targets,
-        uint256[] calldata values,
-        bytes[] calldata payloads,
-        bytes32 predecessor,
-        bytes32 salt
-    ) public pure virtual returns (bytes32) {
-        return
-            keccak256(abi.encode(targets, values, payloads, predecessor, salt));
-    }
-
     //* internal
     /**
      * @dev Execute an operation's call.
@@ -156,7 +100,7 @@ contract Executor is Ownable {
         address target,
         uint256 value,
         bytes calldata data
-    ) internal virtual {
+    ) internal {
         (bool success, bytes memory returndata) = target.call{value: value}(
             data
         );

@@ -3,7 +3,6 @@ import { deployments, ethers, getNamedAccounts } from "hardhat";
 import {
   Executor,
   GovernorContract,
-  GovernorToken,
   Supplychain,
   SupplychainFactory,
   Supplychain__factory,
@@ -34,7 +33,6 @@ import {
 // console.log = () => {};
 describe("Governor", function () {
   let governorContract: GovernorContract;
-  let governorToken: GovernorToken;
   let executor: Executor;
   let supplychainFactory: SupplychainFactory;
   let userRegistry: UserRegistry;
@@ -45,7 +43,6 @@ describe("Governor", function () {
       "GovernorContract"
     );
     executor = await utils.getContract<Executor>("Executor");
-    governorToken = await utils.getContract<GovernorToken>("GovernorToken");
     supplychainFactory = await utils.getContract<SupplychainFactory>(
       "SupplychainFactory"
     );
@@ -54,7 +51,7 @@ describe("Governor", function () {
     console.log(`#####
     GovernorContract: ${await governorContract.getAddress()}
     Executor: ${await executor.getAddress()}
-    GovernorToken: ${await governorToken.getAddress()}
+    Executor owner: ${await executor.owner()}
     SupplychainFactory: ${await supplychainFactory.getAddress()}
     UserRegistry: ${await userRegistry.getAddress()}
     #####`);
@@ -131,7 +128,7 @@ describe("Governor", function () {
       const proposalId = await proposeNewMember(actor1, actor1);
 
       const proposalState = await governorContract.state(proposalId);
-      expect(proposalState).to.equal(1); // 1 = Active
+      expect(proposalState).to.equal(0); // 0 = Active
     });
 
     it("Vote proposal with new member succesfully", async function () {
@@ -159,7 +156,7 @@ describe("Governor", function () {
         newMember
       );
 
-      expect(state).to.equal(4); // 4 = Succeeded
+      expect(state).to.equal(3); // 3 = Succeeded
     });
 
     it("Propose with registered actor succesfully", async function () {
@@ -177,7 +174,7 @@ describe("Governor", function () {
       );
 
       const proposalState = await governorContract.state(proposalId);
-      expect(proposalState).to.equal(1); // 1 = Active
+      expect(proposalState).to.equal(0); // 0 = Active
     });
 
     it("Vote with actor, unsuccesfully", async function () {
@@ -198,10 +195,11 @@ describe("Governor", function () {
         proposalId.toString(),
         1,
         PROPOSAL_VOTE_DESCRIPTION,
-        actor1
+        actor1,
+        true
       );
 
-      expect(state).to.equal(3); // 3 = Defeated
+      expect(state).to.equal(4); // 4 = Expired
     });
   });
 

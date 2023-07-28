@@ -3,39 +3,36 @@ pragma solidity ^0.8.19;
 
 import "./governance/extensions/GovernorCountingSimple.sol";
 import "./governance/extensions/GovernorVotes.sol";
-import "./governance/extensions/GovernorVotesQuorumFraction.sol";
 import "./governance/extensions/GovernorSettings.sol";
 import "./governance/Governor.sol";
+import "./IExecutor.sol";
+import "./IUserRegistry.sol";
 
 contract GovernorContract is
     Governor,
     GovernorSettings,
     GovernorCountingSimple,
-    GovernorVotes,
-    GovernorVotesQuorumFraction
+    GovernorVotes
 {
+    /** @dev Set low value during development, should be adjusted in production.
+     * Possible value 51 for majority.
+     */
+    uint8 constant QUORUM = 25;
+
     constructor(
-        IVotes token_,
-        Executor executor_,
-        uint256 votingDelay_,
-        uint256 votingPeriod_,
-        uint256 quorumFraction_
+        IExecutor executor_,
+        IUserRegistry userRegistry_,
+        uint256 votingPeriod_
     )
-        Governor("GovernorContract", executor_)
-        GovernorSettings(votingDelay_, votingPeriod_, 0)
-        GovernorVotes(token_)
-        GovernorVotesQuorumFraction(quorumFraction_)
+        Governor("TracerDAO", executor_)
+        GovernorSettings(votingPeriod_)
+        GovernorVotes(userRegistry_)
     {}
 
     // The following functions are overrides required by Solidity.
 
-    function votingDelay()
-        public
-        view
-        override(IGovernor, GovernorSettings)
-        returns (uint256)
-    {
-        return super.votingDelay();
+    function quorum() public pure override returns (uint8) {
+        return QUORUM;
     }
 
     function votingPeriod()
@@ -45,25 +42,5 @@ contract GovernorContract is
         returns (uint256)
     {
         return super.votingPeriod();
-    }
-
-    function quorum(
-        uint256 blockNumber
-    )
-        public
-        view
-        override(IGovernor, GovernorVotesQuorumFraction)
-        returns (uint256)
-    {
-        return super.quorum(blockNumber);
-    }
-
-    function proposalThreshold()
-        public
-        view
-        override(Governor, GovernorSettings)
-        returns (uint256)
-    {
-        return super.proposalThreshold();
     }
 }

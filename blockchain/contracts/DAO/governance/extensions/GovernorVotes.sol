@@ -5,6 +5,7 @@ pragma solidity ^0.8.19;
 
 import "../Governor.sol";
 import "../../../OpenZeppelin/interfaces/IERC5805.sol";
+import "../../IUserRegistry.sol";
 
 /**
  * @dev Extension of {Governor} for voting weight extraction from an {ERC20Votes} token, or since v4.5 an {ERC721Votes} token.
@@ -12,22 +13,22 @@ import "../../../OpenZeppelin/interfaces/IERC5805.sol";
  * _Available since v4.3._
  */
 abstract contract GovernorVotes is Governor {
-    IERC5805 public immutable token;
+    IUserRegistry public userRegistry;
 
-    constructor(IVotes tokenAddress) {
-        token = IERC5805(address(tokenAddress));
+    event UserRegistryUpdated(
+        IUserRegistry oldUserRegistry,
+        IUserRegistry newUserRegistry
+    );
+
+    constructor(IUserRegistry userRegistryAddress) {
+        userRegistry = userRegistryAddress;
     }
 
     /**
-     * @dev Clock (as specified in EIP-6372) is set to match the token's clock. Fallback to block numbers if the token
-     * does not implement EIP-6372.
+     * @dev Clock (as specified in EIP-6372) is set to timestamp..
      */
     function clock() public view virtual override returns (uint48) {
-        try token.clock() returns (uint48 timepoint) {
-            return timepoint;
-        } catch {
-            return SafeCast.toUint48(block.number);
-        }
+        return SafeCast.toUint48(block.timestamp);
     }
 
     /**
@@ -35,21 +36,27 @@ abstract contract GovernorVotes is Governor {
      */
     // solhint-disable-next-line func-name-mixedcase
     function CLOCK_MODE() public view virtual override returns (string memory) {
-        try token.CLOCK_MODE() returns (string memory clockmode) {
-            return clockmode;
-        } catch {
-            return "mode=blocknumber&from=default";
-        }
+        return "mode=timestamp";
     }
 
     /**
-     * Read the voting weight from the token's built in snapshot mechanism (see {Governor-_getVotes}).
+     * @dev Read the voting weight from the User Registry (see {Governor-_getVotes}).
      */
     function _getVotes(
-        address account,
-        uint256 timepoint,
-        bytes memory /*params*/
-    ) internal view virtual override returns (uint256) {
-        return token.getPastVotes(account, timepoint);
+        address account
+    ) internal view virtual override returns (uint8) {
+        return userRegistry.getVotes(account);
+    }
+
+    /**
+     * @dev Update the user registry address.
+     *
+     * Emits a {UserRegistryUpdated} event.
+     */
+    function _setUserRegistry(
+        IUserRegistry newUserRegistryAddress
+    ) internal virtual onlyGovernance {
+        emit UserRegistryUpdated(userRegistry, newUserRegistryAddress);
+        userRegistry = newUserRegistryAddress;
     }
 }
