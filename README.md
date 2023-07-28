@@ -27,7 +27,7 @@
 
 - hardhat gas-reporter: run test `npx hardhat test`
 
-*For DAO with Openzeppelin Governance Release [v0.2-dev](http://github.com/DuBento/Thesis/releases/tag/v0.2-dev)*
+_For DAO with Openzeppelin Governance Release [v0.2-dev](http://github.com/DuBento/Thesis/releases/tag/v0.2-dev)_
 
 ```
 ·-------------------------------------------------------|----------------------------|-------------|-----------------------------·
@@ -89,6 +89,97 @@
 ·-------------------------------------------------------|--------------|-------------|-------------|---------------|-------------·
 ```
 
+_Afte DAO improvements and simplifications [v0.3-dev](http://github.com/DuBento/Thesis/releases/tag/v0.3-dev)_
+
+Deployment cost improvement of around 59%.
+Not considering SupplychainFactory contract for cost calculations (cost has increased but is unrelated with DAO).
+
+Calculations on 28/07/2023 with: avg gas 30 gwei/gas and 1700 eur/eth
+
+- old deployment cost: 15477559 gas (around 789 eur)
+- new deployment cost: 6382115 gas (around 358 eur)
+- difference of 463 eur
+
+```
+·-------------------------------------------------------|----------------------------|-------------|-----------------------------·
+|                 Solc version: 0.8.19                  ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 30000000 gas  │
+························································|····························|·············|······························
+|  Methods                                              ·               21 gwei/gas                ·       1702.34 eur/eth       │
+·······················|································|··············|·············|·············|···············|··············
+|  Contract            ·  Method                        ·  Min         ·  Max        ·  Avg        ·  # calls      ·  eur (avg)  │
+·······················|································|··············|·············|·············|···············|··············
+|  Executor            ·  transferOwnership             ·           -  ·          -  ·      32967  ·            1  ·       1.18  │
+·······················|································|··············|·············|·············|···············|··············
+|  GovernorContract    ·  castVoteWithReason            ·       68720  ·      88620  ·      86313  ·           18  ·       3.09  │
+·······················|································|··············|·············|·············|···············|··············
+|  GovernorContract    ·  execute                       ·       87720  ·     187487  ·     168805  ·           14  ·       6.03  │
+·······················|································|··············|·············|·············|···············|··············
+|  GovernorContract    ·  propose                       ·       91130  ·      95456  ·      93267  ·           22  ·       3.33  │
+·······················|································|··············|·············|·············|···············|··············
+|  Supplychain         ·  handleTransaction             ·           -  ·          -  ·     150162  ·            1  ·       5.37  │
+·······················|································|··············|·············|·············|···············|··············
+|  Supplychain         ·  handleUpdate                  ·           -  ·          -  ·     133863  ·            1  ·       4.79  │
+·······················|································|··············|·············|·············|···············|··············
+|  Supplychain         ·  newBatch                      ·      198913  ·     201108  ·     200742  ·           12  ·       7.18  │
+·······················|································|··············|·············|·············|···············|··············
+|  SupplychainFactory  ·  create                        ·           -  ·          -  ·     138435  ·            1  ·       4.95  │
+·······················|································|··············|·············|·············|···············|··············
+|  SupplychainFactory  ·  transferOwnership             ·           -  ·          -  ·      32967  ·            2  ·       1.18  │
+·······················|································|··············|·············|·············|···············|··············
+|  UserRegistry        ·  addActor                      ·           -  ·          -  ·      93895  ·            6  ·       3.36  │
+·······················|································|··············|·············|·············|···············|··············
+|  UserRegistry        ·  addContractToActor            ·       52163  ·      73731  ·      67633  ·            5  ·       2.42  │
+·······················|································|··············|·············|·············|···············|··············
+|  UserRegistry        ·  addMember                     ·      127628  ·     144704  ·     139012  ·            3  ·       4.97  │
+·······················|································|··············|·············|·············|···············|··············
+|  UserRegistry        ·  setSupplychainFactoryAddress  ·           -  ·          -  ·      51989  ·            2  ·       1.86  │
+·······················|································|··············|·············|·············|···············|··············
+|  UserRegistry        ·  transferOwnership             ·           -  ·          -  ·      33011  ·            2  ·       1.18  │
+·······················|································|··············|·············|·············|···············|··············
+|  Deployments                                          ·                                          ·  % of limit   ·             │
+························································|··············|·············|·············|···············|··············
+|  Executor                                             ·           -  ·          -  ·    1334736  ·        4.4 %  ·      47.72  │
+························································|··············|·············|·············|···············|··············
+|  GovernorContract                                     ·           -  ·          -  ·    2702432  ·          9 %  ·      96.61  │
+························································|··············|·············|·············|···············|··············
+|  SupplychainFactory                                   ·           -  ·          -  ·    2767602  ·        9.2 %  ·      98.94  │
+························································|··············|·············|·············|···············|··············
+|  UserRegistry                                         ·           -  ·          -  ·    2344947  ·        7.8 %  ·      83.83  │
+·-------------------------------------------------------|--------------|-------------|-------------|---------------|-------------·
+```
+
+Method gas comparison:
+
+```
+CONSTANTS	gas/gwei	30
+			eth/eur		1700
+
+|  Contract				Method							avg gas:		avg eur:		diff %
+														OZ DAO	our DAO	OZ DAO	our DAO
+|  GovernorContract		castVoteWithReason				88961	86313	€4.54	€4.40	2.98%
+|  GovernorContract		execute							298326	168805	€15.21	€8.61	43.42%
+|  GovernorContract		propose							111769	93267	€5.70	€4.76	16.55%
+|  GovernorContract		queue							143551	-		€7.32	-		-
+|  GovernorTimelock		grantRole						40804	-		€2.08	-		-
+|  GovernorTimelock		revokeRole						27746	-		€1.42	-		-
+|  GovernorToken		delegate						96883	-		€4.94	-		-
+|  GovernorToken		transferOwnership				32992	32967	€1.68	€1.68	0.08%
+|  SupplychainFactory	create							155491	138435	€7.93	€7.06	10.97%
+|  SupplychainFactory	transferOwnership				32967	32967	€1.68	€1.68	0.00%
+|  Supplychain			handleTransaction				149951	150162	€7.65	€7.66	-0.14%
+|  Supplychain			handleUpdate					133635	133863	€6.82	€6.83	-0.17%
+|  Supplychain			newBatch						200508	200742	€10.23	€10.24	-0.12%
+|  UserRegistry			addActor						93851	93895	€4.79	€4.79	-0.05%
+|  UserRegistry			addContractToActor				67611	67633	€3.45	€3.45	-0.03%
+|  UserRegistry			addMember						118547	139012	€6.05	€7.09	-17.26%
+|  UserRegistry			setGovernorTokenAddress			51988	-		€2.65	-		-
+|  UserRegistry			setSupplychainFactoryAddress	52078	51989	€2.66	€2.65	0.17%
+|  UserRegistry			transferOwnership				33011	33011	€1.68	€1.68	0.00%
+													SUM	1930670	1423061	€98.46	€72.58	26.29%
+													DIFF		507609			€25.89
+
+```
+
 ---
 
 ## Resources
@@ -105,6 +196,7 @@
 **Blockchain**
 
 _Hardhat_ as development framework, using extensions:
+
 - hardhat-ethers, for integration with ethersjs
 - hardhat-deploy, for deployment scripts
 - gas-reporter, for reports on gas cost (usage and deployment)
@@ -117,15 +209,16 @@ Developed for EVM compatible blockchains (Ethereum).
 **Frontend**
 
 _Next.js_ as development framework, using:
+
 - React, library for building frontend
 - TailwindCSS, a CSS styling framework
 - Ethers, a library for interacting with Ethereum and Ethereum-like blockchains.
 - swr, a React library for remote data fetching and caching.
-- react-hot-toast, a toast notification library for React. 
+- react-hot-toast, a toast notification library for React.
 
 All files written with Typescript.
 
 **IPFS**
 
 - For development, using a Docker container running [Kubo](https://hub.docker.com/r/ipfs/kubo/) (default IPFS implementation in Go)
-- For production or other, possible to use external pining services and gateways like [pinata](https://www.pinata.cloud/) 
+- For production or other, possible to use external pining services and gateways like [pinata](https://www.pinata.cloud/)
