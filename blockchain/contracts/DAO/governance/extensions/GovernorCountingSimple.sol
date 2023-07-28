@@ -118,8 +118,7 @@ abstract contract GovernorCountingSimple is Governor {
         uint256 proposalId,
         address account,
         uint8 support,
-        uint256 weight,
-        bytes memory // params
+        uint256 weight
     ) internal virtual override {
         ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
