@@ -3,9 +3,6 @@
 
 pragma solidity ^0.8.19;
 
-import "../../OpenZeppelin/token/ERC721/IERC721Receiver.sol";
-import "../../OpenZeppelin/token/ERC1155/IERC1155Receiver.sol";
-import "../../OpenZeppelin/utils/introspection/ERC165.sol";
 import "../../OpenZeppelin/utils/math/SafeCast.sol";
 import "../../OpenZeppelin/utils/Address.sol";
 import "./extensions/GovernorExecutor.sol";
@@ -22,13 +19,7 @@ import "./IGovernor.sol";
  *
  * Modified version of governance contracts from OpenZeppelin v4.9.1
  */
-abstract contract Governor is
-    GovernorExecutor,
-    ERC165,
-    IGovernor,
-    IERC721Receiver,
-    IERC1155Receiver
-{
+abstract contract Governor is GovernorExecutor, IGovernor {
     struct ProposalCore {
         uint64 voteStart;
         address proposer;
@@ -79,35 +70,6 @@ abstract contract Governor is
         if (_executor() != address(this)) {
             revert GovernorDisabledDeposit();
         }
-    }
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(IERC165, ERC165) returns (bool) {
-        bytes4 governorCancelId = this.cancel.selector ^
-            this.proposalProposer.selector;
-
-        // The original interface id in v4.3.
-        bytes4 governor43Id = type(IGovernor).interfaceId ^
-            type(IERC6372).interfaceId ^
-            governorCancelId;
-
-        // An updated interface id in v4.6, with params added.
-        bytes4 governor46Id = type(IGovernor).interfaceId ^
-            type(IERC6372).interfaceId ^
-            governorCancelId;
-
-        // For the updated interface id in v4.9, we use governorCancelId directly.
-
-        return
-            interfaceId == governor43Id ||
-            interfaceId == governor46Id ||
-            interfaceId == governorCancelId ||
-            interfaceId == type(IERC1155Receiver).interfaceId ||
-            super.supportsInterface(interfaceId);
     }
 
     /**
@@ -481,56 +443,6 @@ abstract contract Governor is
     }
 
     /**
-     * @dev See {IERC721Receiver-onERC721Received}.
-     * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
-     */
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes memory
-    ) public virtual returns (bytes4) {
-        if (_executor() != address(this)) {
-            revert GovernorDisabledDeposit();
-        }
-        return this.onERC721Received.selector;
-    }
-
-    /**
-     * @dev See {IERC1155Receiver-onERC1155Received}.
-     * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
-     */
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes memory
-    ) public virtual returns (bytes4) {
-        if (_executor() != address(this)) {
-            revert GovernorDisabledDeposit();
-        }
-        return this.onERC1155Received.selector;
-    }
-
-    /**
-     * @dev See {IERC1155Receiver-onERC1155BatchReceived}.
-     * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
-     */
-    function onERC1155BatchReceived(
-        address,
-        address,
-        uint256[] memory,
-        uint256[] memory,
-        bytes memory
-    ) public virtual returns (bytes4) {
-        if (_executor() != address(this)) {
-            revert GovernorDisabledDeposit();
-        }
-        return this.onERC1155BatchReceived.selector;
-    }
-
-    /**
      * @dev Encodes a `ProposalState` into a `bytes32` representation where each bit enabled corresponds to
      * the underlying position in the `ProposalState` enum. For example:
      *
@@ -546,31 +458,5 @@ abstract contract Governor is
         ProposalState proposalState
     ) internal pure returns (bytes32) {
         return bytes32(1 << uint8(proposalState));
-    }
-
-    /**
-     * @dev Try to parse a character from a string as a hex value. Returns `(true, value)` if the char is in
-     * `[0-9a-fA-F]` and `(false, 0)` otherwise. Value is guaranteed to be in the range `0 <= value < 16`
-     */
-    function _tryHexToUint(bytes1 char) private pure returns (bool, uint8) {
-        uint8 c = uint8(char);
-        unchecked {
-            // Case 0-9
-            if (47 < c && c < 58) {
-                return (true, c - 48);
-            }
-            // Case A-F
-            else if (64 < c && c < 71) {
-                return (true, c - 55);
-            }
-            // Case a-f
-            else if (96 < c && c < 103) {
-                return (true, c - 87);
-            }
-            // Else: not a hex char
-            else {
-                return (false, 0);
-            }
-        }
     }
 }
