@@ -126,15 +126,9 @@ abstract contract IGovernor is IERC165, IERC6372 {
 
     /**
      * @notice module:core
-     * @dev Name of the governor instance (used in building the ERC712 domain separator).
+     * @dev Name of the governor instance.
      */
     function name() public view virtual returns (string memory);
-
-    /**
-     * @notice module:core
-     * @dev Version of the governor instance (used in building the ERC712 domain separator). Default: "1"
-     */
-    function version() public view virtual returns (string memory);
 
     /**
      * @notice module:core
@@ -321,18 +315,5 @@ abstract contract IGovernor is IERC165, IERC6372 {
         uint256 proposalId,
         uint8 support,
         string calldata reason
-    ) public virtual returns (uint256 balance);
-
-    /**
-     * @dev Cast a vote using the user's cryptographic signature.
-     *
-     * Emits a {VoteCast} event.
-     */
-    function castVoteBySig(
-        uint256 proposalId,
-        uint8 support,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
     ) public virtual returns (uint256 balance);
 }
