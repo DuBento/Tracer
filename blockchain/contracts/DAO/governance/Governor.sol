@@ -100,14 +100,10 @@ abstract contract Governor is
         bytes4 governorCancelId = this.cancel.selector ^
             this.proposalProposer.selector;
 
-        bytes4 governorParamsId = this.castVoteWithReasonAndParams.selector ^
-            this.castVoteWithReasonAndParamsBySig.selector;
-
         // The original interface id in v4.3.
         bytes4 governor43Id = type(IGovernor).interfaceId ^
             type(IERC6372).interfaceId ^
-            governorCancelId ^
-            governorParamsId;
+            governorCancelId;
 
         // An updated interface id in v4.6, with params added.
         bytes4 governor46Id = type(IGovernor).interfaceId ^
@@ -252,7 +248,7 @@ abstract contract Governor is
     function _getVotes(address account) internal view virtual returns (uint8);
 
     /**
-     * @dev Register a vote for `proposalId` by `account` with a given `support`, voting `weight` and voting `params`.
+     * @dev Register a vote for `proposalId` by `account` with a given `support` and voting `weight``.
      *
      * Note: Support is generic and can represent various things depending on the voting system used.
      */
@@ -260,19 +256,8 @@ abstract contract Governor is
         uint256 proposalId,
         address account,
         uint8 support,
-        uint256 weight,
-        bytes memory params
+        uint256 weight
     ) internal virtual;
-
-    /**
-     * @dev Default additional encoded parameters used by castVote methods that don't include them
-     *
-     * Note: Should be overridden by specific implementations to use an appropriate value, the
-     * meaning of the additional params, in the context of that implementation
-     */
-    function _defaultParams() internal view virtual returns (bytes memory) {
-        return "";
-    }
 
     /**
      * @dev See {IGovernor-propose}. This function has opt-in frontrunning protection, described in {_isValidDescriptionForProposer}.
@@ -467,19 +452,6 @@ abstract contract Governor is
     }
 
     /**
-     * @dev See {IGovernor-castVoteWithReasonAndParams}.
-     */
-    function castVoteWithReasonAndParams(
-        uint256 proposalId,
-        uint8 support,
-        string calldata reason,
-        bytes memory params
-    ) public virtual override returns (uint256) {
-        address voter = msg.sender;
-        return _castVote(proposalId, voter, support, reason, params);
-    }
-
-    /**
      * @dev See {IGovernor-castVoteBySig}.
      */
     function castVoteBySig(
@@ -501,54 +473,6 @@ abstract contract Governor is
     }
 
     /**
-     * @dev See {IGovernor-castVoteWithReasonAndParamsBySig}.
-     */
-    function castVoteWithReasonAndParamsBySig(
-        uint256 proposalId,
-        uint8 support,
-        string calldata reason,
-        bytes memory params,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public virtual override returns (uint256) {
-        address voter = ECDSA.recover(
-            _hashTypedDataV4(
-                keccak256(
-                    abi.encode(
-                        EXTENDED_BALLOT_TYPEHASH,
-                        proposalId,
-                        support,
-                        keccak256(bytes(reason)),
-                        keccak256(params)
-                    )
-                )
-            ),
-            v,
-            r,
-            s
-        );
-
-        return _castVote(proposalId, voter, support, reason, params);
-    }
-
-    /**
-     * @dev Internal vote casting mechanism: Check that the vote is pending, that it has not been cast yet, retrieve
-     * voting weight using {IGovernor-getVotes} and call the {_countVote} internal function. Uses the _defaultParams().
-     *
-     * Emits a {IGovernor-VoteCast} event.
-     */
-    function _castVote(
-        uint256 proposalId,
-        address account,
-        uint8 support,
-        string memory reason
-    ) internal virtual returns (uint256) {
-        return
-            _castVote(proposalId, account, support, reason, _defaultParams());
-    }
-
-    /**
      * @dev Internal vote casting mechanism: Check that the vote is pending, that it has not been cast yet, retrieve
      * voting weight using {IGovernor-getVotes} and call the {_countVote} internal function.
      *
@@ -558,8 +482,7 @@ abstract contract Governor is
         uint256 proposalId,
         address account,
         uint8 support,
-        string memory reason,
-        bytes memory params
+        string memory reason
     ) internal virtual returns (uint256) {
         ProposalState currentState = state(proposalId);
         if (currentState != ProposalState.Active) {
@@ -571,20 +494,9 @@ abstract contract Governor is
         }
 
         uint256 weight = _getVotes(account);
-        _countVote(proposalId, account, support, weight, params);
+        _countVote(proposalId, account, support, weight);
 
-        if (params.length == 0) {
-            emit VoteCast(account, proposalId, support, weight, reason);
-        } else {
-            emit VoteCastWithParams(
-                account,
-                proposalId,
-                support,
-                weight,
-                reason,
-                params
-            );
-        }
+        emit VoteCast(account, proposalId, support, weight, reason);
 
         return weight;
     }
