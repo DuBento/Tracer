@@ -64,15 +64,6 @@ abstract contract Governor is GovernorExecutor, IGovernor {
     }
 
     /**
-     * @dev Function to receive ETH that will be handled by the governor (disabled if executor is a third party contract)
-     */
-    receive() external payable virtual {
-        if (_executor() != address(this)) {
-            revert GovernorDisabledDeposit();
-        }
-    }
-
-    /**
      * @dev See {IGovernor-name}.
      */
     function name() public view virtual override returns (string memory) {
@@ -423,23 +414,6 @@ abstract contract Governor is GovernorExecutor, IGovernor {
         emit VoteCast(account, proposalId, support, weight, reason);
 
         return weight;
-    }
-
-    /**
-     * @dev Relays a transaction or function call to an arbitrary target. In cases where the governance executor
-     * is some contract other than the governor itself, like when using a timelock, this function can be invoked
-     * in a governance proposal to recover tokens or Ether that was sent to the governor contract by mistake.
-     * Note that if the executor is simply the governor itself, use of `relay` is redundant.
-     */
-    function relay(
-        address target,
-        uint256 value,
-        bytes calldata data
-    ) external payable virtual onlyGovernance {
-        (bool success, bytes memory returndata) = target.call{value: value}(
-            data
-        );
-        Address.verifyCallResult(success, returndata);
     }
 
     /**
