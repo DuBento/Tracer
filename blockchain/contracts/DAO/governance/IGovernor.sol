@@ -112,7 +112,7 @@ abstract contract IGovernor is IERC165, IERC6372 {
     event ProposalExecuted(uint256 proposalId);
 
     /**
-     * @dev Emitted when a vote is cast without params.
+     * @dev Emitted when a vote.
      *
      * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
      */
@@ -122,21 +122,6 @@ abstract contract IGovernor is IERC165, IERC6372 {
         uint8 support,
         uint256 weight,
         string reason
-    );
-
-    /**
-     * @dev Emitted when a vote is cast with params.
-     *
-     * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
-     * `params` are additional encoded parameters. Their interpepretation also depends on the voting module used.
-     */
-    event VoteCastWithParams(
-        address indexed voter,
-        uint256 proposalId,
-        uint8 support,
-        uint256 weight,
-        string reason,
-        bytes params
     );
 
     /**
@@ -339,18 +324,6 @@ abstract contract IGovernor is IERC165, IERC6372 {
     ) public virtual returns (uint256 balance);
 
     /**
-     * @dev Cast a vote with a reason and additional encoded parameters
-     *
-     * Emits a {VoteCast} or {VoteCastWithParams} event depending on the length of params.
-     */
-    function castVoteWithReasonAndParams(
-        uint256 proposalId,
-        uint8 support,
-        string calldata reason,
-        bytes memory params
-    ) public virtual returns (uint256 balance);
-
-    /**
      * @dev Cast a vote using the user's cryptographic signature.
      *
      * Emits a {VoteCast} event.
@@ -358,21 +331,6 @@ abstract contract IGovernor is IERC165, IERC6372 {
     function castVoteBySig(
         uint256 proposalId,
         uint8 support,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public virtual returns (uint256 balance);
-
-    /**
-     * @dev Cast a vote with a reason and additional encoded parameters using the user's cryptographic signature.
-     *
-     * Emits a {VoteCast} or {VoteCastWithParams} event depending on the length of params.
-     */
-    function castVoteWithReasonAndParamsBySig(
-        uint256 proposalId,
-        uint8 support,
-        string calldata reason,
-        bytes memory params,
         uint8 v,
         bytes32 r,
         bytes32 s
