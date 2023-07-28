@@ -3,7 +3,6 @@
 
 pragma solidity ^0.8.19;
 
-import "../../OpenZeppelin/interfaces/IERC165.sol";
 import "../../OpenZeppelin/interfaces/IERC6372.sol";
 
 /**
@@ -11,7 +10,7 @@ import "../../OpenZeppelin/interfaces/IERC6372.sol";
  *
  * _Available since v4.3._
  */
-abstract contract IGovernor is IERC165, IERC6372 {
+abstract contract IGovernor is IERC6372 {
     enum ProposalState {
         Active,
         Canceled,
