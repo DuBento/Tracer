@@ -85,6 +85,7 @@ export async function increaseBlocks(nBlocks: number) {
 
 export async function increaseTime(seconds: number) {
   await network.provider.send("evm_increaseTime", [seconds]);
+  await network.provider.send("evm_mine");
   console.log(`Time increase by ${seconds} seconds`);
 }
 // proposals

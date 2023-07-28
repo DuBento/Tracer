@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import "../custom/Ownable.sol";
 import "../ConformityState.sol";
-import "../DAO/UserRegistry.sol";
+import "../DAO/IUserRegistry.sol";
 import "../OpenZeppelin/interfaces/IERC6372.sol";
 import "../OpenZeppelin/utils/math/SafeCast.sol";
 
@@ -34,7 +34,7 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     // State variables
     mapping(uint256 => Batch) batches;
 
-    UserRegistry private userRegistry;
+    IUserRegistry private userRegistry;
 
     // Events
     event NewBatch(address indexed owner, uint256 id);
@@ -76,9 +76,9 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
 
     //* external
 
-    function init(UserRegistry userRegistry_, address owner_) external {
+    function init(IUserRegistry userRegistry_, address owner_) external {
         if (address(userRegistry) == address(0)) {
-            userRegistry = UserRegistry(userRegistry_);
+            userRegistry = IUserRegistry(userRegistry_);
             super.init(owner_);
         }
     }

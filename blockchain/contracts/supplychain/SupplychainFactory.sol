@@ -4,16 +4,16 @@ pragma solidity ^0.8.19;
 import "./Supplychain.sol";
 import "../custom/Clone.sol";
 import "../custom/Ownable.sol";
-import "../DAO/UserRegistry.sol";
+import "../DAO/IUserRegistry.sol";
 
 // import "../../node_modules/hardhat/console.sol";
 
 contract SupplychainFactory is Ownable {
     address immutable defaultImplementation;
-    UserRegistry private userRegistry;
+    IUserRegistry private userRegistry;
 
     constructor(address userRegistry_) {
-        userRegistry = UserRegistry(userRegistry_);
+        userRegistry = IUserRegistry(userRegistry_);
         defaultImplementation = address(new Supplychain());
     }
 

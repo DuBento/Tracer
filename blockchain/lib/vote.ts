@@ -8,7 +8,8 @@ export async function vote(
   proposalId: string,
   decision: number, // 0 = Against, 1 = For, 2 = Abstain
   reason: string,
-  signerAddress?: string
+  signerAddress?: string,
+  moveTimeForward?: boolean
 ) {
   console.log("Voting...");
   const governor = await utils.getContract<GovernorContract>(
@@ -39,14 +40,20 @@ export async function vote(
     )}`
   );
 
+  console.log(`Before - current clock: ${await governor.clock()}`);
+
   // Moving forward to the end of the voting period
-  if (DEVELOPMENT_CHAINS.includes(network.name)) {
-    await utils.increaseBlocks(VOTING_PERIOD + 1);
+  if (moveTimeForward && DEVELOPMENT_CHAINS.includes(network.name)) {
+    await utils.increaseTime(VOTING_PERIOD + 1);
   }
 
   // Check the proposal state
   proposalState = await governor.state(proposalId);
   console.log(`After - Proposal State: ${proposalState}`);
+  console.log(
+    `After - deadline: ${await governor.proposalDeadline(proposalId)}`
+  );
+  console.log(`After - current clock: ${await governor.clock()}`);
   return proposalState;
 }
 

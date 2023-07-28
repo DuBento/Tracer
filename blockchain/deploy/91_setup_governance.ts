@@ -3,7 +3,6 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import {
   Executor,
   GovernorContract,
-  GovernorToken,
   SupplychainFactory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
@@ -26,7 +25,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   await Promise.all([
     setupExecutor(executorContract, deployer),
-    setupGovernorToken(executorContract, deployer),
     setupUserRegistry(executorContract, deployer),
     setupSupplychainFactory(executorContract, deployer),
   ]);
@@ -44,41 +42,7 @@ const setupExecutor = async function (
   );
 
   executorContract.transferOwnership(await governorContract.getAddress());
-};
-
-const setupGovernorToken = async function (
-  executorContract: Executor,
-  deployer: string
-) {
-  log("Setting up GovernorToken...");
-
-  const governorTokenContract = await utils.getContract<GovernorToken>(
-    "GovernorToken",
-    { signerAddress: deployer }
-  );
-
-  // Delegate token
-  await delegateVotingPower(governorTokenContract, deployer);
-
-  // Transfer owner to timelock
-  const transferOwnershipTx = await governorTokenContract.transferOwnership(
-    await executorContract.getAddress()
-  );
-  await transferOwnershipTx.wait();
-};
-
-const delegateVotingPower = async function (
-  governorToken: GovernorToken,
-  account: string
-) {
-  const delegateResponse = await governorToken.delegate(account);
-  await delegateResponse.wait();
-
-  log(
-    `Current checkpoints (greater than 0 for delagate to be successful): ${await governorToken.numCheckpoints(
-      account
-    )}`
-  );
+  log("Executor owner: ", await executorContract.owner());
 };
 
 const setupUserRegistry = async function (
