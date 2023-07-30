@@ -4,7 +4,6 @@
 pragma solidity ^0.8.19;
 
 import "../Governor.sol";
-import "../../../OpenZeppelin/interfaces/IERC5805.sol";
 import "../../IUserRegistry.sol";
 
 /**
