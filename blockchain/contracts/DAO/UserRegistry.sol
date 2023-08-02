@@ -9,28 +9,27 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
     // Type declarations
     struct Member {
         address addr;
-        string name;
-        string infoURI;
         uint8 votingPower;
         ConformityState.State state;
         address managingContractAddress;
+        string name;
+        string infoURI;
     }
 
     struct Actor {
         address addr;
+        ConformityState.State state;
         string name;
         string infoURI;
-        ConformityState.State state;
         address[] participatingContracts;
     }
 
     // State variables
     uint256 public memberCount;
+    address private supplychainFactory;
 
     mapping(address => Member) public members;
     mapping(address => Actor) public actors;
-
-    address private supplychainFactory;
 
     // Modifiers
     modifier onlyOwnerOrFactoryContract() {

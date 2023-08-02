@@ -13,17 +13,17 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     // Type declarations
     struct Batch {
         uint256 id;
-        string description;
         address currentOwner;
         ConformityState.State state;
+        string description;
         Update[] updates;
         Transaction[] transactions;
     }
 
     struct Update {
         address owner;
-        string documentURI;
         uint48 ts; // as specified in EIP-6372
+        string documentURI;
     }
 
     struct Transaction {
@@ -32,9 +32,9 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     }
 
     // State variables
-    mapping(uint256 => Batch) batches;
-
     IUserRegistry private userRegistry;
+
+    mapping(uint256 => Batch) batches;
 
     // Events
     event NewBatch(address indexed owner, uint256 id);
@@ -156,7 +156,7 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     function _newUpdate(
         string memory documentURI_
     ) internal view returns (Update memory) {
-        return Update(msg.sender, documentURI_, clock());
+        return Update(msg.sender, clock(), documentURI_);
     }
 
     function _newTransaction(
