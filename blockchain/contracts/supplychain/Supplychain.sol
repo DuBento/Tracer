@@ -51,17 +51,6 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
         _;
     }
 
-    modifier isValidUpdate(uint256 id_) {
-        _assertBatchExists(id_);
-        _assertCurrentOwner(id_);
-        _;
-    }
-
-    modifier onlyFunctioningBatch(uint256 id_) {
-        _assertBatchFunctioning(id_);
-        _;
-    }
-
     // Functions
 
     //* constructor
@@ -120,21 +109,24 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     function handleUpdate(
         uint256 id_,
         string memory documentURI_
-    ) public allowedActor isValidUpdate(id_) {
+    ) public allowedActor {
+        Batch storage batch = batches[id_];
+        _assertValidUpdate(batch);
         // Send BCEvent
         // Record Update
         Update memory update = _newUpdate(documentURI_);
-        batches[id_].updates.push(update);
+        batch.updates.push(update);
     }
 
     function handleTransaction(
         uint256 id_,
         address receiver_,
         string memory documentURI_
-    ) public allowedActor onlyFunctioningBatch(id_) isValidUpdate(id_) {
-        _assertAllowedActor(receiver_);
-
+    ) public allowedActor {
         Batch storage batch = batches[id_];
+        _assertValidUpdate(batch);
+        _assertAllowedActor(receiver_);
+        _assertBatchFunctioning(batch);
 
         Transaction memory transaction = _newTransaction(
             receiver_,
@@ -187,13 +179,18 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
 
     //* asserts
 
-    function _assertCurrentOwner(uint256 id_) private view {
-        if (batches[id_].currentOwner != msg.sender)
+    function _assertValidUpdate(Batch storage batch_) private view {
+        _assertBatchExists(batch_);
+        _assertCurrentOwner(batch_);
+    }
+
+    function _assertCurrentOwner(Batch storage batch_) private view {
+        if (batch_.currentOwner != msg.sender)
             revert UserIsNotCurrentBatchOwner();
     }
 
-    function _assertBatchExists(uint256 id_) private view {
-        if (batches[id_].id == 0) revert BatchDoesNotExist();
+    function _assertBatchExists(Batch storage batch_) private view {
+        if (batch_.id == 0) revert BatchDoesNotExist();
     }
 
     function _assertAllowedActor(address addr_) private view {
@@ -205,8 +202,8 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
             revert UserNotAllowedToTransact();
     }
 
-    function _assertBatchFunctioning(uint256 id_) private view {
-        if (batches[id_].state != ConformityState.CONFORMITY_STATE_FUNCTIONING)
+    function _assertBatchFunctioning(Batch storage batch_) private view {
+        if (batch_.state != ConformityState.CONFORMITY_STATE_FUNCTIONING)
             revert BatchFunctioningPause();
     }
 }

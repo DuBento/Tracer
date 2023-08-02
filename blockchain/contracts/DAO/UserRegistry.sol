@@ -99,29 +99,32 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
         string calldata name_,
         string calldata infoURI_
     ) public override onlyOwner {
-        _assertMemberExists(addr_);
+        Member storage member = members[addr_];
+        _assertMemberExists(member);
 
-        members[addr_].name = name_;
-        members[addr_].infoURI = infoURI_;
+        member.name = name_;
+        member.infoURI = infoURI_;
     }
 
     function updateMember(
         address addr_,
         address managingContractAddress_
     ) public override onlyOwnerOrFactoryContract {
-        _assertMemberExists(addr_);
+        Member storage member = members[addr_];
+        _assertMemberExists(member);
 
-        members[addr_].managingContractAddress = managingContractAddress_;
+        member.managingContractAddress = managingContractAddress_;
     }
 
     function updateMemberState(
         address addr_,
         ConformityState.State newState_
     ) public override onlyOwner {
+        Member storage member = members[addr_];
         ConformityState.assertValidConformityState(newState_);
-        _assertMemberExists(addr_);
+        _assertMemberExists(member);
 
-        members[addr_].state = newState_;
+        member.state = newState_;
     }
 
     function addActor(
@@ -143,21 +146,23 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
         string calldata name_,
         string calldata infoURI_
     ) public override {
-        _assertActorExists(addr_);
-        _assertSenderIsActor(addr_);
+        Actor storage actor = actors[addr_];
+        _assertActorExists(actor);
+        _assertSenderIsActor(actor);
 
-        actors[addr_].name = name_;
-        actors[addr_].infoURI = infoURI_;
+        actor.name = name_;
+        actor.infoURI = infoURI_;
     }
 
     function updateActorState(
         address addr_,
         ConformityState.State newState_
     ) public override onlyOwner {
+        Actor storage actor = actors[addr_];
         ConformityState.assertValidConformityState(newState_);
-        _assertActorExists(addr_);
+        _assertActorExists(actor);
 
-        actors[addr_].state = newState_;
+        actor.state = newState_;
     }
 
     function addContractToActor(
@@ -201,16 +206,16 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
         if (actors[addr_].addr != address(0)) revert UserAlreadyExists();
     }
 
-    function _assertMemberExists(address addr_) internal view {
-        if (members[addr_].addr == address(0)) revert MemberDoesNotExist();
+    function _assertMemberExists(Member storage member_) internal view {
+        if (member_.addr == address(0)) revert MemberDoesNotExist();
     }
 
-    function _assertActorExists(address addr_) internal view {
-        if (actors[addr_].addr == address(0)) revert ActorDoesNotExist();
+    function _assertActorExists(Actor storage actor_) internal view {
+        if (actor_.addr == address(0)) revert ActorDoesNotExist();
     }
 
-    function _assertSenderIsActor(address addr_) internal view {
-        if (actors[addr_].addr != msg.sender)
+    function _assertSenderIsActor(Actor storage actor_) internal view {
+        if (actor_.addr != msg.sender)
             revert TransactionNotFromOriginalActorAddress();
     }
 
