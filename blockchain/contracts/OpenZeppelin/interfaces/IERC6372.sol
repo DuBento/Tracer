@@ -7,7 +7,7 @@ interface IERC6372 {
     /**
      * @dev Clock used for flagging checkpoints. Can be overridden to implement timestamp based checkpoints (and voting).
      */
-    function clock() external view returns (uint48);
+    function clock() external view returns (uint256);
 
     /**
      * @dev Description of the clock

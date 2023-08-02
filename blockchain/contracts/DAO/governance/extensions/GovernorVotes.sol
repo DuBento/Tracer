@@ -26,8 +26,8 @@ abstract contract GovernorVotes is Governor {
     /**
      * @dev Clock (as specified in EIP-6372) is set to timestamp..
      */
-    function clock() public view virtual override returns (uint48) {
-        return SafeCast.toUint48(block.timestamp);
+    function clock() public view virtual override returns (uint256) {
+        return block.timestamp;
     }
 
     /**

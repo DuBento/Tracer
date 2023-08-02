@@ -140,8 +140,8 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     /**
      * @dev Clock (as specified in EIP-6372) is set to timestamp.
      */
-    function clock() public view virtual override returns (uint48) {
-        return SafeCast.toUint48(block.timestamp);
+    function clock() public view virtual override returns (uint256) {
+        return block.timestamp;
     }
 
     /**
@@ -156,7 +156,7 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     function _newUpdate(
         string memory documentURI_
     ) internal view returns (Update memory) {
-        return Update(msg.sender, clock(), documentURI_);
+        return Update(msg.sender, SafeCast.toUint48(clock()), documentURI_);
     }
 
     function _newTransaction(

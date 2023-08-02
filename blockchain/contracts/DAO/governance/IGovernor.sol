@@ -128,7 +128,7 @@ abstract contract IGovernor is IERC6372 {
      * @notice module:core
      * @dev See {IERC6372}
      */
-    function clock() public view virtual returns (uint48);
+    function clock() public view virtual returns (uint256);
 
     /**
      * @notice module:core
