@@ -1,8 +1,8 @@
-import { FRONTEND_ARTIFACTS_PATH } from "./hardhat.config";
-const path = require("path");
+import path from "path";
 
 export const DEVELOPMENT_CHAINS = ["hardhat", "localhost"];
 
+export const FRONTEND_ARTIFACTS_PATH = "./artifacts-frontend";
 export const CONTRACTS_DIR = path.join(__dirname, FRONTEND_ARTIFACTS_PATH);
 export const FRONTEND_OUTPUT_DIR = path.join(
   __dirname,

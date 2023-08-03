@@ -2,10 +2,9 @@ import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
-import { HardhatUserConfig, task } from "hardhat/config";
+import { HardhatUserConfig, subtask, task } from "hardhat/config";
+import { CONTRACT_ADDRESS_FILE, FRONTEND_ARTIFACTS_PATH } from "./properties";
 import secrets from "./secrets.json";
-
-export const FRONTEND_ARTIFACTS_PATH = "./artifacts-frontend";
 
 task(
   "clean",
@@ -15,6 +14,32 @@ task(
     console.log(`Clean extended, deleting ${FRONTEND_ARTIFACTS_PATH}...`);
     fs.removeSync(FRONTEND_ARTIFACTS_PATH);
     await runSuper(args);
+  }
+);
+
+task(
+  "deploy",
+  "Deploy contracts and clears old addresses file",
+  async function (args, hre, runSuper) {
+    await hre.run("clean-contract-addresses");
+    await runSuper(args);
+  }
+);
+
+task(
+  "node",
+  "Starts a JSON-RPC server on top of Hardhat EVM",
+  async function (args, hre, runSuper) {
+    await hre.run("clean-contract-addresses");
+    await runSuper(args);
+  }
+);
+
+subtask("clean-contract-addresses", "Clears old addresses file").setAction(
+  async (taskArgs) => {
+    const fs = require("fs-extra");
+    console.log(`Deploy extended, deleting ${CONTRACT_ADDRESS_FILE}...`);
+    fs.removeSync(CONTRACT_ADDRESS_FILE);
   }
 );
 
