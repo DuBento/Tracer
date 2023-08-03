@@ -1,34 +1,42 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { Supplychain } from "../artifacts-frontend/typechain";
-import { getContract, padCenter, scriptName } from "../lib/utils";
+import { UserRegistry } from "../artifacts-frontend/typechain";
+import { newMemberViaGovernance } from "../lib/newMemberViaGovernance";
+import { newSupplychainContractViaGovernance } from "../lib/newSupplychainContractViaGovernance";
+import {
+  getContract,
+  padCenter,
+  scriptName,
+  storeContractAddress,
+} from "../lib/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
   const { log, get, deploy } = deployments;
-  const { deployer } = await getNamedAccounts();
+  const { deployer, supplychainManager, actor1, actor2, actor3 } =
+    await getNamedAccounts();
   log(padCenter(scriptName(__filename), 50));
 
-  const userRegistry = await get("UserRegistry");
+  const { member } = await newMemberViaGovernance(supplychainManager);
 
-  const supplychain = await deploy("Supplychain", {
-    from: deployer,
-    args: [],
-    log: true,
-    // TODO verify if live on network
-  });
-
-  const supplychainContract = await getContract<Supplychain>("Supplychain", {
-    contractAddress: supplychain.address,
-  });
-
-  await supplychainContract["init(address,address)"](
-    userRegistry.address,
-    deployer
+  const { contractAddress } = await newSupplychainContractViaGovernance(
+    supplychainManager
   );
 
-  log("Supplychain smart contract: deployed!");
+  const userRegistry = await getContract<UserRegistry>("UserRegistry", {
+    signerAddress: supplychainManager,
+  });
+  // Add allowed actor
+  await Promise.all([
+    userRegistry.addContractToActor(contractAddress, actor1),
+    userRegistry.addContractToActor(contractAddress, actor1),
+    userRegistry.addContractToActor(contractAddress, actor2),
+  ]);
+
+  storeContractAddress("testSupplychain", contractAddress);
+
+  log(`Supplychain smart contract: deployed @ ${contractAddress}`);
 };
 
 module.exports = func;

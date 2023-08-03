@@ -78,8 +78,6 @@ describe("Supplychain", function () {
       userRegistry.addContractToActor(contractAddress, actor2),
     ]);
 
-    // await userRegistry.actors;
-
     const contract = await utils.getContract<Supplychain>("Supplychain", {
       contractAddress: contractAddress,
       signerAddress: actor1,

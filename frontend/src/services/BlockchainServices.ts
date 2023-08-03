@@ -3,7 +3,7 @@ import { EventLog, ethers } from "ethers";
 import deployedAddresses from "@/contracts/deployedAddresses.json";
 import { Supplychain, Supplychain__factory } from "@/contracts/typechain";
 import { NewBatchEvent } from "@/contracts/typechain/supplychain/Supplychain";
-const supplyChainAddress = deployedAddresses["Supplychain"];
+const supplyChainAddress = deployedAddresses["testSupplychain"];
 
 let supplyChainContract: Supplychain | undefined = undefined;
 
