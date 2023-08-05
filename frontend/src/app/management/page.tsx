@@ -1,7 +1,7 @@
 import GetBatch from "@/components/batch/getBatch";
 import NewBatch from "@/components/batch/newBatch";
-import UpdateBatch from "@/components/batch/updateBatch";
 import Transaction from "@/components/batch/transaction";
+import UpdateBatch from "@/components/batch/updateBatch";
 
 export const formSubmit = (
   e: React.FormEvent | React.MouseEvent,
@@ -11,7 +11,7 @@ export const formSubmit = (
   method();
 };
 
-const BatchPage = () => {
+const ManagementPage = () => {
   return (
     <main className="flex flex-col box-border py-4 px-8 h-screen w-full overflow-auto text-cyan-50  bg-bluegray-600">
       <div
@@ -39,4 +39,4 @@ const BatchPage = () => {
   );
 };
 
-export default BatchPage;
+export default ManagementPage;

@@ -11,6 +11,8 @@ const ViewPage = ({ params }: Props) => {
   const id = decodeURIComponent(params.ids[prefixIdx + 1]);
   const [batchId, contractAddress] = id.split("@");
 
+  // TODO sanitization
+
   return (
     <>
       <div>Ids: {params.ids.join("/")}</div>

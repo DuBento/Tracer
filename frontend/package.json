@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo --show-all",
+    "dev": "next dev --show-all",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -18,6 +18,7 @@
     "ethers": "^6.7.0",
     "next": "^13.4.12",
     "postcss": "^8.4.27",
+    "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
@@ -26,6 +27,8 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.4"
+    "@tailwindcss/forms": "^0.5.4",
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^6.0.3"
   }
 }
