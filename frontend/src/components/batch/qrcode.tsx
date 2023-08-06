@@ -5,7 +5,9 @@ import {
   CLIENT_VIEW_PAGE_LOCATION,
   GS1_DATA_LINK_BATCH_PREFIX,
   GS1_DATA_LINK_GTIN_PREFIX,
+  QR_CODE_PROTOCOL,
 } from "@/properties";
+import base64url from "base64url";
 import { QRCodeSVG } from "qrcode.react";
 import { useContext, useState } from "react";
 
@@ -19,21 +21,32 @@ const QRCode = ({}) => {
     console.log({ batch, gtin });
     if (!batch?.id) return;
 
-    let path = `${CLIENT_VIEW_PAGE_LOCATION}/${GS1_DATA_LINK_BATCH_PREFIX}/${batch?.id}`;
+    const bytes = batch?.id.toString(16);
+    const buffer = Buffer.from(bytes, "hex");
+
+    const b64id = base64url.encode(buffer);
+    console.log({ b64id });
+
+    let path = `${CLIENT_VIEW_PAGE_LOCATION}/${GS1_DATA_LINK_BATCH_PREFIX}/${b64id}`;
     if (gtin) path = path.concat(`/${GS1_DATA_LINK_GTIN_PREFIX}/${gtin}`);
-    const url = new URL(path, `https://${window.location.host}`).toString();
+    const url = new URL(
+      path,
+      `${QR_CODE_PROTOCOL}://${window.location.host}`
+    ).toString();
+
+    console.log({ url }, batch?.id);
 
     setQrcode(
       <QRCodeSVG
         value={url}
         bgColor={"#ffffff"}
         fgColor={"#000000"}
-        level={"Q"}
+        level={"M"}
         includeMargin={true}
         imageSettings={{
           src: "/images/logo.svg",
-          height: 32,
-          width: 32,
+          height: 24,
+          width: 24,
           excavate: true,
         }}
         className="rounded-md"
