@@ -7,7 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import DisplayBatch from "./displayBatch";
 import QRCode from "./qrcode";
 
-const GetBatch = ({}) => {
+const GetBatch = () => {
   const [batchId, setBatchId] = useState<string>(
     "109520590170103477010316801948809068559869343391415481457425034871206184730642"
   );
@@ -31,7 +31,7 @@ const GetBatch = ({}) => {
 
   return (
     <>
-      <div className="flex flex-row w-full justify-between gap-2">
+      <div className="flex flex-row w-full justify-between gap-6 my-2 h-40">
         <div className="flex-grow">
           <h2 className="text-2xl font-mono ">Get Batch</h2>
           <p className="text-base leading-6">Batch id</p>
@@ -50,7 +50,7 @@ const GetBatch = ({}) => {
           </div>
 
           <button
-            className="my-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
+            className="mt-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
             type="submit"
             onClick={handleFetchBatch}
           >
@@ -58,7 +58,7 @@ const GetBatch = ({}) => {
           </button>
         </div>
         {batch && (
-          <div className="basis-1/3">
+          <div className="w-56">
             <QRCode />
           </div>
         )}
