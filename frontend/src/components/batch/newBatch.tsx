@@ -4,7 +4,11 @@ import NotificationContext from "@/context/notificationContext";
 import BlockchainServices from "@/services/BlockchainServices";
 import { useContext, useState } from "react";
 
-const NewBatch = ({}) => {
+interface Props {
+  contractAddress: string;
+}
+
+const NewBatch = (props: Props) => {
   const notifications = useContext(NotificationContext);
 
   const [batchId, setBatchId] = useState<string>();
@@ -13,7 +17,10 @@ const NewBatch = ({}) => {
   const handleCreateNewBatch = async () => {
     if (!newBatchDescription) throw new Error("Batch description is empty");
 
-    const newBatchId = await BlockchainServices.newBatch(newBatchDescription);
+    const newBatchId = await BlockchainServices.newBatch(
+      props.contractAddress,
+      newBatchDescription,
+    );
     setBatchId(newBatchId.toString());
   };
 

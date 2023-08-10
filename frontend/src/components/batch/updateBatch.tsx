@@ -1,26 +1,35 @@
 "use client";
 
-import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices from "@/services/BlockchainServices";
+import BlockchainServices, { BatchId } from "@/services/BlockchainServices";
 import StorageService from "@/services/StorageService";
 import { useContext, useState } from "react";
 import FilesDropzone from "../common/filesDropzone";
 
-const UpdateBatch = ({}) => {
-  const { batch } = useContext(BatchContext);
-  const notifications = useContext(NotificationContext);
+interface Props {
+  batchId?: BatchId;
+  contractAddress: string;
+}
 
+const UpdateBatch = (props: Props) => {
   const [updateDescription, setUpdateDescription] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
 
+  const notifications = useContext(NotificationContext);
+
   const handlePushNewEvent = async () => {
-    if (batch === undefined) throw new Error("No batch to be updated");
+    if (!props.batchId) throw new Error("No batch to be updated");
     if (!updateDescription && files.length == 0)
       throw new Error("No files or description provided");
 
     return StorageService.uploadDocuments(updateDescription, files)
-      .then((URI) => BlockchainServices.pushNewUpdate(batch.id, URI))
+      .then((URI) =>
+        BlockchainServices.pushNewUpdate(
+          props.contractAddress,
+          props.batchId!,
+          URI,
+        ),
+      )
       .then(() => {
         setUpdateDescription("");
         setFiles([]);
@@ -31,9 +40,14 @@ const UpdateBatch = ({}) => {
     notifications.notifyPromise(handlePushNewEvent(), {
       loading: "Pushing new event...",
       success: "New event pushed",
-      error: (err) => `${err}`,
+      error: (err) => {
+        console.error(err);
+        return `${err}`;
+      },
     });
   };
+
+  if (!props.batchId) return null;
 
   return (
     <>

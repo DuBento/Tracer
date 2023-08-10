@@ -1,29 +1,37 @@
 "use client";
 
-import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices from "@/services/BlockchainServices";
+import BlockchainServices, { BatchId } from "@/services/BlockchainServices";
 import StorageService from "@/services/StorageService";
 import { useContext, useState } from "react";
 import FilesDropzone from "../common/filesDropzone";
 
-const Transaction = ({}) => {
-  const { batch } = useContext(BatchContext);
-  const notifications = useContext(NotificationContext);
+interface Props {
+  batchId?: BatchId;
+  contractAddress: string;
+}
 
+const Transaction = (props: Props) => {
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [updateDescription, setUpdateDescription] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
 
+  const notifications = useContext(NotificationContext);
+
   const handleSendTransaction = async () => {
-    if (batch === undefined) throw new Error("No batch to be updated");
+    if (!props.batchId) throw new Error("No batch to be updated");
     if (!receiverAddress) throw new Error("No receiver address provided");
     if (!updateDescription && files.length == 0)
       throw new Error("No files or description provided");
 
     return StorageService.uploadDocuments(updateDescription, files)
       .then((URI) =>
-        BlockchainServices.pushNewTransaction(batch.id, receiverAddress, URI),
+        BlockchainServices.pushNewTransaction(
+          props.contractAddress,
+          props.batchId!,
+          receiverAddress,
+          URI,
+        ),
       )
       .then(() => {
         setReceiverAddress("");
@@ -36,9 +44,14 @@ const Transaction = ({}) => {
     notifications.notifyPromise(handleSendTransaction(), {
       loading: "Pushing new transaction...",
       success: "New transaction pushed",
-      error: (err) => `${err}`,
+      error: (err) => {
+        console.error(err);
+        return `${err}`;
+      },
     });
   };
+
+  if (!props.batchId) return null;
 
   return (
     <>

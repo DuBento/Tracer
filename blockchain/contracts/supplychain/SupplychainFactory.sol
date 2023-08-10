@@ -6,8 +6,6 @@ import "../custom/Clone.sol";
 import "../custom/Ownable.sol";
 import "../DAO/IUserRegistry.sol";
 
-// import "../../node_modules/hardhat/console.sol";
-
 contract SupplychainFactory is Ownable {
     address immutable defaultImplementation;
     IUserRegistry private userRegistry;
