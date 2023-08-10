@@ -1,11 +1,11 @@
-import { EventLog, ethers } from "ethers";
-
 import deployedAddresses from "@/contracts/deployedAddresses.json";
 import { Supplychain, Supplychain__factory } from "@/contracts/typechain";
 import { NewBatchEvent } from "@/contracts/typechain/supplychain/Supplychain";
+import base64url from "base64url";
+import { EventLog, ethers } from "ethers";
 const supplyChainAddress = deployedAddresses["testSupplychain"];
 
-let supplyChainContract: Supplychain | undefined = undefined;
+const BATCH_URI_DELIMITER = "@";
 
 // Types
 
@@ -136,6 +136,32 @@ const BlockchainServices = {
 
   parseTime: (ts: bigint): string => {
     return new Date(Number(ts * 1000n)).toISOString();
+  },
+
+  encodeBatchURI: (id: BatchId, contractAddress: string): string => {
+    const idBytes = id.toString(16);
+    const idBuffer = Buffer.from(idBytes, "hex");
+
+    const contractAddressBytes = contractAddress.replace("0x", "");
+    const contractAddressBuffer = Buffer.from(contractAddressBytes, "hex");
+
+    return `${base64url.encode(
+      idBuffer,
+    )}${BATCH_URI_DELIMITER}${base64url.encode(contractAddressBuffer)}`;
+  },
+
+  decodeBatchURI: (
+    encodedText: string,
+  ): { batchId: BatchId; contractAddress: string } => {
+    const encodedParts = encodedText.split(BATCH_URI_DELIMITER);
+    if (encodedParts.length != 2) throw new Error("Invalid encoded batch URL");
+
+    const [batchIdEncoded, contractAddressEncoded] = encodedParts;
+
+    return {
+      batchId: BigInt(`0x${base64url.decode(batchIdEncoded, "hex")}`),
+      contractAddress: base64url.decode(contractAddressEncoded, "hex"),
+    };
   },
 };
 
