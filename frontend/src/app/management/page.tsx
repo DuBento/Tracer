@@ -5,7 +5,7 @@ import UpdateBatch from "@/components/batch/updateBatch";
 
 export const formSubmit = (
   e: React.FormEvent | React.MouseEvent,
-  method: any
+  method: any,
 ) => {
   e.preventDefault();
   method();
@@ -13,26 +13,17 @@ export const formSubmit = (
 
 const ManagementPage = () => {
   return (
-    <main className="flex flex-col box-border py-4 px-8 h-screen w-full overflow-auto text-cyan-50  bg-bluegray-600">
-      <div
-        className="flex-auto w-full p-2
-                  border-b-2 border-red-100"
-      >
+    <main className="box-border flex h-screen w-full flex-col overflow-auto bg-bluegray-600 px-8 py-4  text-cyan-50">
+      <div className="w-full flex-auto border-b-2 border-red-100 p-2">
         <NewBatch />
       </div>
-      <div
-        className="flex-auto w-full p-2
-                  border-b-2 border-red-100"
-      >
+      <div className="w-full flex-auto border-b-2 border-red-100 p-2">
         <GetBatch />
       </div>
-      <div
-        className="flex-auto w-full p-2
-                  border-b-2 border-red-100"
-      >
+      <div className="w-full flex-auto border-b-2 border-red-100 p-2">
         <UpdateBatch />
       </div>
-      <div className="flex-auto w-full p-2">
+      <div className="w-full flex-auto p-2">
         <Transaction />
       </div>
     </main>

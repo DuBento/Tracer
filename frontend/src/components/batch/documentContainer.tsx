@@ -11,7 +11,7 @@ interface DocumentContainerProps {
 const DocumentContainer = ({ uri }: DocumentContainerProps) => {
   const { data, error, isLoading } = useSWR(
     uri,
-    StorageService.fetchIndexDocument
+    StorageService.fetchIndexDocument,
   );
 
   if (error) return <div>failed to load</div>;
@@ -23,19 +23,19 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
       <p className="pb-2 text-sm text-gray-900">{data?.desc}</p>
 
       <div
-        className="grid items-center justify-center align-middle grid-flow-row-dense gap-4
-        grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+        className="grid grid-flow-row-dense grid-cols-1 items-center justify-center gap-4
+        align-middle sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
       >
         {data?.imgs.map((filename, idx) => (
           <div
             key={`img${idx}`}
-            className="relative grow aspect-[16/12] shadow-lg"
+            className="relative aspect-[16/12] grow shadow-lg"
           >
             <Image
               src={StorageService.generateResourceURL(uri, filename).toString()}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="absolute object-cover inset-0 w-full h-full rounded-lg"
+              className="absolute inset-0 h-full w-full rounded-lg object-cover"
               placeholder="blur"
               blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8s3RpPQAHsgLHRM/5kQAAAABJRU5ErkJggg=="
               alt={filename}
@@ -46,13 +46,13 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
         {data?.vids.map((filename, idx) => (
           <div
             key={`vids${idx}`}
-            className="col-span-2 aspect-video rounded-lg overflow-hidden shadow-lg"
+            className="col-span-2 aspect-video overflow-hidden rounded-lg shadow-lg"
           >
             <video loop controls muted>
               <source
                 src={StorageService.generateResourceURL(
                   uri,
-                  filename
+                  filename,
                 ).toString()}
               />
             </video>
@@ -62,8 +62,8 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
         {data?.txt.map((filename, idx) => (
           <div
             key={`txt${idx}`}
-            className="col-span-2 aspect-video rounded-lg shadow-lg
-            w-full h-full p-2 font-mono overflow-auto"
+            className="col-span-2 aspect-video h-full w-full
+            overflow-auto rounded-lg p-2 font-mono shadow-lg"
           >
             <DocumentText uri={uri} filename={filename} />
           </div>
@@ -75,7 +75,7 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
             className="col-span-2 aspect-video rounded-lg shadow-lg"
           >
             <iframe
-              className="w-full h-full font-mono border border-gray-300 rounded-lg"
+              className="h-full w-full rounded-lg border border-gray-300 font-mono"
               src={StorageService.generateResourceURL(uri, filename).toString()}
             />
           </div>
@@ -84,19 +84,19 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
         {data?.other.map((filename, idx) => (
           <div
             key={`txt${idx}`}
-            className="p-2 aspect-video rounded-lg shadow-lg"
+            className="aspect-video rounded-lg p-2 shadow-lg"
           >
             <a
               href={StorageService.generateResourceURL(
                 uri,
-                filename
+                filename,
               ).toString()}
               download
-              className="flex justify-center items-center h-full m-auto"
+              className="m-auto flex h-full items-center justify-center"
             >
-              <div className="text-center text-bluegray-500 font-mono font-bold max-w-full text-ellipsis overflow-hidden">
+              <div className="max-w-full overflow-hidden text-ellipsis text-center font-mono font-bold text-bluegray-500">
                 <svg
-                  className="h-16 w-16 m-auto"
+                  className="m-auto h-16 w-16"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -131,15 +131,15 @@ const DocumentText = ({ uri, filename }: DocumentTextProps) => {
   const fetcher = (url: string) => fetch(url).then((res) => res.text());
   const { data, error, isLoading } = useSWR(
     StorageService.generateResourceURL(uri, filename).toString(),
-    fetcher
+    fetcher,
   );
 
   if (error) return <pre>failed to load</pre>;
   if (isLoading)
     return (
       <div role="status" className="w-full animate-pulse">
-        <div className="h-2.5 w-3/4 bg-gray-200 rounded-full dark:bg-bluegray-500 mb-4"></div>
-        <div className="h-2.5 w-2/4 bg-gray-200 rounded-full dark:bg-bluegray-500 mb-4"></div>
+        <div className="mb-4 h-2.5 w-3/4 rounded-full bg-gray-200 dark:bg-bluegray-500"></div>
+        <div className="mb-4 h-2.5 w-2/4 rounded-full bg-gray-200 dark:bg-bluegray-500"></div>
       </div>
     );
 

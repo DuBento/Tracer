@@ -16,7 +16,7 @@ interface UpdateIndexDocument {
 
 export const composeMetadata = (
   description: string,
-  files: File[]
+  files: File[],
 ): UpdateIndexDocument => {
   const metadata: UpdateIndexDocument = {
     desc: description,
@@ -51,7 +51,7 @@ const StorageService = {
 
   fetchDocument: async (uri: string, filename: string): Promise<any> => {
     console.log(
-      `Fetching ${StorageService.generateResourceURL(uri, filename)}`
+      `Fetching ${StorageService.generateResourceURL(uri, filename)}`,
     );
     return fetch(StorageService.generateResourceURL(uri, filename), {
       method: "GET",
@@ -67,7 +67,7 @@ const StorageService = {
 
   uploadDocuments: async (
     description: string,
-    files: File[]
+    files: File[],
   ): Promise<string> => {
     const formData = new FormData();
     formData.append("description", description);

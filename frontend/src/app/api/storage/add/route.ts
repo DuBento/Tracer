@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     formData.append(
       "file",
       new Blob([JSON.stringify(metadata)], { type: "application/json" }),
-      `${INDEX_FILE}`
+      `${INDEX_FILE}`,
     );
 
     // request
@@ -38,8 +38,8 @@ export async function POST(request: Request) {
           Buffer.from(
             process.env.STORAGE_API_KEY +
               ":" +
-              process.env.STORAGE_API_KEY_SECRET
-          ).toString("base64")
+              process.env.STORAGE_API_KEY_SECRET,
+          ).toString("base64"),
       );
 
     const requestUrl = `${process.env
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
     if (!res.ok)
       throw new Error(
-        `Received error from storage server: ${res.status} ${res.statusText}`
+        `Received error from storage server: ${res.status} ${res.statusText}`,
       );
 
     const data = await res.text();
@@ -80,7 +80,7 @@ function checkAvailableIndexFilename(files: FormDataEntryValue[]) {
 
 function checkAddFileRequestData(
   description: FormDataEntryValue | null,
-  files: FormDataEntryValue[]
+  files: FormDataEntryValue[],
 ) {
   if (!description || !(typeof description == "string"))
     throw new Error("Missing form data fields: description");
