@@ -68,7 +68,10 @@ const GetBatch = (props: Props) => {
         </div>
         {props.batch && (
           <div className="w-56">
-            <QRCode batch={props.batch} />
+            <QRCode
+              batch={props.batch}
+              contractAddress={props.contractAddress}
+            />
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import { GS1_DATA_LINK_BATCH_PREFIX } from "@/properties";
-import base64url from "base64url";
+import BlockchainServices from "@/services/BlockchainServices";
 
 interface Props {
   params: {
@@ -8,10 +8,11 @@ interface Props {
 }
 
 const ViewPage = ({ params }: Props) => {
-  const prefixIdx = params.ids.indexOf(GS1_DATA_LINK_BATCH_PREFIX);
-  const id = decodeURIComponent(params.ids[prefixIdx + 1]);
-  const [batchIdB64, contractAddress] = id.split("@");
-  const batchId = BigInt(`0x${base64url.decode(batchIdB64, "hex")}`);
+  const prefixBatchURI = params.ids.indexOf(GS1_DATA_LINK_BATCH_PREFIX);
+  const batchURI = decodeURIComponent(params.ids[prefixBatchURI + 1]);
+
+  const { batchId, contractAddress } =
+    BlockchainServices.decodeBatchURI(batchURI);
 
   // TODO sanitization
 

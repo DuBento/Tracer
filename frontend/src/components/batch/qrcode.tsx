@@ -6,13 +6,13 @@ import {
   GS1_DATA_LINK_GTIN_PREFIX,
   QR_CODE_PROTOCOL,
 } from "@/properties";
-import { Batch } from "@/services/BlockchainServices";
-import base64url from "base64url";
+import BlockchainServices, { Batch } from "@/services/BlockchainServices";
 import { useState } from "react";
 import LogoQrCode from "../common/logoQrCode";
 
 interface Props {
   batch: Batch;
+  contractAddress: string;
 }
 
 const QRCode = (props: Props) => {
@@ -22,13 +22,14 @@ const QRCode = (props: Props) => {
   const generateQrcode = async () => {
     if (!props.batch.id) return;
 
-    const bytes = props.batch.id.toString(16);
-    const buffer = Buffer.from(bytes, "hex");
+    const encodedBatchURL = BlockchainServices.encodeBatchURI(
+      props.batch.id,
+      props.contractAddress,
+    );
 
-    const b64id = base64url.encode(buffer);
-    console.log({ b64id });
+    console.log({ encodedBatchURL });
 
-    let path = `${CLIENT_VIEW_PAGE_LOCATION}/${GS1_DATA_LINK_BATCH_PREFIX}/${b64id}`;
+    let path = `${CLIENT_VIEW_PAGE_LOCATION}/${GS1_DATA_LINK_BATCH_PREFIX}/${encodedBatchURL}`;
     if (gtin) path = path.concat(`/${GS1_DATA_LINK_GTIN_PREFIX}/${gtin}`);
     const url = new URL(
       path,
