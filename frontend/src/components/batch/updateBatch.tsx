@@ -38,14 +38,14 @@ const UpdateBatch = ({}) => {
   return (
     <>
       <div>
-        <h2 className="text-2xl font-mono">Push new event</h2>
+        <h2 className="font-mono text-2xl">Push new event</h2>
 
         <p className="text-base leading-6">Update description</p>
         <div className="my-2 ">
           <textarea
             autoComplete="off"
-            className="block w-full rounded-md border-0 py-1.5 
-              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
+            className="block w-full rounded-md border-0 bg-coolgray-500 
+              py-1.5 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
             value={updateDescription}
             onChange={(e) => setUpdateDescription(e.target.value)}
@@ -57,7 +57,7 @@ const UpdateBatch = ({}) => {
         </div>
 
         <button
-          className="my-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
+          className="my-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
           onClick={handlePushNewEventNotify}
         >
           Push new update

@@ -31,16 +31,16 @@ const QRCode = ({}) => {
     if (gtin) path = path.concat(`/${GS1_DATA_LINK_GTIN_PREFIX}/${gtin}`);
     const url = new URL(
       path,
-      `${QR_CODE_PROTOCOL}://${window.location.host}`
+      `${QR_CODE_PROTOCOL}://${window.location.host}`,
     ).toString();
 
     setQrCodeElement(
       <div
         id="qrcode-created-container"
-        className="rounded-md h-full aspect-square overflow-hidden"
+        className="aspect-square h-full overflow-hidden rounded-md"
       >
         <LogoQrCode url={url} imageSize={24} />
-      </div>
+      </div>,
     );
   };
 
@@ -59,11 +59,11 @@ const QRCode = ({}) => {
 
   if (qrCodeElement)
     return (
-      <div className="flex flex-row items-center w-full h-full py-4">
+      <div className="flex h-full w-full flex-row items-center py-4">
         {qrCodeElement}
-        <div className="flex flex-col justify-center ml-4">
+        <div className="ml-4 flex flex-col justify-center">
           <button
-            className="my-2 p-2 h-12 w-12 rounded-full bg-red-300 hover:bg-red-400 font-semibold"
+            className="my-2 h-12 w-12 rounded-full bg-red-300 p-2 font-semibold hover:bg-red-400"
             onClick={() => setQrCodeElement(undefined)}
           >
             {/* close icon */}
@@ -76,7 +76,7 @@ const QRCode = ({}) => {
             </svg>
           </button>
           <button
-            className="my-2 p-2 h-12 w-12 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+            className="my-2 h-12 w-12 rounded-full bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600"
             onClick={downloadQrcode}
           >
             {/* download icon */}
@@ -94,7 +94,7 @@ const QRCode = ({}) => {
 
   return (
     <>
-      <h2 className="text-2xl font-mono ">QRCode</h2>
+      <h2 className="font-mono text-2xl ">QRCode</h2>
       <p className="text-base leading-6">GTIN</p>
       <div className="mt-2">
         <input
@@ -105,8 +105,8 @@ const QRCode = ({}) => {
           autoComplete="GTIN"
           placeholder="Optional"
           value={gtin}
-          className="block w-full rounded-md border-0 py-1.5 
-              bg-coolgray-500 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
+          className="block w-full rounded-md border-0 bg-coolgray-500 
+              py-1.5 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
               focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
           onChange={(e) =>
             setGtin(e.target.value.replace(/\D/g, "").substring(0, 14))
@@ -115,7 +115,7 @@ const QRCode = ({}) => {
       </div>
 
       <button
-        className="my-4 px-2 py-1.5 rounded bg-red-300 font-bold hover:bg-red-200 hover:text-white hover:font-extrabold"
+        className="my-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
         type="submit"
         onClick={generateQrcode}
       >

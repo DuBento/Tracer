@@ -17,7 +17,7 @@ const NotificationContext = createContext({
       loading: string;
       success: string | ProcessingFunction;
       error: string | ProcessingFunction;
-    }
+    },
   ) =>
     toast.promise(promise, {
       loading: loading,

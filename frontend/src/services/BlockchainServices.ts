@@ -56,7 +56,7 @@ const BlockchainServices = {
     else {
       supplyChainContract = Supplychain__factory.connect(
         supplyChainAddress,
-        await connectWallet()
+        await connectWallet(),
       );
       return supplyChainContract;
     }
@@ -64,7 +64,7 @@ const BlockchainServices = {
 
   getBatch: async (id: BatchId): Promise<Batch> => {
     return BlockchainServices.supplyChainContract().then((contract) =>
-      contract.getBatch(id)
+      contract.getBatch(id),
     );
   },
 
@@ -77,7 +77,7 @@ const BlockchainServices = {
 
       const newBatchEvent = (
         receipt.logs.find(
-          (event) => event instanceof EventLog && event.eventName == "NewBatch"
+          (event) => event instanceof EventLog && event.eventName == "NewBatch",
         ) as NewBatchEvent.Log
       )?.args;
 
@@ -93,14 +93,14 @@ const BlockchainServices = {
 
         const tx = await contract.handleUpdate(id, documentURI);
         tx.wait();
-      }
+      },
     );
   },
 
   pushNewTransaction: async (
     id: BatchId,
     receiver: string,
-    documentURI: string
+    documentURI: string,
   ) => {
     return await BlockchainServices.supplyChainContract().then(
       async (contract) => {
@@ -112,7 +112,7 @@ const BlockchainServices = {
 
         const tx = await contract.handleTransaction(id, receiver, documentURI);
         tx.wait();
-      }
+      },
     );
   },
 
@@ -124,10 +124,10 @@ const BlockchainServices = {
 
         contract.on(filter, (owner, id, event) => {
           console.log(
-            `#Listening: New Bacth event with id: ${owner}. Owner is ${id}.`
+            `#Listening: New Bacth event with id: ${owner}. Owner is ${id}.`,
           );
         });
-      }
+      },
     );
   },
 

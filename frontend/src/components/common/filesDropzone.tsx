@@ -49,7 +49,7 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
 
   return (
     <div
-      className={`py-4 px-4 rounded-md ${
+      className={`rounded-md px-4 py-4 ${
         dragging ? "bg-bluegray-200" : "bg-coolgray-100"
       }`}
       onDragOver={handleDragOver}
@@ -57,7 +57,7 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
       onDrop={handleDrop}
     >
       <div
-        className={`py-2 px-4 border-[2px] border-red-300 border-dotted rounded-lg cursor-pointer
+        className={`cursor-pointer rounded-lg border-[2px] border-dotted border-red-300 px-4 py-2
         ${dragging ? "bg-bluegray-200" : "bg-coolgray-100"}`}
         onClick={handleFileInputClick}
       >
@@ -69,9 +69,9 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
           accept="image/*, audio/*, video/*, .xml, .json, .txt, .xlsx, .xls, .doc, .docx, .ppt, .pptx, .pdf"
           onChange={handleFileSelect}
         />
-        <div className="flex flex-row space-x-4 items-center">
+        <div className="flex flex-row items-center space-x-4">
           <svg
-            className="w-8 h-8 text-red-300"
+            className="h-8 w-8 text-red-300"
             fill="currentColor"
             viewBox="0 0 102 66"
           >
@@ -88,7 +88,7 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
       </div>
 
       {fileArray.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mt-4 px-4 w-full">
+        <div className="mt-4 grid w-full grid-cols-2 gap-2 px-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {fileArray.map((file, index) => (
             <div key={index} className="h-48">
               <FilePreview file={file} close={removeFile} />

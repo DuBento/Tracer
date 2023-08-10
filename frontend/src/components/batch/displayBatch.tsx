@@ -15,10 +15,10 @@ const DisplayBatch = ({}) => {
     <>
       {batch && (
         <>
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+          <div className="mb-8 overflow-hidden bg-white shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6">
-              <h2 className="text-gray-900 text-lg font-bold mb-2">ID</h2>
-              <p className="text-gray-500 mb-2">{batch.id.toString()}</p>
+              <h2 className="mb-2 text-lg font-bold text-gray-900">ID</h2>
+              <p className="mb-2 text-gray-500">{batch.id.toString()}</p>
             </div>
             <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
               <dl className="sm:divide-y sm:divide-gray-200">
@@ -52,9 +52,9 @@ const DisplayBatch = ({}) => {
             </div>
           </div>
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+          <div className="mb-8 overflow-hidden bg-white shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6">
-              <h2 className="text-gray-900 text-lg font-bold mb-2">Updates</h2>
+              <h2 className="mb-2 text-lg font-bold text-gray-900">Updates</h2>
             </div>
             <div className="border-t border-gray-200">
               <ul className="divide-y divide-gray-200">
@@ -67,9 +67,9 @@ const DisplayBatch = ({}) => {
             </div>
           </div>
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+          <div className="mb-8 overflow-hidden bg-white shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6">
-              <h2 className="text-gray-900 text-lg font-bold mb-2">
+              <h2 className="mb-2 text-lg font-bold text-gray-900">
                 Transactions
               </h2>
             </div>
@@ -114,7 +114,7 @@ const DisplayUpdate = ({ update }: DisplayUpdateProps) => {
           />
         </svg>
       </div>
-      <div className="flex-grow ml-3">
+      <div className="ml-3 flex-grow">
         <p className="text-sm font-medium text-green-500">Owner</p>
         <p className="text-sm text-gray-900">{update.owner.toString()}</p>
         <p className="text-xs text-gray-500">
