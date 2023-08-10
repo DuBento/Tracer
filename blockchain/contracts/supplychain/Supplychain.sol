@@ -7,8 +7,6 @@ import "../DAO/IUserRegistry.sol";
 import "../OpenZeppelin/interfaces/IERC6372.sol";
 import "../OpenZeppelin/utils/math/SafeCast.sol";
 
-// import "../../node_modules/hardhat/console.sol";
-
 contract Supplychain is Ownable, ConformityState, IERC6372 {
     // Type declarations
     struct Batch {

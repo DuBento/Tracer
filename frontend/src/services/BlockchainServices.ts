@@ -51,42 +51,44 @@ const connectHardhat = async () => {
 };
 
 const BlockchainServices = {
-  supplyChainContract: async (): Promise<Supplychain> => {
-    if (supplyChainContract) return supplyChainContract;
-    else {
-      supplyChainContract = Supplychain__factory.connect(
-        supplyChainAddress,
-        await connectWallet(),
-      );
-      return supplyChainContract;
-    }
-  },
+  supplyChainContract: async (address: string): Promise<Supplychain> =>
+    Supplychain__factory.connect(address, await connectWallet()),
 
-  getBatch: async (id: BatchId): Promise<Batch> => {
-    return BlockchainServices.supplyChainContract().then((contract) =>
-      contract.getBatch(id),
+  getBatch: async (contractAddress: string, id: BatchId): Promise<Batch> => {
+    return BlockchainServices.supplyChainContract(contractAddress).then(
+      (contract) => contract.getBatch(id),
     );
   },
 
-  newBatch: async (description: string): Promise<BatchId> => {
-    return BlockchainServices.supplyChainContract().then(async (contract) => {
-      const tx = await contract.newBatch(description);
-      const receipt = await tx.wait();
+  newBatch: async (
+    contractAddress: string,
+    description: string,
+  ): Promise<BatchId> => {
+    return BlockchainServices.supplyChainContract(contractAddress).then(
+      async (contract) => {
+        const tx = await contract.newBatch(description);
+        const receipt = await tx.wait();
 
-      if (receipt == null) throw new Error("Error completing transaction");
+        if (receipt == null) throw new Error("Error completing transaction");
 
-      const newBatchEvent = (
-        receipt.logs.find(
-          (event) => event instanceof EventLog && event.eventName == "NewBatch",
-        ) as NewBatchEvent.Log
-      )?.args;
+        const newBatchEvent = (
+          receipt.logs.find(
+            (event) =>
+              event instanceof EventLog && event.eventName == "NewBatch",
+          ) as NewBatchEvent.Log
+        )?.args;
 
-      return newBatchEvent.id;
-    });
+        return newBatchEvent.id;
+      },
+    );
   },
 
-  pushNewUpdate: async (id: BatchId, documentURI: string) => {
-    return await BlockchainServices.supplyChainContract().then(
+  pushNewUpdate: async (
+    contractAddress: string,
+    id: BatchId,
+    documentURI: string,
+  ) => {
+    return await BlockchainServices.supplyChainContract(contractAddress).then(
       async (contract) => {
         console.log("Sending:");
         console.log({ id, documentURI });
@@ -98,11 +100,12 @@ const BlockchainServices = {
   },
 
   pushNewTransaction: async (
+    contractAddress: string,
     id: BatchId,
     receiver: string,
     documentURI: string,
   ) => {
-    return await BlockchainServices.supplyChainContract().then(
+    return await BlockchainServices.supplyChainContract(contractAddress).then(
       async (contract) => {
         if (!ethers.isAddress(receiver))
           throw new Error("No receiver associated with transaction");
@@ -116,8 +119,8 @@ const BlockchainServices = {
     );
   },
 
-  listenOnNewBatchEvent: async () => {
-    BlockchainServices.supplyChainContract().then(
+  listenOnNewBatchEvent: async (contractAddress: string) => {
+    BlockchainServices.supplyChainContract(contractAddress).then(
       async (contract: Supplychain) => {
         const currentAddress = await contract.getAddress();
         const filter = contract.filters.NewBatch(currentAddress);

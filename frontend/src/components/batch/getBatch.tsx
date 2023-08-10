@@ -1,33 +1,42 @@
 "use client";
 
-import { BatchContext } from "@/context/batchContext";
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices from "@/services/BlockchainServices";
-import { useContext, useEffect, useState } from "react";
+import BlockchainServices, { Batch } from "@/services/BlockchainServices";
+import { useContext, useState } from "react";
 import DisplayBatch from "./displayBatch";
 import QRCode from "./qrcode";
 
-const GetBatch = () => {
+interface Props {
+  batch?: Batch;
+  setBatch: (newBatch: Batch) => void;
+  contractAddress: string;
+  children?: React.ReactNode;
+}
+
+const tmpDevBatchId =
+  "86908536660999850864466637729736991726033624077462134270947258110704485629459";
+
+const GetBatch = (props: Props) => {
   const [batchId, setBatchId] = useState<string>(
-    "109520590170103477010316801948809068559869343391415481457425034871206184730642",
+    props.batch?.id ? props.batch.id.toString() : tmpDevBatchId,
   );
-  const { batch, setBatch } = useContext(BatchContext);
 
   const notifications = useContext(NotificationContext);
 
   const handleFetchBatch = async () => {
     try {
-      setBatch(await BlockchainServices.getBatch(batchId));
+      const batch = await BlockchainServices.getBatch(
+        props.contractAddress,
+        batchId,
+      );
+      if (!batch.id) throw new Error("Batch not found.");
+
+      props.setBatch(batch);
     } catch (error: any) {
       console.error(error);
       notifications.error(error.message);
     }
   };
-
-  useEffect(() => {
-    if (!batch) return;
-    console.log(batch);
-  }, [batch]);
 
   return (
     <>
@@ -50,20 +59,25 @@ const GetBatch = () => {
           </div>
 
           <button
-            className="mt-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
+            className="wfont-bold mt-4 rounded bg-red-300 px-2 py-1.5 hover:bg-red-200 hover:font-extrabold hover:text-white"
             type="submit"
             onClick={handleFetchBatch}
           >
             Submit
           </button>
         </div>
-        {batch && (
+        {props.batch && (
           <div className="w-56">
-            <QRCode />
+            <QRCode batch={props.batch} />
           </div>
         )}
       </div>
-      <DisplayBatch />
+      {props.batch && (
+        <>
+          <DisplayBatch batch={props.batch} />
+          {props.children}
+        </>
+      )}
     </>
   );
 };

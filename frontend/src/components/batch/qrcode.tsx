@@ -1,27 +1,28 @@
 "use client";
 
-import { BatchContext } from "@/context/batchContext";
 import {
   CLIENT_VIEW_PAGE_LOCATION,
   GS1_DATA_LINK_BATCH_PREFIX,
   GS1_DATA_LINK_GTIN_PREFIX,
   QR_CODE_PROTOCOL,
 } from "@/properties";
+import { Batch } from "@/services/BlockchainServices";
 import base64url from "base64url";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import LogoQrCode from "../common/logoQrCode";
 
-const QRCode = ({}) => {
-  const { batch } = useContext(BatchContext);
+interface Props {
+  batch: Batch;
+}
 
+const QRCode = (props: Props) => {
   const [gtin, setGtin] = useState<string>("");
   const [qrCodeElement, setQrCodeElement] = useState<JSX.Element>();
 
   const generateQrcode = async () => {
-    console.log({ batch, gtin });
-    if (!batch?.id) return;
+    if (!props.batch.id) return;
 
-    const bytes = batch?.id.toString(16);
+    const bytes = props.batch.id.toString(16);
     const buffer = Buffer.from(bytes, "hex");
 
     const b64id = base64url.encode(buffer);
@@ -54,8 +55,6 @@ const QRCode = ({}) => {
     element.click();
     element.remove();
   };
-
-  if (!batch) return null;
 
   if (qrCodeElement)
     return (
