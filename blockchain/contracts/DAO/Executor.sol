@@ -42,10 +42,9 @@ contract Executor is IExecutor, Ownable {
         address target,
         uint256 value,
         bytes calldata payload,
-        bytes32 predecessor,
         bytes32 salt
     ) public payable override nonReentrant onlyOwner {
-        bytes32 id = hashOperation(target, value, payload, predecessor, salt);
+        bytes32 id = hashOperation(target, value, payload, salt);
 
         _execute(target, value, payload);
         emit CallExecuted(id, 0, target, value, payload);
@@ -62,7 +61,6 @@ contract Executor is IExecutor, Ownable {
         address[] calldata targets,
         uint256[] calldata values,
         bytes[] calldata payloads,
-        bytes32 predecessor,
         bytes32 salt
     ) public payable override nonReentrant onlyOwner {
         if (
@@ -75,13 +73,7 @@ contract Executor is IExecutor, Ownable {
             );
         }
 
-        bytes32 id = hashOperationBatch(
-            targets,
-            values,
-            payloads,
-            predecessor,
-            salt
-        );
+        bytes32 id = hashOperationBatch(targets, values, payloads, salt);
 
         for (uint256 i = 0; i < targets.length; ++i) {
             address target = targets[i];

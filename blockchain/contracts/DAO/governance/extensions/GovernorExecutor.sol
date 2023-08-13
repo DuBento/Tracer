@@ -61,7 +61,6 @@ abstract contract GovernorExecutor {
             targets,
             values,
             calldatas,
-            0,
             descriptionHash
         );
     }
