@@ -46,7 +46,6 @@ abstract contract IExecutor {
         address target,
         uint256 value,
         bytes calldata payload,
-        bytes32 predecessor,
         bytes32 salt
     ) public payable virtual;
 
@@ -61,7 +60,6 @@ abstract contract IExecutor {
         address[] calldata targets,
         uint256[] calldata values,
         bytes[] calldata payloads,
-        bytes32 predecessor,
         bytes32 salt
     ) public payable virtual;
 
@@ -73,10 +71,9 @@ abstract contract IExecutor {
         address target,
         uint256 value,
         bytes calldata data,
-        bytes32 predecessor,
         bytes32 salt
     ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encode(target, value, data, predecessor, salt));
+        return keccak256(abi.encode(target, value, data, salt));
     }
 
     /**
@@ -87,10 +84,8 @@ abstract contract IExecutor {
         address[] calldata targets,
         uint256[] calldata values,
         bytes[] calldata payloads,
-        bytes32 predecessor,
         bytes32 salt
     ) public pure virtual returns (bytes32) {
-        return
-            keccak256(abi.encode(targets, values, payloads, predecessor, salt));
+        return keccak256(abi.encode(targets, values, payloads, salt));
     }
 }
