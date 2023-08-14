@@ -31,7 +31,7 @@ const DisplayUpdate = ({ update }: DisplayUpdateProps) => {
         <p className="text-sm font-medium text-green-500">Owner</p>
         <p className="text-sm text-gray-900">{update.owner.toString()}</p>
         <p className="text-xs text-gray-500">
-          Ts: {BlockchainServices.parseTime(update.ts)}
+          Ts: {BlockchainServices.Utils.parseTime(update.ts)}
         </p>
         {update.documentURI && (
           <>

@@ -26,7 +26,7 @@ const Transaction = (props: Props) => {
 
     return StorageService.uploadDocuments(updateDescription, files)
       .then((URI) =>
-        BlockchainServices.pushNewTransaction(
+        BlockchainServices.Traceability.pushNewTransaction(
           props.contractAddress,
           props.batchId!,
           receiverAddress,

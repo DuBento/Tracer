@@ -16,12 +16,18 @@ contract SupplychainFactory is Ownable {
     }
 
     function create(
-        address supplychainManager_
+        address supplychainManager_,
+        string calldata contractDescription_
     ) external onlyOwner returns (address) {
         address clone = Clones.clone(defaultImplementation);
 
         // initialize the clone
-        Supplychain(clone).init(userRegistry, msg.sender);
+        Supplychain(clone).init(
+            userRegistry,
+            msg.sender,
+            supplychainManager_,
+            contractDescription_
+        );
 
         userRegistry.updateMember(supplychainManager_, clone);
 

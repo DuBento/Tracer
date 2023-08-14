@@ -25,7 +25,7 @@ const GetBatch = (props: Props) => {
 
   const handleFetchBatch = async () => {
     try {
-      const batch = await BlockchainServices.getBatch(
+      const batch = await BlockchainServices.Traceability.getBatch(
         props.contractAddress,
         batchId,
       );

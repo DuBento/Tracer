@@ -20,51 +20,83 @@ export type PartialTransaction = Partial<Transaction> & {
   info?: PartialUpdate;
 };
 
-const connectWallet = async (): Promise<ethers.Signer> => {
-  if (window?.ethereum == null) {
-    //   // If MetaMask is not installed, we use the default provider,
-    //   // which is backed by a variety of third-party services (such
-    //   // as INFURA). They do not have private keys installed so are
-    //   // only have read-only access
-    throw new Error("MetaMask not installed; TODO");
-    //   // provider = ethers.getDefaultProvider();
-    //   // TODO
-  } else {
-    // Connect to the MetaMask EIP-1193 object. This is a standard
-    // protocol that allows Ethers access to make all read-only
-    // requests through MetaMask
-    const provider = new ethers.BrowserProvider(window.ethereum);
-
-    // It also provides an opportunity to request access to write
-    // operations, which will be performed by the private key
-    // that MetaMask manages for the user.
-    const signer = await provider.getSigner();
-    return signer;
-  }
+const connectEthereum = async (): Promise<ethers.Provider> => {
+  // if server side, connects to node
+  if (typeof window === "undefined") return connectNode();
+  // if client side, connects to wallet
+  return connectWallet();
 };
 
-const connectHardhat = async () => {
-  // If no %%url%% is provided, it connects to the default
-  // http://localhost:8545, which most nodes use.
-  const jsonRpcProvider = new ethers.JsonRpcProvider();
-  return jsonRpcProvider;
+const connectNode = async (): Promise<ethers.Provider> => {
+  return new ethers.JsonRpcProvider(process.env.ETHEREUM_NODE_URL);
 };
 
-const BlockchainServices = {
-  supplyChainContract: async (address: string): Promise<Supplychain> =>
-    Supplychain__factory.connect(address, await connectWallet()),
+const connectWallet = async (): Promise<ethers.BrowserProvider> => {
+  if (window.ethereum == null) throw new Error("No web3 wallet connected.");
+  // Connect to the MetaMask EIP-1193 object. This is a standard
+  // protocol that allows Ethers access to make all read-only
+  // requests through MetaMask
+  return new ethers.BrowserProvider(window.ethereum);
+};
+
+const connectSigner = async (): Promise<ethers.Signer> => {
+  // Connect to the MetaMask EIP-1193 object. This is a standard
+  // protocol that allows Ethers access to make all read-only
+  // requests through MetaMask
+  const provider = await connectWallet();
+
+  // It also provides an opportunity to request access to write
+  // operations, which will be performed by the private key
+  // that MetaMask manages for the user.
+  const signer = await provider.getSigner();
+  return signer;
+};
+
+const Traceability = {
+  traceabilityContract: async (address: string): Promise<Supplychain> =>
+    Supplychain__factory.connect(address, await connectSigner()),
+
+  traceabilityContractReadOnly: async (address: string): Promise<Supplychain> =>
+    Supplychain__factory.connect(address, await connectEthereum()),
+
+  // Read only methods
+
+  getContractManagerAddress: async (
+    contractAddress: string,
+  ): Promise<string> => {
+    return Traceability.traceabilityContractReadOnly(contractAddress).then(
+      (contract) => contract.manager(),
+    );
+  },
 
   getBatch: async (contractAddress: string, id: BatchId): Promise<Batch> => {
-    return BlockchainServices.supplyChainContract(contractAddress).then(
+    return Traceability.traceabilityContractReadOnly(contractAddress).then(
       (contract) => contract.getBatch(id),
     );
   },
+
+  listenOnNewBatchEvent: async (contractAddress: string) => {
+    Traceability.traceabilityContractReadOnly(contractAddress).then(
+      async (contract: Supplychain) => {
+        const currentAddress = await contract.getAddress();
+        const filter = contract.filters.NewBatch(currentAddress);
+
+        contract.on(filter, (owner, id, event) => {
+          console.log(
+            `#Listening: New Bacth event with id: ${owner}. Owner is ${id}.`,
+          );
+        });
+      },
+    );
+  },
+
+  // State changing methods
 
   newBatch: async (
     contractAddress: string,
     description: string,
   ): Promise<BatchId> => {
-    return BlockchainServices.supplyChainContract(contractAddress).then(
+    return Traceability.traceabilityContract(contractAddress).then(
       async (contract) => {
         const tx = await contract.newBatch(description);
         const receipt = await tx.wait();
@@ -88,7 +120,7 @@ const BlockchainServices = {
     id: BatchId,
     documentURI: string,
   ) => {
-    return await BlockchainServices.supplyChainContract(contractAddress).then(
+    return await Traceability.traceabilityContract(contractAddress).then(
       async (contract) => {
         console.log("Sending:");
         console.log({ id, documentURI });
@@ -105,7 +137,7 @@ const BlockchainServices = {
     receiver: string,
     documentURI: string,
   ) => {
-    return await BlockchainServices.supplyChainContract(contractAddress).then(
+    return await Traceability.traceabilityContract(contractAddress).then(
       async (contract) => {
         if (!ethers.isAddress(receiver))
           throw new Error("No receiver associated with transaction");
@@ -118,22 +150,15 @@ const BlockchainServices = {
       },
     );
   },
+};
 
-  listenOnNewBatchEvent: async (contractAddress: string) => {
-    BlockchainServices.supplyChainContract(contractAddress).then(
-      async (contract: Supplychain) => {
-        const currentAddress = await contract.getAddress();
-        const filter = contract.filters.NewBatch(currentAddress);
-
-        contract.on(filter, (owner, id, event) => {
-          console.log(
-            `#Listening: New Bacth event with id: ${owner}. Owner is ${id}.`,
-          );
-        });
-      },
-    );
+const UserRegistry = {
+  getMember: async (address: string) => {
+    // TODO
   },
+};
 
+const Utils = {
   parseTime: (ts: bigint): string => {
     return new Date(Number(ts * 1000n)).toISOString();
   },
@@ -160,9 +185,16 @@ const BlockchainServices = {
 
     return {
       batchId: BigInt(`0x${base64url.decode(batchIdEncoded, "hex")}`),
-      contractAddress: base64url.decode(contractAddressEncoded, "hex"),
+      contractAddress: ethers.getAddress(
+        base64url.decode(contractAddressEncoded, "hex"),
+      ),
     };
   },
+};
+
+const BlockchainServices = {
+  Traceability,
+  Utils,
 };
 
 export default BlockchainServices;

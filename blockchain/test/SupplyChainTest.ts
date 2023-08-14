@@ -9,6 +9,7 @@ import {
 } from "../artifacts-frontend/typechain";
 import { NewBatchEvent } from "../artifacts-frontend/typechain/supplychain/Supplychain";
 import * as utils from "../lib/utils";
+import { SUPPLYCHAIN_CONTRACT_DESCRIPTION } from "../properties";
 import * as Values from "./TestConfig";
 
 /* 
@@ -66,7 +67,10 @@ describe("Supplychain", function () {
       "SupplychainFactory",
       { signerAddress: deployer }
     );
-    await supplychainFactory.create(supplychainManager);
+    await supplychainFactory.create(
+      supplychainManager,
+      SUPPLYCHAIN_CONTRACT_DESCRIPTION
+    );
 
     const contractAddress = (await userRegistry.members(supplychainManager))
       .managingContractAddress;

@@ -31,6 +31,8 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
 
     // State variables
     IUserRegistry private userRegistry;
+    address private manager;
+    string private contractDescription;
 
     mapping(uint256 => Batch) batches;
 
@@ -63,9 +65,18 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
 
     //* external
 
-    function init(IUserRegistry userRegistry_, address owner_) external {
+    function init(
+        IUserRegistry userRegistry_,
+        address owner_,
+        address manager_,
+        string calldata contractDescription_
+    ) external {
         if (address(userRegistry) == address(0)) {
+            // init can only be called once
             userRegistry = IUserRegistry(userRegistry_);
+            manager = manager_;
+            contractDescription = contractDescription_;
+
             super.init(owner_);
         }
     }
@@ -80,6 +91,14 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     }
 
     //* public
+
+    function getManager() public view returns (address) {
+        return manager;
+    }
+
+    function getContractDescription() public view returns (string memory) {
+        return contractDescription;
+    }
 
     function getBatch(uint256 id_) public view returns (Batch memory) {
         return batches[id_];

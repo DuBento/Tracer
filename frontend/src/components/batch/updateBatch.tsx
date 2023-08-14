@@ -24,7 +24,7 @@ const UpdateBatch = (props: Props) => {
 
     return StorageService.uploadDocuments(updateDescription, files)
       .then((URI) =>
-        BlockchainServices.pushNewUpdate(
+        BlockchainServices.Traceability.pushNewUpdate(
           props.contractAddress,
           props.batchId!,
           URI,

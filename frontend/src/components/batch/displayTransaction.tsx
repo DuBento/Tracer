@@ -37,7 +37,7 @@ const DisplayTransaction = ({ transaction }: DisplayTransactionProps) => {
           Owner: {transaction.info.owner.toString()}
         </p>
         <p className="text-xs text-gray-500">
-          Ts: {BlockchainServices.parseTime(transaction.info.ts)}
+          Ts: {BlockchainServices.Utils.parseTime(transaction.info.ts)}
         </p>
         {transaction.info.documentURI && (
           <>

@@ -23,6 +23,7 @@ export const VOTING_DELAY = 1; // 1 block
 export const VOTING_PERIOD = 5; // 5 blocks
 
 export const SUPPLYCHAIN_CREATE_METHOD = "create";
+export const SUPPLYCHAIN_CONTRACT_DESCRIPTION = "New supplychain contract";
 export const SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION =
   "Create a new supplychain contract";
 
