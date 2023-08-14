@@ -4,16 +4,19 @@ import { propose } from "../lib/propose";
 import * as utils from "../lib/utils";
 import { vote } from "../lib/vote";
 import {
+  SUPPLYCHAIN_CONTRACT_DESCRIPTION,
   SUPPLYCHAIN_CREATE_METHOD,
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
 } from "../properties";
 
+const encodeFunctionCallPromise = (memberAddress: string) =>
+  utils.encodeFunctionCall("SupplychainFactory", SUPPLYCHAIN_CREATE_METHOD, [
+    memberAddress,
+    SUPPLYCHAIN_CONTRACT_DESCRIPTION,
+  ]);
+
 async function proposeCreateSupplychain(memberAddress: string) {
-  const encodedFunctionCall = await utils.encodeFunctionCall(
-    "SupplychainFactory",
-    SUPPLYCHAIN_CREATE_METHOD,
-    [memberAddress]
-  );
+  const encodedFunctionCall = await encodeFunctionCallPromise(memberAddress);
 
   const proposalId = await propose(
     await utils.getContractAddress("SupplychainFactory"),
@@ -34,11 +37,7 @@ async function voteFor(proposalId: string) {
 async function executeSupplychainContractCreation(
   memberAddress: string
 ): Promise<string> {
-  const encodedFunctionCall = await utils.encodeFunctionCall(
-    "SupplychainFactory",
-    SUPPLYCHAIN_CREATE_METHOD,
-    [memberAddress]
-  );
+  const encodedFunctionCall = await encodeFunctionCallPromise(memberAddress);
 
   await execute(
     await utils.getContractAddress("SupplychainFactory"),

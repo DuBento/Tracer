@@ -22,7 +22,7 @@ const QRCode = (props: Props) => {
   const generateQrcode = async () => {
     if (!props.batch.id) return;
 
-    const encodedBatchURL = BlockchainServices.encodeBatchURI(
+    const encodedBatchURL = BlockchainServices.Utils.encodeBatchURI(
       props.batch.id,
       props.contractAddress,
     );
