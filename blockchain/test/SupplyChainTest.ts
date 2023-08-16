@@ -72,7 +72,7 @@ describe("Supplychain", function () {
       SUPPLYCHAIN_CONTRACT_DESCRIPTION
     );
 
-    const contractAddress = (await userRegistry.members(supplychainManager))
+    const contractAddress = (await userRegistry.getMember(supplychainManager))
       .managingContractAddress;
 
     // Add allowed actor

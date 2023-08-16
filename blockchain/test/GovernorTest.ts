@@ -78,7 +78,7 @@ describe("Governor", function () {
       );
       await userRegistryAsActor1.addActor(actor1, ACTOR_NAME, ACTOR_INFO_URI);
 
-      const resActor = await userRegistry.actors(actor1);
+      const resActor = await userRegistry.getActor(actor1);
       expect(resActor.addr).to.equal(actor1);
       expect(resActor.name).to.equal(ACTOR_NAME);
       expect(resActor.infoURI).to.equal(ACTOR_INFO_URI);
@@ -236,7 +236,7 @@ describe("Governor", function () {
 
       console.log(
         `### Address of supplychainManager: ${supplychainManager}
-        ###UserReg member: ${await userRegistry.members(supplychainManager)}`
+        ###UserReg member: ${await userRegistry.getMember(supplychainManager)}`
       );
       const { contractAddress, proposalId } =
         await newSupplychainContractViaGovernance(supplychainManager);
@@ -247,7 +247,7 @@ describe("Governor", function () {
         .connect(await ethers.getSigner(supplychainManager))
         .addContractToActor(contractAddress, actor1);
 
-      console.log(`###User Registry ${await userRegistry.actors(actor1)}`);
+      console.log(`###User Registry ${await userRegistry.getActor(actor1)}`);
       const { deployer } = await getNamedAccounts();
       console.log("deployer address :", deployer);
 

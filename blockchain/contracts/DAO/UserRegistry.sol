@@ -6,30 +6,12 @@ import "../ConformityState.sol";
 import "./IUserRegistry.sol";
 
 contract UserRegistry is IUserRegistry, Ownable, ConformityState {
-    // Type declarations
-    struct Member {
-        address addr;
-        uint8 votingPower;
-        ConformityState.State state;
-        address managingContractAddress;
-        string name;
-        string infoURI;
-    }
-
-    struct Actor {
-        address addr;
-        ConformityState.State state;
-        string name;
-        string infoURI;
-        address[] participatingContracts;
-    }
-
     // State variables
     uint256 public memberCount;
     address private supplychainFactory;
 
-    mapping(address => Member) public members;
-    mapping(address => Actor) public actors;
+    mapping(address => Member) members;
+    mapping(address => Actor) actors;
 
     // Modifiers
     modifier onlyOwnerOrFactoryContract() {
@@ -63,6 +45,17 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
     }
 
     //* public
+    function getMember(
+        address addr_
+    ) public view override returns (Member memory) {
+        return members[addr_];
+    }
+
+    function getActor(
+        address addr_
+    ) public view override returns (Actor memory) {
+        return actors[addr_];
+    }
 
     function getVotes(address member_) public view override returns (uint8) {
         return members[member_].votingPower;

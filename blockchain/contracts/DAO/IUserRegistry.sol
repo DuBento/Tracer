@@ -7,6 +7,25 @@ import "../ConformityState.sol";
  */
 abstract contract IUserRegistry {
     uint8 constant MAX_VOTING_POWER = 49;
+
+    // Type declarations
+    struct Member {
+        address addr;
+        uint8 votingPower;
+        ConformityState.State state;
+        address managingContractAddress;
+        string name;
+        string infoURI;
+    }
+
+    struct Actor {
+        address addr;
+        ConformityState.State state;
+        string name;
+        string infoURI;
+        address[] participatingContracts;
+    }
+
     // Errors
     error UserAlreadyExists();
     error MemberDoesNotExist();
@@ -16,6 +35,12 @@ abstract contract IUserRegistry {
     error InvalidVotingPower(uint8 votingPower);
 
     function setSupplychainFactoryAddress(address addr_) external virtual;
+
+    function getMember(
+        address addr_
+    ) public view virtual returns (Member memory);
+
+    function getActor(address addr_) public view virtual returns (Actor memory);
 
     function getVotes(address member_) public view virtual returns (uint8);
 
