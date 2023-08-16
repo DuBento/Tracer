@@ -25,12 +25,20 @@ export default async function ViewPage({ params }: Props) {
 
   console.log("managerAddress", managerAddress);
 
+  const contractDescription =
+    await BlockchainServices.Traceability.getContractDescription(
+      contractAddress,
+    );
+
+  console.log("contractDescription", contractDescription);
+
+  const member = await BlockchainServices.UserRegistry.getMember(
+    managerAddress,
+  );
+
   return (
     <>
-      <Header
-        memberName="Member Name"
-        contractDescription="Contract Description"
-      />
+      <Header member={member} contractDescription={contractDescription} />
       <div>Ids: {params.ids.join("/")}</div>
       <div>
         Batch ({batchId.toString()}) and contract ({contractAddress})
