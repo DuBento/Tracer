@@ -1,9 +1,16 @@
 import deployedAddresses from "@/contracts/deployedAddresses.json";
-import { Supplychain, Supplychain__factory } from "@/contracts/typechain";
+import {
+  IUserRegistry,
+  Supplychain,
+  Supplychain__factory,
+  UserRegistry,
+  UserRegistry__factory,
+} from "@/contracts/typechain";
 import { NewBatchEvent } from "@/contracts/typechain/supplychain/Supplychain";
 import base64url from "base64url";
 import { EventLog, ethers } from "ethers";
 const supplyChainAddress = deployedAddresses["testSupplychain"];
+const userRegistryAddress = deployedAddresses["UserRegistry"];
 
 const BATCH_URI_DELIMITER = "@";
 
@@ -19,6 +26,11 @@ export type Transaction = Supplychain.TransactionStructOutput;
 export type PartialTransaction = Partial<Transaction> & {
   info?: PartialUpdate;
 };
+
+export type Member = IUserRegistry.MemberStructOutput;
+export type Actor = IUserRegistry.ActorStructOutput;
+
+// Connect
 
 const connectEthereum = async (): Promise<ethers.Provider> => {
   // if server side, connects to node
@@ -53,30 +65,31 @@ const connectSigner = async (): Promise<ethers.Signer> => {
 };
 
 const Traceability = {
-  traceabilityContract: async (address: string): Promise<Supplychain> =>
+  connect: async (address: string): Promise<Supplychain> =>
     Supplychain__factory.connect(address, await connectSigner()),
 
-  traceabilityContractReadOnly: async (address: string): Promise<Supplychain> =>
+  connectReadOnly: async (address: string): Promise<Supplychain> =>
     Supplychain__factory.connect(address, await connectEthereum()),
 
   // Read only methods
 
-  getContractManagerAddress: async (
-    contractAddress: string,
-  ): Promise<string> => {
-    return Traceability.traceabilityContractReadOnly(contractAddress).then(
-      (contract) => contract.manager(),
-    );
-  },
+  getContractManagerAddress: async (contractAddress: string): Promise<string> =>
+    Traceability.connectReadOnly(contractAddress).then((contract) =>
+      contract.getManager(),
+    ),
 
-  getBatch: async (contractAddress: string, id: BatchId): Promise<Batch> => {
-    return Traceability.traceabilityContractReadOnly(contractAddress).then(
-      (contract) => contract.getBatch(id),
-    );
-  },
+  getContractDescription: async (contractAddress: string): Promise<string> =>
+    Traceability.connectReadOnly(contractAddress).then((contract) =>
+      contract.getContractDescription(),
+    ),
+
+  getBatch: async (contractAddress: string, id: BatchId): Promise<Batch> =>
+    Traceability.connectReadOnly(contractAddress).then((contract) =>
+      contract.getBatch(id),
+    ),
 
   listenOnNewBatchEvent: async (contractAddress: string) => {
-    Traceability.traceabilityContractReadOnly(contractAddress).then(
+    Traceability.connectReadOnly(contractAddress).then(
       async (contract: Supplychain) => {
         const currentAddress = await contract.getAddress();
         const filter = contract.filters.NewBatch(currentAddress);
@@ -95,67 +108,61 @@ const Traceability = {
   newBatch: async (
     contractAddress: string,
     description: string,
-  ): Promise<BatchId> => {
-    return Traceability.traceabilityContract(contractAddress).then(
-      async (contract) => {
-        const tx = await contract.newBatch(description);
-        const receipt = await tx.wait();
+  ): Promise<BatchId> =>
+    Traceability.connect(contractAddress).then(async (contract) => {
+      const tx = await contract.newBatch(description);
+      const receipt = await tx.wait();
 
-        if (receipt == null) throw new Error("Error completing transaction");
+      if (receipt == null) throw new Error("Error completing transaction");
 
-        const newBatchEvent = (
-          receipt.logs.find(
-            (event) =>
-              event instanceof EventLog && event.eventName == "NewBatch",
-          ) as NewBatchEvent.Log
-        )?.args;
+      const newBatchEvent = (
+        receipt.logs.find(
+          (event) => event instanceof EventLog && event.eventName == "NewBatch",
+        ) as NewBatchEvent.Log
+      )?.args;
 
-        return newBatchEvent.id;
-      },
-    );
-  },
+      return newBatchEvent.id;
+    }),
 
   pushNewUpdate: async (
     contractAddress: string,
     id: BatchId,
     documentURI: string,
-  ) => {
-    return await Traceability.traceabilityContract(contractAddress).then(
-      async (contract) => {
-        console.log("Sending:");
-        console.log({ id, documentURI });
+  ): Promise<void> =>
+    Traceability.connect(contractAddress).then(async (contract) => {
+      console.log("Sending:");
+      console.log({ id, documentURI });
 
-        const tx = await contract.handleUpdate(id, documentURI);
-        tx.wait();
-      },
-    );
-  },
+      const tx = await contract.handleUpdate(id, documentURI);
+      tx.wait();
+    }),
 
   pushNewTransaction: async (
     contractAddress: string,
     id: BatchId,
     receiver: string,
     documentURI: string,
-  ) => {
-    return await Traceability.traceabilityContract(contractAddress).then(
-      async (contract) => {
-        if (!ethers.isAddress(receiver))
-          throw new Error("No receiver associated with transaction");
+  ): Promise<void> =>
+    await Traceability.connect(contractAddress).then(async (contract) => {
+      if (!ethers.isAddress(receiver))
+        throw new Error("No receiver associated with transaction");
 
-        console.log("Sending transaction:");
-        console.log({ id, receiver, documentURI });
+      console.log("Sending transaction:");
+      console.log({ id, receiver, documentURI });
 
-        const tx = await contract.handleTransaction(id, receiver, documentURI);
-        tx.wait();
-      },
-    );
-  },
+      const tx = await contract.handleTransaction(id, receiver, documentURI);
+      tx.wait();
+    }),
 };
 
 const UserRegistry = {
-  getMember: async (address: string) => {
-    // TODO
-  },
+  connectReadOnly: async (): Promise<UserRegistry> =>
+    UserRegistry__factory.connect(userRegistryAddress, await connectEthereum()),
+
+  getMember: async (address: string): Promise<Member> =>
+    UserRegistry.connectReadOnly().then((contract) =>
+      contract.getMember(address),
+    ),
 };
 
 const Utils = {
@@ -194,6 +201,7 @@ const Utils = {
 
 const BlockchainServices = {
   Traceability,
+  UserRegistry,
   Utils,
 };
 
