@@ -54,7 +54,7 @@ async function executeNewMemberProposal(memberAddress: string) {
 
   // check that the contract was created
   const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
-  const member = await userRegistry.members(memberAddress);
+  const member = await userRegistry.getMember(memberAddress);
   return member;
 }
 

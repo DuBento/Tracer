@@ -47,7 +47,7 @@ async function executeSupplychainContractCreation(
 
   // check that the contract was created
   const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
-  const contractAddress = (await userRegistry.members(memberAddress))
+  const contractAddress = (await userRegistry.getMember(memberAddress))
     .managingContractAddress;
   return contractAddress;
 }
