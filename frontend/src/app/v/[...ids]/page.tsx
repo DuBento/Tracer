@@ -1,4 +1,6 @@
 import Header from "@/components/clientView/header";
+import Log from "@/components/clientView/log";
+import LogContainer from "@/components/clientView/logContainer";
 import { GS1_DATA_LINK_BATCH_PREFIX } from "@/properties";
 import BlockchainServices from "@/services/BlockchainServices";
 
@@ -37,17 +39,17 @@ export default async function ViewPage({ params }: Props) {
   );
 
   return (
-    <div className="relative">
+    <LogContainer>
       <div className="sticky top-0 z-50 w-screen">
         <Header member={member} contractDescription={contractDescription} />
       </div>
       <div className="w-screen whitespace-normal break-words">
-        <div>Ids: {params.ids.join("/")}</div>
-        <div>
-          Batch ({batchId.toString()}) and contract ({contractAddress})
-        </div>
-        <div className="h-screen bg-slate-400"></div>
+        <Log
+          ids={params.ids}
+          batchId={batchId.toString()}
+          contractAddress={contractAddress}
+        />
       </div>
-    </div>
+    </LogContainer>
   );
 }

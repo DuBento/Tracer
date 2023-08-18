@@ -2,11 +2,15 @@ import Logo from "@/public/images/logo";
 import { Member } from "@/services/BlockchainServices";
 import { SVGProps } from "react";
 
-type Props = { member: Member; contractDescription: string };
+type Props = {
+  member: Member;
+  contractDescription: string;
+  children?: React.ReactNode;
+};
 
 export default function Header(props: Props) {
   return (
-    <div className="w-full max-w-full bg-brunswick_green pb-3">
+    <div className="bg-brunswick_green pb-3">
       {/* <div>Member Name: {props.member.name}</div>
       <div>Contract Description: {props.contractDescription}</div>
       <div>MemberInfo uri: {props.member.infoURI}</div> */}
@@ -15,7 +19,7 @@ export default function Header(props: Props) {
         <div className="m-[10px] h-12 w-12 flex-none">
           <Logo className="fill-isabelline" />
         </div>
-        <div className="mx-2 w-2/3 pb-3 pt-4">
+        <div className="mx-2 w-2/3 pt-4">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-center font-display text-4xl leading-none text-isabelline">
             CVRA
           </p>
@@ -27,7 +31,10 @@ export default function Header(props: Props) {
           <InfoIcon className="fill-isabelline" />
         </div>
       </div>
-      <div className="m-auto h-fit w-10/12 rounded-3xl bg-isabelline px-3 py-1 text-center leading-tight text-black drop-shadow-md">
+      <div
+        id="cv-header-description"
+        className="m-auto mt-3 h-fit w-10/12 rounded-3xl bg-isabelline px-3 py-1 text-center leading-tight text-black drop-shadow-md"
+      >
         Producao sustentavel certificada, vinhos do alentejo.
       </div>
     </div>
