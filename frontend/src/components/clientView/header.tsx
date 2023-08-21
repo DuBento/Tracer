@@ -10,11 +10,7 @@ type Props = {
 
 export default function Header(props: Props) {
   return (
-    <div className="bg-brunswick_green pb-3">
-      {/* <div>Member Name: {props.member.name}</div>
-      <div>Contract Description: {props.contractDescription}</div>
-      <div>MemberInfo uri: {props.member.infoURI}</div> */}
-      {/* <div className="absolute left-[-1px] top-[-1px] h-[136px] w-[393px] bg-[#344e41]/25" /> */}
+    <div className="bg-wine bg-cover bg-center pb-3">
       <div className="max-w-screen flex min-w-0 flex-row justify-between">
         <div className="m-[10px] h-12 w-12 flex-none">
           <Logo className="fill-isabelline" />
@@ -33,9 +29,13 @@ export default function Header(props: Props) {
       </div>
       <div
         id="cv-header-description"
-        className="m-auto mt-3 h-fit w-10/12 rounded-3xl bg-isabelline px-3 py-1 text-center leading-tight text-black drop-shadow-md"
+        className="max-h-fit overflow-hidden transition-maxHeight duration-200 ease-out"
       >
-        Producao sustentavel certificada, vinhos do alentejo.
+        <div id="cv-measuringWrapper" className="h-auto pt-3">
+          <div className="m-auto h-fit max-h-max w-10/12 overflow-ellipsis rounded-3xl bg-isabelline px-3 py-1 text-center leading-tight text-black drop-shadow-md">
+            Producao sustentavel certificada, vinhos do alentejo.
+          </div>
+        </div>
       </div>
     </div>
   );
