@@ -6,10 +6,15 @@ module.exports = {
       fontFamily: {
         display: ["var(--font-montserrat)"],
       },
+      transitionProperty: {
+        height: "height",
+        maxHeight: "max-height",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        wine: "linear-gradient(0deg, rgba(52, 78, 65, 0.25) 0%, rgba(52, 78, 65, 0.25) 100%), url('/images/cv-bg/wine.jpg')",
       },
       colors: {
         brunswick_green: {
