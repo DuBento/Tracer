@@ -14,19 +14,29 @@ export default function LogContainer(props: Props) {
     console.log(container?.scrollTop);
     var description = document.getElementById("cv-header-description");
 
-    var wrapper = document.getElementById("cv-measuringWrapper");
+    // var wrapper = document.getElementById("cv-measuringWrapper");
     window.requestAnimationFrame(() => {
       if (container?.scrollTop! > 50 && description?.style.maxHeight != "0px") {
         transitioning = true;
         description!.style.maxHeight = "0px";
       } else if (
-        container?.scrollTop! < 10 &&
+        container?.scrollTop! < 5 &&
         description?.style.maxHeight == "0px"
       ) {
         transitioning = true;
-        description!.style.maxHeight = wrapper?.clientHeight + "px";
+        description!.style.maxHeight = description.scrollHeight + "px";
       }
     });
+  }
+
+  function resizeOnClick() {
+    var description = document.getElementById("cv-header-description");
+
+    if (description?.style.maxHeight == "0px") {
+      description!.style.maxHeight = description.scrollHeight + "px";
+    } else {
+      description!.style.maxHeight = "0px";
+    }
   }
 
   return (
@@ -34,6 +44,7 @@ export default function LogContainer(props: Props) {
       id="cv-log-container"
       className="relative max-h-screen overflow-y-scroll"
       onScroll={(e) => resizeHeader(e)}
+      //   onClick={() => resizeOnClick()}
       onTransitionEnd={() => (transitioning = false)}
     >
       {props.children}

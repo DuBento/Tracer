@@ -29,14 +29,20 @@ export default function Header(props: Props) {
       </div>
       <div
         id="cv-header-description"
-        className="max-h-fit overflow-hidden transition-maxHeight duration-200 ease-out"
+        // className="max-h-fit overflow-hidden transition-maxHeight duration-200 ease-out"
+
+        style={{
+          overflow: "hidden",
+          transition: "max-height 0.15s linear",
+          maxHeight: "300px",
+        }}
       >
-        <div id="cv-measuringWrapper" className="h-auto pt-3">
-          <div className="m-auto h-fit max-h-max w-10/12 overflow-ellipsis rounded-3xl bg-isabelline px-3 py-1 text-center leading-tight text-black drop-shadow-md">
-            Producao sustentavel certificada, vinhos do alentejo.
-          </div>
+        {/* <div id="cv-measuringWrapper" className="h-auto pt-3"> */}
+        <div className="m-auto mt-3 h-fit max-h-max w-10/12 overflow-ellipsis rounded-3xl bg-isabelline px-3 py-1 text-center leading-tight text-black drop-shadow-md">
+          Producao sustentavel certificada, vinhos do alentejo.
         </div>
       </div>
+      {/* </div> */}
     </div>
   );
 }
