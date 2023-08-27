@@ -101,7 +101,7 @@ export default function Log(props: Props) {
                 <ExpandIcon className="fill-brunswick_green-400" />
               </div>
             </div>
-            <div className="mb-6 ml-6 text-xs">{value.date}</div>
+            <div className="mb-6 ml-6 text-xs font-light">{value.date}</div>
           </li>
         ))}
       </ol>
