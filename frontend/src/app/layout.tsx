@@ -11,8 +11,8 @@ const montserrat = Montserrat({
 const lato = Lato({
   subsets: ["latin"],
   display: "swap",
-  weight: "400",
-  variable: "--font-lato400",
+  weight: ["400", "300"],
+  variable: "--font-lato",
 });
 
 export const metadata = {

@@ -5,7 +5,7 @@ module.exports = {
     extend: {
       fontFamily: {
         display: ["var(--font-montserrat)"],
-        body: ["var(--font-lato400)"],
+        body: ["var(--font-lato)"],
       },
       transitionProperty: {
         height: "height",
