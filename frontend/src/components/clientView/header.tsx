@@ -31,7 +31,7 @@ export default function Header(props: Props) {
         id="cv-header-description"
         className="linear max-h-[300px] overflow-hidden transition-maxHeight duration-150"
       >
-        <div className="m-auto mt-3 h-fit max-h-max w-10/12 overflow-ellipsis rounded-3xl bg-isabelline px-3 py-1 text-center leading-tight text-black drop-shadow-md">
+        <div className="m-auto mt-3 h-fit max-h-max w-10/12 overflow-ellipsis rounded-3xl bg-isabelline px-4 py-1 text-center font-body leading-tight text-black drop-shadow-md">
           Producao sustentavel certificada, vinhos do alentejo.
         </div>
       </div>

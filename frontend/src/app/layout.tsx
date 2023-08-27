@@ -1,11 +1,18 @@
 import "@/styles/globals.css";
-import { Montserrat } from "next/font/google";
+import { Lato, Montserrat } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-montserrat",
+});
+
+const lato = Lato({
+  subsets: ["latin"],
+  display: "swap",
+  weight: "400",
+  variable: "--font-lato400",
 });
 
 export const metadata = {
@@ -19,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${montserrat.variable}`}>
+    <html lang="en" className={`${montserrat.variable} ${lato.variable}`}>
       <body>
         <Toaster position="bottom-left" reverseOrder={false} />
         {children}
