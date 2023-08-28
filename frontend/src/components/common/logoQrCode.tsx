@@ -36,7 +36,7 @@ const LogoQrCode = ({ url, imageSize }: LogoQrCodeProps) => {
       <svg dangerouslySetInnerHTML={{ __html: qrCode }} />
       <circle cx="60" cy="60" r="12" fill="#ffffff" />
       <svg height="20" width="20" x="50" y="50" preserveAspectRatio="none">
-        <Logo />
+        <Logo className="fill-black" />
       </svg>
     </svg>
   );
