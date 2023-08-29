@@ -18,7 +18,12 @@ export async function POST(request: Request) {
     // create body
     const formData = new FormData();
     for (const file of files) {
-      if (file instanceof File) formData.append("file", file, `${file.name}`);
+      if (file instanceof File)
+        formData.append(
+          "file",
+          new Blob([await file.arrayBuffer()], { type: file.type }),
+          `${file.name}`,
+        );
     }
     formData.append(
       "file",
@@ -27,27 +32,13 @@ export async function POST(request: Request) {
     );
 
     // request
-    const queryParams = new URLSearchParams();
-    queryParams.append("wrap-with-directory", "true");
-
-    const myHeaders = new Headers();
-    if (process.env.STORAGE_API_KEY && process.env.STORAGE_API_KEY_SECRET)
-      myHeaders.append(
-        "Authorization",
-        "Basic " +
-          Buffer.from(
-            process.env.STORAGE_API_KEY +
-              ":" +
-              process.env.STORAGE_API_KEY_SECRET,
-          ).toString("base64"),
-      );
-
     const requestUrl = `${process.env
-      .STORAGE_API_ADD!}?${queryParams.toString()}`;
+      .STORAGE_API_ADD!}?wrap-with-directory=true`;
+
     const res = await fetch(requestUrl, {
       method: "POST",
       body: formData,
-      headers: myHeaders,
+      headers: authHeader(),
     }).catch((e) => {
       throw new Error("Error interacting with storage server");
     });
@@ -66,11 +57,25 @@ export async function POST(request: Request) {
         return new NextResponse(JSON.stringify(json.Hash), { status: 200 });
       }
     }
-    // return new NextResponse(JSON.stringify(description), { status: 200 });
   } catch (e: any) {
     console.error(e);
     return new NextResponse(e.message, { status: 400 });
   }
+}
+
+function authHeader() {
+  const authHeader = new Headers();
+  if (process.env.STORAGE_API_KEY && process.env.STORAGE_API_KEY_SECRET)
+    authHeader.append(
+      "Authorization",
+      "Basic " +
+        Buffer.from(
+          process.env.STORAGE_API_KEY +
+            ":" +
+            process.env.STORAGE_API_KEY_SECRET,
+        ).toString("base64"),
+    );
+  return authHeader;
 }
 
 function checkAvailableIndexFilename(files: FormDataEntryValue[]) {
