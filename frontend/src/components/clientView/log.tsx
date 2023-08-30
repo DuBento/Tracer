@@ -1,5 +1,8 @@
-import ExpandIcon from "@/public/images/expandIcon";
-import { SVGProps } from "react";
+"use client";
+
+import ChevronIcon from "@/public/images/chevronIcon";
+import { SVGProps, useState } from "react";
+import Event from "./event";
 
 type Props = {
   ids: string[];
@@ -87,21 +90,60 @@ const mockValues = [
 ];
 
 export default function Log(props: Props) {
+  const [expanded, setExpanded] = useState<boolean[]>(
+    mockValues.map(() => true),
+  );
+
+  function toggleExpansion(idx: number) {
+    const updatedExpandedItems = [...expanded];
+    updatedExpandedItems[idx] = !updatedExpandedItems[idx];
+    setExpanded(updatedExpandedItems);
+  }
+
   return (
-    <div className="h-screen w-screen bg-isabelline pb-2 pl-10 pr-8 pt-8 font-body">
+    <div className="h-screen w-screen overflow-auto bg-isabelline pb-10 pl-10 pr-8 pt-8 font-body">
       <ol className="-mb- border-l-[2px] border-brunswick_green ">
         {mockValues.map((value, idx) => (
           <li key={idx} className="pb-2">
             <div className="flex items-start justify-between gap-4 align-top">
               <div className="z-10 -ml-[14px] flex-none">
-                <LogBulletPointMiddle className="fill-brunswick_green" />
+                <LogBulletPoint className="fill-brunswick_green" />
               </div>
-              <h4 className="-mt-2 flex-grow text-xl">{value.owner}</h4>
-              <div className="mt-1 h-4 flex-none">
-                <ExpandIcon className="fill-brunswick_green-400" />
+              <h4 className="-mt-2 flex-grow text-xl leading-tight">
+                {value.owner}
+              </h4>
+              <div
+                className="mt-1 h-4 flex-none"
+                onClick={() => toggleExpansion(idx)}
+              >
+                {!expanded[idx] && (
+                  <ChevronIcon className="fill-brunswick_green-400" />
+                )}
+                {expanded[idx] && (
+                  <ChevronIcon className="rotate-180 transform fill-brunswick_green-400" />
+                )}
               </div>
             </div>
-            <div className="mb-6 ml-6 text-xs font-light">{value.date}</div>
+
+            {!expanded[idx] && (
+              <div className="mb-6 ml-6 text-xs font-light">{value.date}</div>
+            )}
+
+            {expanded[idx] && (
+              <>
+                <div className="mb-6 ml-6 text-xs font-light">
+                  {value.date} · {value.hour}
+                </div>
+
+                <ol>
+                  {value.events.map((event, idx) => (
+                    <li key={idx} className="mt-2">
+                      <Event {...event} />
+                    </li>
+                  ))}
+                </ol>
+              </>
+            )}
           </li>
         ))}
       </ol>
@@ -109,7 +151,7 @@ export default function Log(props: Props) {
   );
 }
 
-const LogBulletPointMiddle = (props: SVGProps<SVGSVGElement>) => (
+const LogBulletPoint = (props: SVGProps<SVGSVGElement>) => (
   <svg
     className={props.className}
     width={20}
