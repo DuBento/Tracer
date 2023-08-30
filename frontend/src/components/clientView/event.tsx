@@ -1,3 +1,9 @@
+"use client";
+
+import ChevronIcon from "@/public/images/chevronIcon";
+import Image from "next/image";
+import { useState } from "react";
+
 type Props = {
   description: string;
   date: string;
@@ -6,6 +12,37 @@ type Props = {
 };
 
 export default function Event(props: Props) {
+  const imgSrc = [
+    "/images/mock/beach.jpg",
+    "/images/mock/crop.jpeg",
+    "/images/mock/food.jpeg",
+    "/images/mock/paintingWallpaper.png",
+    "/images/mock/storage.jpeg",
+    "/images/mock/walmart.webp",
+    "/images/mock/waterfall.mp4",
+  ];
+  const sourcesCount = imgSrc.length;
+
+  const [expanded, setExpanded] = useState(false);
+  const [currentSrcIdx, setCurrentSrcIdx] = useState(0);
+
+  function expandImage(srcIdx: number) {
+    setCurrentSrcIdx(srcIdx);
+    setExpanded(true);
+  }
+
+  function positiveScroll() {
+    setCurrentSrcIdx((currentSrcIdx + 1) % sourcesCount);
+  }
+
+  function negativeScroll() {
+    setCurrentSrcIdx((currentSrcIdx - 1 + sourcesCount) % sourcesCount);
+  }
+
+  function exitFullscreen() {
+    setExpanded(false);
+  }
+
   return (
     <>
       <div className="flex-start flex items-start justify-between gap-5 align-top">
@@ -22,44 +59,63 @@ export default function Event(props: Props) {
 
       {/* Preview scroll */}
       <div className="ml-6 mt-3">
-        <div className="relative flex w-full snap-x gap-2 overflow-x-auto pb-4">
-          <div className="shrink-0 snap-center">
-            <img
-              className=" h-32 w-full shrink-0 rounded-lg shadow-md"
-              src="https://images.unsplash.com/photo-1604999565976-8913ad2ddb7c?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=320&amp;h=160&amp;q=80"
-            />
-          </div>
-          <div className="shrink-0 snap-center">
-            <img
-              className=" h-32 w-full shrink-0 rounded-lg shadow-md"
-              src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=320&amp;h=160&amp;q=80"
-            />
-          </div>
-          <div className="shrink-0 snap-center">
-            <img
-              className=" h-32 w-full shrink-0 rounded-lg shadow-md"
-              src="https://images.unsplash.com/photo-1622890806166-111d7f6c7c97?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=320&h=160&q=80"
-            />
-          </div>{" "}
-          <div className="shrink-0 snap-center">
-            <img
-              className=" h-32 w-full shrink-0 rounded-lg shadow-md"
-              src="https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=320&h=160&q=80"
-            />
-          </div>{" "}
-          <div className="shrink-0 snap-center">
-            <img
-              className=" h-32 w-full shrink-0 rounded-lg shadow-md"
-              src="https://images.unsplash.com/photo-1575424909138-46b05e5919ec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=320&h=160&q=80"
-            />
-          </div>{" "}
-          <div className="shrink-0 snap-center">
-            <img
-              className=" h-32 w-full shrink-0 rounded-lg shadow-md"
-              src="https://images.unsplash.com/photo-1559333086-b0a56225a93c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=320&h=160&q=80"
-            />
-          </div>
+        <div className="relative flex h-36 snap-x snap-mandatory gap-2 overflow-x-auto pb-4">
+          {imgSrc.map((src, idx) => (
+            <div
+              key={idx}
+              className="h-full shrink-0 snap-center"
+              onClick={() => expandImage(idx)}
+            >
+              <Image
+                src={src}
+                width="0"
+                height="0"
+                sizes="50vw"
+                className="h-full w-auto rounded-lg shadow-md"
+                placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvLGrHgAGPAJfdxHGYQAAAABJRU5ErkJggg=="
+                alt="update image TODO filename"
+              />
+            </div>
+          ))}
         </div>
+
+        {/* Expanded view */}
+        {expanded && (
+          <div id="CVDocumentFullscreen" onClick={exitFullscreen}>
+            <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-auto bg-black/20 p-4">
+              <div className="relative max-h-[90vh] w-full md:max-w-[90vh]">
+                <div
+                  className="absolute left-0 top-0 flex h-full w-1/2 cursor-pointer items-center justify-start pl-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    negativeScroll();
+                  }}
+                >
+                  <ChevronIcon className="h-10 w-10 rotate-90 transform fill-pearl" />
+                </div>
+                <Image
+                  id="CVDocumentFullscreen-img"
+                  src={imgSrc[currentSrcIdx]}
+                  width="0"
+                  height="0"
+                  sizes="100vw"
+                  className="h-full w-full rounded-lg shadow-md"
+                  placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvLGrHgAGPAJfdxHGYQAAAABJRU5ErkJggg=="
+                  alt="update image extended TODO filename"
+                />
+                <div
+                  className="absolute right-0 top-0 flex h-full w-1/2 cursor-pointer items-center justify-end pr-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    positiveScroll();
+                  }}
+                >
+                  <ChevronIcon className="h-10 w-10 -rotate-90 transform fill-pearl" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
