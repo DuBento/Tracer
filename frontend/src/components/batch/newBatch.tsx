@@ -1,7 +1,7 @@
 "use client";
 
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices from "@/services/BlockchainServices";
+import BlockchainServices from "@/TracerAPI";
 import { useContext, useState } from "react";
 
 interface Props {
@@ -9,6 +9,8 @@ interface Props {
 }
 
 const NewBatch = (props: Props) => {
+  if (!props.contractAddress) throw new Error("Contract address is empty");
+
   const notifications = useContext(NotificationContext);
 
   const [batchId, setBatchId] = useState<string>();
@@ -17,6 +19,7 @@ const NewBatch = (props: Props) => {
   const handleCreateNewBatch = async () => {
     if (!newBatchDescription) throw new Error("Batch description is empty");
 
+    console.log(props.contractAddress);
     const newBatchId = await BlockchainServices.Traceability.newBatch(
       props.contractAddress,
       newBatchDescription,
@@ -28,7 +31,6 @@ const NewBatch = (props: Props) => {
     notifications.notifyPromise(handleCreateNewBatch(), {
       loading: "Creating new batch...",
       success: "New batch created",
-      error: (err) => `${err}`,
     });
   };
 

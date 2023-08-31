@@ -1,7 +1,7 @@
 "use client";
 
+import BlockchainServices, { Batch } from "@/TracerAPI";
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices, { Batch } from "@/services/BlockchainServices";
 import { useContext, useState } from "react";
 import DisplayBatch from "./displayBatch";
 import QRCode from "./qrcode";

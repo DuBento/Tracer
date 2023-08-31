@@ -1,18 +1,10 @@
-import deployedAddresses from "@/contracts/deployedAddresses.json";
 import {
-  IUserRegistry,
   Supplychain,
   Supplychain__factory,
-  UserRegistry,
-  UserRegistry__factory,
-} from "@/contracts/typechain";
-import { NewBatchEvent } from "@/contracts/typechain/supplychain/Supplychain";
-import base64url from "base64url";
+} from "@/TracerAPI/contracts/typechain";
 import { EventLog, ethers } from "ethers";
-const supplyChainAddress = deployedAddresses["testSupplychain"];
-const userRegistryAddress = deployedAddresses["UserRegistry"];
-
-const BATCH_URI_DELIMITER = "@";
+import { connectEthereum, connectSigner } from "./connection";
+import { NewBatchEvent } from "./contracts/typechain/supplychain/Supplychain";
 
 // Types
 
@@ -27,41 +19,19 @@ export type PartialTransaction = Partial<Transaction> & {
   info?: PartialUpdate;
 };
 
-export type Member = IUserRegistry.MemberStructOutput;
-export type Actor = IUserRegistry.ActorStructOutput;
-
-// Connect
-
-const connectEthereum = async (): Promise<ethers.Provider> => {
-  // if server side, connects to node
-  if (typeof window === "undefined") return connectNode();
-  // if client side, connects to wallet
-  return connectWallet();
+export type HumanReadableBatch = Omit<Batch, "updates" | "transactions"> & {
+  currentOwnerName: string;
+  updates: HumanReadableUpdate[];
+  transactions: HumanReadableTransaction[];
 };
-
-const connectNode = async (): Promise<ethers.Provider> => {
-  return new ethers.JsonRpcProvider(process.env.ETHEREUM_NODE_URL);
+export type HumanReadableTransaction = Omit<Transaction, "info"> & {
+  receiverName: string;
+  info: HumanReadableUpdate;
 };
-
-const connectWallet = async (): Promise<ethers.BrowserProvider> => {
-  if (window.ethereum == null) throw new Error("No web3 wallet connected.");
-  // Connect to the MetaMask EIP-1193 object. This is a standard
-  // protocol that allows Ethers access to make all read-only
-  // requests through MetaMask
-  return new ethers.BrowserProvider(window.ethereum);
-};
-
-const connectSigner = async (): Promise<ethers.Signer> => {
-  // Connect to the MetaMask EIP-1193 object. This is a standard
-  // protocol that allows Ethers access to make all read-only
-  // requests through MetaMask
-  const provider = await connectWallet();
-
-  // It also provides an opportunity to request access to write
-  // operations, which will be performed by the private key
-  // that MetaMask manages for the user.
-  const signer = await provider.getSigner();
-  return signer;
+export type HumanReadableUpdate = Update & {
+  ownerName: string;
+  date: string;
+  time: string;
 };
 
 const Traceability = {
@@ -72,7 +42,6 @@ const Traceability = {
     Supplychain__factory.connect(address, await connectEthereum()),
 
   // Read only methods
-
   getContractManagerAddress: async (contractAddress: string): Promise<string> =>
     Traceability.connectReadOnly(contractAddress).then((contract) =>
       contract.getManager(),
@@ -155,54 +124,4 @@ const Traceability = {
     }),
 };
 
-const UserRegistry = {
-  connectReadOnly: async (): Promise<UserRegistry> =>
-    UserRegistry__factory.connect(userRegistryAddress, await connectEthereum()),
-
-  getMember: async (address: string): Promise<Member> =>
-    UserRegistry.connectReadOnly().then((contract) =>
-      contract.getMember(address),
-    ),
-};
-
-const Utils = {
-  parseTime: (ts: bigint): string => {
-    return new Date(Number(ts * 1000n)).toISOString();
-  },
-
-  encodeBatchURI: (id: BatchId, contractAddress: string): string => {
-    const idBytes = id.toString(16);
-    const idBuffer = Buffer.from(idBytes, "hex");
-
-    const contractAddressBytes = contractAddress.replace("0x", "");
-    const contractAddressBuffer = Buffer.from(contractAddressBytes, "hex");
-
-    return `${base64url.encode(
-      idBuffer,
-    )}${BATCH_URI_DELIMITER}${base64url.encode(contractAddressBuffer)}`;
-  },
-
-  decodeBatchURI: (
-    encodedText: string,
-  ): { batchId: BatchId; contractAddress: string } => {
-    const encodedParts = encodedText.split(BATCH_URI_DELIMITER);
-    if (encodedParts.length != 2) throw new Error("Invalid encoded batch URL");
-
-    const [batchIdEncoded, contractAddressEncoded] = encodedParts;
-
-    return {
-      batchId: BigInt(`0x${base64url.decode(batchIdEncoded, "hex")}`),
-      contractAddress: ethers.getAddress(
-        base64url.decode(contractAddressEncoded, "hex"),
-      ),
-    };
-  },
-};
-
-const BlockchainServices = {
-  Traceability,
-  UserRegistry,
-  Utils,
-};
-
-export default BlockchainServices;
+export default Traceability;

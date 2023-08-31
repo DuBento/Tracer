@@ -1,12 +1,12 @@
 "use client";
 
+import BlockchainServices, { Batch } from "@/TracerAPI";
 import {
   CLIENT_VIEW_PAGE_LOCATION,
   GS1_DATA_LINK_BATCH_PREFIX,
   GS1_DATA_LINK_GTIN_PREFIX,
   QR_CODE_PROTOCOL,
 } from "@/properties";
-import BlockchainServices, { Batch } from "@/services/BlockchainServices";
 import { useState } from "react";
 import LogoQrCode from "../common/logoQrCode";
 

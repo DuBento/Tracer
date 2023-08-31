@@ -16,13 +16,18 @@ const NotificationContext = createContext({
     }: {
       loading: string;
       success: string | ProcessingFunction;
-      error: string | ProcessingFunction;
+      error?: string | ProcessingFunction;
     },
   ) =>
     toast.promise(promise, {
       loading: loading,
       success: success,
-      error: error,
+      error:
+        error ||
+        ((err) => {
+          console.error(err);
+          return `${err}`;
+        }),
     }),
   error: (msg: string) => toast.error(msg),
 });

@@ -1,7 +1,6 @@
 "use client";
 
-import deployedAddresses from "@/contracts/deployedAddresses.json";
-import { Batch } from "@/services/BlockchainServices";
+import TracerAPI, { Batch } from "@/TracerAPI";
 import { createContext, useState } from "react";
 
 interface BatchContextType {
@@ -14,7 +13,7 @@ interface BatchContextType {
 export const BatchContext = createContext<BatchContextType>({
   batch: undefined,
   setBatch: () => {},
-  contractAddress: deployedAddresses["testSupplychain"],
+  contractAddress: TracerAPI.deployedAddresses["mockTraceabilityContract"],
   setContractAddress: () => {},
 });
 
@@ -25,7 +24,7 @@ export default function BatchProvider({
 }) {
   const [batch, setBatch] = useState<Batch>();
   const [contractAddress, setContractAddress] = useState<string>(
-    deployedAddresses["testSupplychain"],
+    TracerAPI.deployedAddresses["mockTraceabilityContract"],
   );
 
   return (

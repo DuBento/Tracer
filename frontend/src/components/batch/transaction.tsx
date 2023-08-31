@@ -1,7 +1,7 @@
 "use client";
 
+import BlockchainServices, { BatchId } from "@/TracerAPI";
 import NotificationContext from "@/context/notificationContext";
-import BlockchainServices, { BatchId } from "@/services/BlockchainServices";
 import StorageService from "@/services/StorageService";
 import { useContext, useState } from "react";
 import FilesDropzone from "../common/filesDropzone";

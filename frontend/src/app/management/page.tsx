@@ -1,18 +1,17 @@
 "use client";
 
+import TracerAPI, { Batch } from "@/TracerAPI";
 import GetBatch from "@/components/batch/getBatch";
 import NewBatch from "@/components/batch/newBatch";
 import Transaction from "@/components/batch/transaction";
 import UpdateBatch from "@/components/batch/updateBatch";
-import deployedAddresses from "@/contracts/deployedAddresses.json";
-import { Batch } from "@/services/BlockchainServices";
 
 import { useState } from "react";
 
 const ManagementPage = () => {
   const [batch, setBatch] = useState<Batch>();
   const [contractAddress, setContractAddress] = useState<string>(
-    deployedAddresses["testSupplychain"],
+    TracerAPI.deployedAddresses["mockTraceabilityContract"],
   );
 
   return (

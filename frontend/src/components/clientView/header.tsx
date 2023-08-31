@@ -1,5 +1,5 @@
 import Logo from "@/public/images/logo";
-import { Member } from "@/services/BlockchainServices";
+import { Member } from "@/TracerAPI";
 import { SVGProps } from "react";
 
 type Props = {
