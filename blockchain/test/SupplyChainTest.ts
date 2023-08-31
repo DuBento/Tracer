@@ -7,8 +7,7 @@ import {
   SupplychainFactory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
-import { NewBatchEvent } from "../artifacts-frontend/typechain/supplychain/Supplychain";
-import * as utils from "../lib/utils";
+import { newBatch, utils } from "../lib";
 import { SUPPLYCHAIN_CONTRACT_DESCRIPTION } from "../properties";
 import * as Values from "./TestConfig";
 
@@ -16,24 +15,6 @@ import * as Values from "./TestConfig";
  TODO:
   - Test transfer ownership
 */
-export async function createNewBatch(
-  supplyChain: Supplychain,
-  description: string
-): Promise<bigint> {
-  const tx = await supplyChain.newBatch(description);
-  const receipt = await tx.wait();
-
-  if (receipt == null) throw new Error("Error completing transaction");
-
-  const newBatchEvent = (
-    receipt.logs.find(
-      (event) =>
-        event instanceof ethers.EventLog && event.eventName == "NewBatch"
-    ) as NewBatchEvent.Log
-  )?.args;
-
-  return newBatchEvent.id;
-}
 
 describe("Supplychain", function () {
   var supplyChain: Supplychain;
@@ -117,7 +98,7 @@ describe("Supplychain", function () {
 
   describe("Batches", function () {
     it("New batch should be properly initialized", async function () {
-      const id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
+      const id = await newBatch(supplyChain, Values.BATCH_DESCRIPTION);
 
       const batch = await supplyChain.getBatch(id);
 
@@ -134,7 +115,7 @@ describe("Supplychain", function () {
     let id: bigint;
 
     beforeEach(async function () {
-      id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
+      id = await newBatch(supplyChain, Values.BATCH_DESCRIPTION);
     });
 
     it("New update should be registered correctly", async function () {
@@ -215,7 +196,7 @@ describe("Supplychain", function () {
     let id: bigint;
 
     beforeEach(async function () {
-      id = await createNewBatch(supplyChain, Values.BATCH_DESCRIPTION);
+      id = await newBatch(supplyChain, Values.BATCH_DESCRIPTION);
     });
 
     it("New transaction between actors works correctly", async function () {

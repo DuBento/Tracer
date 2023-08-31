@@ -34,7 +34,7 @@ export async function saveFrontendFiles() {
   fs.copySync(CONTRACTS_DIR, FRONTEND_OUTPUT_DIR, { overwrite: true });
 }
 
-export function storeContractAddress(name: string, address: string) {
+export function storeAddress(name: string, address: string) {
   let addresses: any;
   if (!fs.pathExistsSync(CONTRACT_ADDRESS_FILE)) addresses = {};
   else addresses = JSON.parse(fs.readFileSync(CONTRACT_ADDRESS_FILE, "utf8"));
@@ -46,6 +46,15 @@ export function storeContractAddress(name: string, address: string) {
     JSON.stringify(addresses, null, 2),
     "utf8"
   );
+}
+
+export function getStoredAddress(name: string) {
+  if (!fs.pathExistsSync(CONTRACT_ADDRESS_FILE))
+    throw new Error("Contract address file not found");
+
+  const addresses = JSON.parse(fs.readFileSync(CONTRACT_ADDRESS_FILE, "utf8"));
+
+  return addresses[name];
 }
 
 export async function getContract<TypedContract>(

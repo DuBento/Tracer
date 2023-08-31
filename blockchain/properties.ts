@@ -39,3 +39,8 @@ export const MEMBER_DEV_NAME = "Dev member";
 export const MEMBER_DEV_INFO_URI = "<member dev uri>";
 // bigger than quorum and less than max voting power. For development, able to pass proposals with only one member
 export const MEMBER_DEV_VOTING_POWER = 49;
+
+// traceability mock
+export const TRACEABILITY_MOCK_ADDRESS_NAME = "mockTraceabilityContract";
+export const TRACEABILITY_MOCK_BATCH_DESCRIPTION =
+  "Mock batch created on deployment for development purposes";

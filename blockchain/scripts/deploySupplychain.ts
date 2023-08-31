@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { saveFrontendFiles, storeContractAddress } from "./utils";
+import { saveFrontendFiles, storeAddress } from "./utils";
 
 async function main() {
   const Supplychain = await ethers.getContractFactory("Supplychain");
@@ -9,7 +9,7 @@ async function main() {
 
   console.log(`Supplychain smart contract: deployed!`);
 
-  storeContractAddress("Supplychain", await supplychain.getAddress());
+  storeAddress("Supplychain", await supplychain.getAddress());
   saveFrontendFiles();
 }
 
