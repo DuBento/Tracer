@@ -8,6 +8,7 @@ export const FRONTEND_OUTPUT_DIR = path.join(
   __dirname,
   "..",
   "frontend",
+  "TracerAPI",
   "contracts"
 );
 
