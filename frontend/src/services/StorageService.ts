@@ -5,14 +5,14 @@ export const STORAGE_API_ADD = "/api/storage/add";
 
 export const INDEX_FILE = "index.json";
 
-interface UpdateIndexDocument {
+export type UpdateIndexDocument = {
   desc: string;
   imgs: string[];
   vids: string[];
   txt: string[];
   pdf: string[];
   other: string[];
-}
+};
 
 export const composeMetadata = (
   description: string,

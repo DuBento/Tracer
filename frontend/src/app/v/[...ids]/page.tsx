@@ -2,7 +2,7 @@ import Header from "@/components/clientView/header";
 import Log from "@/components/clientView/log";
 import LogContainer from "@/components/clientView/logContainer";
 import { GS1_DATA_LINK_BATCH_PREFIX } from "@/properties";
-import BlockchainServices from "@/services/BlockchainServices";
+import TracerAPI from "@/TracerAPI";
 
 interface Props {
   params: {
@@ -14,29 +14,28 @@ export default async function ViewPage({ params }: Props) {
   const prefixBatchURI = params.ids.indexOf(GS1_DATA_LINK_BATCH_PREFIX);
   const batchURI = decodeURIComponent(params.ids[prefixBatchURI + 1]);
 
-  const { batchId, contractAddress } =
-    BlockchainServices.Utils.decodeBatchURI(batchURI);
+  const { batchId, contractAddress } = TracerAPI.Utils.decodeBatchURI(batchURI);
 
   // TODO sanitization
   console.log("contractAddress", contractAddress);
 
   const managerAddress =
-    await BlockchainServices.Traceability.getContractManagerAddress(
-      contractAddress,
-    );
+    await TracerAPI.Traceability.getContractManagerAddress(contractAddress);
 
   console.log("managerAddress", managerAddress);
 
   const contractDescription =
-    await BlockchainServices.Traceability.getContractDescription(
-      contractAddress,
-    );
+    await TracerAPI.Traceability.getContractDescription(contractAddress);
 
   console.log("contractDescription", contractDescription);
 
-  const member = await BlockchainServices.UserRegistry.getMember(
-    managerAddress,
-  );
+  const member = await TracerAPI.UserRegistry.getMember(managerAddress);
+
+  let batch = await TracerAPI.Traceability.getBatch(contractAddress, batchId);
+  if (!batch.id) throw new Error("Batch not found.");
+
+  batch = await TracerAPI.Utils.humanizeBatch(batch);
+  console.log("batch", batch);
 
   return (
     <LogContainer>

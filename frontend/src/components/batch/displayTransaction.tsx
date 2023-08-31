@@ -1,5 +1,5 @@
 "use client";
-import BlockchainServices, { Transaction } from "@/services/BlockchainServices";
+import BlockchainServices, { Transaction } from "@/TracerAPI";
 import { useState } from "react";
 import DocumentContainer from "./documentContainer";
 

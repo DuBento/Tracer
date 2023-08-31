@@ -50,7 +50,7 @@ export default function Event(props: Props) {
           <LogBulletPointSmall className="bg-sage" h-32 w-full />
         </div>
         <h4 className="-mt-1 flex-grow text-sm leading-tight ">
-          {props.description} with regard to the following files:
+          {props.description}
         </h4>
         <div className="flex-none text-xs font-thin leading-tight">
           {props.date} · {props.hour}

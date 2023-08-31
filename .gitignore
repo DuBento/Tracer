@@ -3,7 +3,7 @@
 
 LICENSE
 
-/frontend/contracts/
+/frontend/**/contracts/
 
 ## Blockchain (hardhat)
 

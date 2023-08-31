@@ -1,4 +1,4 @@
-import BlockchainServices, { Update } from "@/services/BlockchainServices";
+import BlockchainServices, { Update } from "@/TracerAPI";
 import { useState } from "react";
 import DocumentContainer from "./documentContainer";
 

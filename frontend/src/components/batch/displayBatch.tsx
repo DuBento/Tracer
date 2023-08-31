@@ -1,6 +1,6 @@
 "use client";
 
-import { Batch } from "@/services/BlockchainServices";
+import { Batch } from "@/TracerAPI";
 import DisplayTransaction from "./displayTransaction";
 import DisplayUpdate from "./displayUpdate";
 
