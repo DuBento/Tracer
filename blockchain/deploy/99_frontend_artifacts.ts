@@ -5,7 +5,7 @@ import {
   padCenter,
   saveFrontendFiles,
   scriptName,
-  storeContractAddress,
+  storeAddress,
 } from "../lib/utils";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -16,7 +16,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const allDeployments = await deployments.all();
   for (let contractName in allDeployments) {
-    storeContractAddress(contractName, allDeployments[contractName].address);
+    storeAddress(contractName, allDeployments[contractName].address);
   }
 
   saveFrontendFiles();

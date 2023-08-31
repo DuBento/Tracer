@@ -8,20 +8,20 @@ import {
   Supplychain__factory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
-import { execute } from "../lib/execute";
 import {
+  execute,
+  newBatch,
   newMemberViaGovernance,
+  newSupplychainContractViaGovernance,
+  propose,
   proposeNewMember,
-} from "../lib/newMemberViaGovernance";
-import { newSupplychainContractViaGovernance } from "../lib/newSupplychainContractViaGovernance";
-import { propose } from "../lib/propose";
-import * as utils from "../lib/utils";
-import { vote } from "../lib/vote";
+  utils,
+  vote,
+} from "../lib";
 import {
   USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION,
   USER_REGISTRY_UPDATE_MEMBER_STATE_METHOD,
 } from "../properties";
-import { createNewBatch } from "./SupplyChainTest";
 import {
   ACTOR_INFO_URI,
   ACTOR_NAME,
@@ -268,7 +268,7 @@ describe("Governor", function () {
     });
 
     it("Interact with onlyOwner functions of the new supplychain contract (via governace)", async function () {
-      const batchId = await createNewBatch(
+      const batchId = await newBatch(
         supplychainContractAsActor1,
         BATCH_DESCRIPTION
       );
