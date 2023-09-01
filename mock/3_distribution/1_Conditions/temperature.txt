@@ -1,0 +1,7 @@
+Package temperature control:
+
+- T+10m = 20°C
+- T+20m = 18°C
+- T+30m = 27°C
+- T+40m = 34°C
+- T+50m = 40°C
