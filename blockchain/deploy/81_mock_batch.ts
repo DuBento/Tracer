@@ -1,0 +1,104 @@
+import { ethers } from "hardhat";
+import { DeployFunction } from "hardhat-deploy/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+
+import mockUpload from "../../mock/mockUpload.json";
+import { Supplychain, UserRegistry } from "../artifacts-frontend/typechain";
+import { newBatch, utils } from "../lib";
+import {
+  TRACEABILITY_MOCK_ADDRESS_NAME,
+  TRACEABILITY_MOCK_BATCH_DESCRIPTION,
+} from "../properties";
+
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const { getNamedAccounts, deployments } = hre;
+  const { log, get, deploy } = deployments;
+  const {
+    deployer,
+    supplychainManager,
+    actor1,
+    actor2,
+    actor3,
+    actor4,
+    actor5,
+  } = await getNamedAccounts();
+  log(utils.padCenter(utils.scriptName(__filename), 50));
+  const actors = [actor1, actor2, actor3, actor4, actor5];
+
+  const traceabilityAddress = utils.getStoredAddress(
+    TRACEABILITY_MOCK_ADDRESS_NAME
+  );
+
+  // Add actors to user registry
+  const userRegistry = await utils.getContract<UserRegistry>("UserRegistry", {
+    signerAddress: supplychainManager,
+  });
+
+  let actorIdx = 0;
+
+  for (const [mockActor] of Object.entries(mockUpload)) {
+    if (actorIdx > actors.length - 1) break;
+
+    const actorName = mockActor.replace(/^\d+_/, "");
+    await userRegistry.addActor(actors[actorIdx], actorName, "");
+    await userRegistry.addContractToActor(
+      traceabilityAddress,
+      actors[actorIdx]
+    );
+    actorIdx++;
+  }
+
+  // Get traceability contract
+  let traceabilityContract = await utils.getContract<Supplychain>(
+    "Supplychain",
+    {
+      contractAddress: traceabilityAddress,
+      signerAddress: actors[0],
+    }
+  );
+
+  // Create new batch
+  const batchId = await newBatch(
+    traceabilityContract,
+    TRACEABILITY_MOCK_BATCH_DESCRIPTION
+  );
+
+  utils.storeAddress("mockBatchId", batchId.toString());
+  log(`Batch created: id@${batchId.toString()}`);
+
+  // Add updates and transactions
+  actorIdx = 0;
+
+  log("mockUpload", mockUpload);
+
+  for (const [transactionKey, trasactionUpdates] of Object.entries(
+    mockUpload
+  )) {
+    // Connect with actor
+    traceabilityContract = traceabilityContract.connect(
+      await ethers.getSigner(actors[actorIdx])
+    );
+
+    log(trasactionUpdates);
+
+    // Add updates
+    for (const update of trasactionUpdates) {
+      log("update");
+      log(update);
+      await traceabilityContract.handleUpdate(batchId, update.uri);
+      log(`Update added: ${update.name} by ${actors[actorIdx]}`);
+    }
+
+    // Add transaction
+    if (actorIdx + 1 > actors.length - 1) break;
+    await traceabilityContract.handleTransaction(
+      batchId,
+      actors[actorIdx + 1],
+      ""
+    );
+    actorIdx++;
+  }
+};
+
+module.exports = func;
+module.exports.tags = ["all", "mock"];

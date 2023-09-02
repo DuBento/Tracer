@@ -97,6 +97,12 @@ const config: HardhatUserConfig = {
     actor3: {
       default: 4,
     },
+    actor4: {
+      default: 5,
+    },
+    actor5: {
+      default: 6,
+    },
   },
 
   gasReporter: {

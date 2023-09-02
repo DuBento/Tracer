@@ -7,18 +7,16 @@ import DisplayBatch from "./displayBatch";
 import QRCode from "./qrcode";
 
 interface Props {
+  initialBatchId?: string;
   batch?: Batch;
   setBatch: (newBatch: Batch) => void;
   contractAddress: string;
   children?: React.ReactNode;
 }
 
-const tmpDevBatchId =
-  "86908536660999850864466637729736991726033624077462134270947258110704485629459";
-
 const GetBatch = (props: Props) => {
   const [batchId, setBatchId] = useState<string>(
-    props.batch?.id ? props.batch.id.toString() : tmpDevBatchId,
+    props.batch?.id ? props.batch.id.toString() : props.initialBatchId || "",
   );
 
   const notifications = useContext(NotificationContext);

@@ -59,21 +59,18 @@ function composeUpdates() {
 
       files = fs.readdirSync(stepUpdatePath, { withFileTypes: true });
 
-      const description = stepUpdate.name.replace(/^\d_/, "");
+      const description = stepUpdate.name.replace(/^\d+_/, "");
       // console.log(description);
 
-      const filesToProcess = files.filter((file) => file.isFile());
+      const filesToProcess = files.filter(
+        (file) => file.isFile() && file.name !== "index.json"
+      );
 
       const filesContent = filesToProcess.map((file) =>
         fs.readFileSync(path.join(stepUpdatePath, file.name), "utf-8")
       );
 
       const updateMetadata = composeMetadata(description, filesToProcess);
-
-      // data[stepDirectory.name][data[stepDirectory.name].length - 1].metadata =
-      //   updateMetadata;
-      // data[stepDirectory.name][data[stepDirectory.name].length - 1].files =
-      //   filesContent;
 
       // write metadata to file
       fs.writeFileSync(
@@ -150,16 +147,11 @@ let promises = [];
 for (const topLevelKey in updates) {
   const subArray = updates[topLevelKey];
 
-  console.log(`Top-level key: ${topLevelKey}`);
-
   for (const item of subArray) {
-    console.log(`  Name: ${item.name}`);
-    console.log(`  Path: ${item.path}`);
-
     promises.push(
       upload(item.path).then((hash) => {
         console.log(hash);
-        item.hash = hash;
+        item.uri = hash;
       })
     );
   }
@@ -167,7 +159,7 @@ for (const topLevelKey in updates) {
 
 Promise.all(promises).then(() => {
   const cleanUpdates = cleanJSON(updates);
-  fs.writeFileSync("updates.json", JSON.stringify(cleanUpdates, null, 2));
+  fs.writeFileSync("mockUpload.json", JSON.stringify(cleanUpdates, null, 2));
 
   console.log(cleanUpdates);
 });
