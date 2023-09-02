@@ -1,0 +1,44 @@
+{
+  "0_production": [
+    {
+      "name": "0_Land",
+      "uri": "QmWu8RZYki3xknuwJzXmSDxL9kki5g9UyRomwgR6VWVmXA"
+    }
+  ],
+  "1_processing": [
+    {
+      "name": "0_Sorting and fermentation",
+      "uri": "QmRspvmhf9ethstucm5432x8hRxH2nZheGZUcy2uYC2oVE"
+    },
+    {
+      "name": "1_Resting",
+      "uri": "QmeiuX8C8frQ5f1PdCKbF8FS4NR8ZiRSLXfo1meCnvSWFY"
+    },
+    {
+      "name": "2_Testing",
+      "uri": "QmQnppmg86y1pkb9sMBXARgyn61AaPu3hh5ZuN2ggyQxVm"
+    }
+  ],
+  "2_storage": [
+    {
+      "name": "0_Aging for 18 months",
+      "uri": "QmanqL2iHBbQ5Y73ZnzieQJat19wQmkBKaBT1noFC6CGwh"
+    }
+  ],
+  "3_distribution": [
+    {
+      "name": "0_Loading",
+      "uri": "QmZrbNHTe7RiYXPmHKDv9JP8upG1ZXGzaPNdtrytKUmG18"
+    },
+    {
+      "name": "1_Conditions",
+      "uri": "QmYa65kDni1mfDNbk3uMHXJ5wnJfa7VsnxQcBagK5ZPvQm"
+    }
+  ],
+  "4_store": [
+    {
+      "name": "0_Displayed",
+      "uri": "QmdoALK4JfxHsQqMkYALwh5mqRUMNSLrKVYogXUDqkkUjC"
+    }
+  ]
+}
