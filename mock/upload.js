@@ -41,8 +41,6 @@ function composeUpdates() {
 
   const stepDirectories = files.filter((file) => file.isDirectory());
 
-  // console.log(stepDirectories.map((stepDirectory) => stepDirectory.name));
-
   stepDirectories.forEach((stepDirectory) => {
     data[stepDirectory.name] = [];
     const stepDirectoryPath = path.join(currentDirectory, stepDirectory.name);
@@ -64,10 +62,6 @@ function composeUpdates() {
 
       const filesToProcess = files.filter(
         (file) => file.isFile() && file.name !== "index.json"
-      );
-
-      const filesContent = filesToProcess.map((file) =>
-        fs.readFileSync(path.join(stepUpdatePath, file.name), "utf-8")
       );
 
       const updateMetadata = composeMetadata(description, filesToProcess);

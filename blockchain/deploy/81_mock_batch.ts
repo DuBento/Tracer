@@ -36,10 +36,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   let actorIdx = 0;
 
-  for (const [mockActor] of Object.entries(mockUpload)) {
+  const mockActorNames = Object.keys(mockUpload).filter(
+    (key) => key !== "transaction"
+  );
+
+  for (const mockActor of mockActorNames) {
     if (actorIdx > actors.length - 1) break;
 
-    const actorName = mockActor.replace(/^\d+_/, "");
+    const actorName = mockActor
+      .replace(/^\d+_/, "")
+      .replace(/\w/, (c) => c.toUpperCase());
     await userRegistry.addActor(actors[actorIdx], actorName, "");
     await userRegistry.addContractToActor(
       traceabilityAddress,
@@ -69,22 +75,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // Add updates and transactions
   actorIdx = 0;
 
-  log("mockUpload", mockUpload);
-
   for (const [transactionKey, trasactionUpdates] of Object.entries(
     mockUpload
   )) {
+    if (transactionKey === "transaction") continue;
     // Connect with actor
     traceabilityContract = traceabilityContract.connect(
       await ethers.getSigner(actors[actorIdx])
     );
 
-    log(trasactionUpdates);
-
     // Add updates
     for (const update of trasactionUpdates) {
-      log("update");
-      log(update);
       await traceabilityContract.handleUpdate(batchId, update.uri);
       log(`Update added: ${update.name} by ${actors[actorIdx]}`);
     }
@@ -94,7 +95,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await traceabilityContract.handleTransaction(
       batchId,
       actors[actorIdx + 1],
-      ""
+      mockUpload.transaction[0].uri
     );
     actorIdx++;
   }
