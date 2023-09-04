@@ -1,22 +1,100 @@
 import base64url from "base64url";
 import { ethers } from "ethers";
-import {
-  Batch,
-  BatchId,
-  HumanReadableBatch,
-  HumanReadableTransaction,
-  HumanReadableUpdate,
-} from "./traceability";
+import { Batch, BatchId, Transaction, Update } from "./traceability";
 import UserRegistry from "./userRegistry";
 
 const BATCH_URI_DELIMITER = "@";
 
+export type HumanReadableBatch = Omit<Batch, "updates" | "transactions"> & {
+  currentOwnerName: string;
+  updates: HumanReadableUpdate[];
+  transactions: HumanReadableTransaction[];
+};
+export type HumanReadableTransaction = Omit<Transaction, "info"> & {
+  receiverName: string;
+  info: HumanReadableUpdate;
+};
+export type HumanReadableUpdate = Update & {
+  ownerName: string;
+  date: string;
+  time: string;
+};
+
+type BatchLog = {
+  batchId: BatchId;
+  currentOwnerName: string;
+  currentOwnerAddress: string;
+  state: string;
+  warning: boolean;
+  description: string;
+  log: BatchEventLog[];
+};
+
+type BatchEventLog = {
+  actorName: string;
+  actorAddress: string;
+  events: {
+    isTransaction: boolean;
+    ts: bigint;
+    date: string;
+    time: string;
+    documentURI: string;
+  }[];
+};
+
 const Utils = {
   parseTime: (ts: bigint): string => {
-    return new Date(Number(ts * 1000n)).toISOString();
+    const date = new Date(Number(ts * 1000n));
+    return `${date.getHours()}:${date.getMinutes()}`;
   },
 
-  encodeBatchURI: (id: BatchId, contractAddress: string): string => {
+  parseDate: (ts: bigint): string => {
+    const date = new Date(Number(ts * 1000n));
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day} ${month}, ${year}`;
+  },
+
+  parseBatchState: (
+    state: number,
+  ): { stateDescription: string; warning: boolean } => {
+    switch (state) {
+      case 0:
+        return { stateDescription: "Functioning", warning: false };
+      case 1:
+        return {
+          stateDescription: "Corrective Measures Needed",
+          warning: true,
+        };
+      case 2:
+        return {
+          stateDescription: "Waiting Review of Corrective Measures",
+          warning: true,
+        };
+      default:
+        return { stateDescription: "Unknown", warning: true };
+    }
+  },
+
+  encodeBatchURI: (id: BatchId | string, contractAddress: string): string => {
+    if (typeof id == "string") id = BigInt(id);
     const idBytes = id.toString(16);
     const idBuffer = Buffer.from(idBytes, "hex");
 
@@ -61,7 +139,7 @@ const Utils = {
     return actors;
   },
 
-  memoizedGetActorNames: async (batch: Batch): Promise<Map<string, string>> => {
+  getActorNamesMemoized: async (batch: Batch): Promise<Map<string, string>> => {
     const actorNamesMap = new Map<string, string>();
     const actorAddresses = Utils.getInvolvedActors(batch);
 
@@ -74,34 +152,84 @@ const Utils = {
   },
 
   humanizeBatch: async (batch: Batch): Promise<HumanReadableBatch> => {
-    const actorNamesMap = await Utils.memoizedGetActorNames(batch);
+    const actorNamesMap = await Utils.getActorNamesMemoized(batch);
 
     return {
       ...batch,
       currentOwner: actorNamesMap.get(batch.currentOwner) || "Unknown",
-      updates: batch.updates.map(
-        (update) =>
-          ({
-            ...update,
-            ownerName: actorNamesMap.get(update.owner) || "Unknown",
-            date: "TODO parse date",
-            time: "TODO parse time",
-          }) as HumanReadableUpdate,
-      ),
-      transactions: batch.transactions.map(
-        (transaction) =>
-          ({
-            ...transaction,
-            receiverName: actorNamesMap.get(transaction.receiver) || "Unknown",
-            info: {
-              ...transaction.info,
-              owner: actorNamesMap.get(transaction.info.owner) || "Unknown",
-              date: "TODO parse date",
-              time: "TODO parse time",
-            },
-          }) as HumanReadableTransaction,
-      ),
-    } as HumanReadableBatch;
+      updates: batch.updates.map((update) => ({
+        ...update,
+        ownerName: actorNamesMap.get(update.owner) || "Unknown",
+        date: "TODO parse date",
+        time: "TODO parse time",
+      })),
+      transactions: batch.transactions.map((transaction) => ({
+        ...transaction,
+        receiverName: actorNamesMap.get(transaction.receiver) || "Unknown",
+        info: {
+          ...transaction.info,
+          owner: actorNamesMap.get(transaction.info.owner) || "Unknown",
+          date: "TODO parse date",
+          time: "TODO parse time",
+        },
+      })),
+    };
+  },
+
+  getBatchLog: async (batch: Batch): Promise<BatchLog> => {
+    const actorNamesMap = await Utils.getActorNamesMemoized(batch);
+    const { stateDescription, warning } = Utils.parseBatchState(batch.state);
+
+    const eventLog: BatchEventLog[] = [];
+    for (const update of batch.updates) {
+      const event = {
+        isTransaction: false,
+        ts: update.ts,
+        date: Utils.parseDate(update.ts),
+        time: Utils.parseTime(update.ts),
+        documentURI: update.documentURI,
+      };
+
+      const existingActorEventLog = eventLog.find(
+        (log) => log.actorAddress == update.owner,
+      );
+      if (existingActorEventLog == undefined) {
+        eventLog.push({
+          actorName: actorNamesMap.get(update.owner) || "Unknown",
+          actorAddress: update.owner,
+          events: [event],
+        });
+      } else {
+        existingActorEventLog.events.push(event);
+      }
+    }
+
+    for (const transaction of batch.transactions) {
+      const event = {
+        isTransaction: true,
+        ts: transaction.info.ts,
+        date: Utils.parseDate(transaction.info.ts),
+        time: Utils.parseTime(transaction.info.ts),
+        documentURI: transaction.info.documentURI,
+      };
+
+      const existingActorEventLog = eventLog.find(
+        (log) => log.actorAddress == transaction.info.owner,
+      );
+      if (existingActorEventLog == undefined) throw Error("Misformed batch");
+
+      existingActorEventLog.events.push(event);
+    }
+
+    return {
+      batchId: batch.id,
+      state: stateDescription,
+      warning: warning,
+      description: batch.description,
+      currentOwnerName: actorNamesMap.get(batch.currentOwner) || "Unknown",
+      currentOwnerAddress: batch.currentOwner,
+      log: eventLog,
+    };
   },
 };
 

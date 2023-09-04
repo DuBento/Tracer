@@ -1,12 +1,27 @@
+import TracerAPI from "@/TracerAPI";
+import {
+  CLIENT_VIEW_PAGE_LOCATION,
+  GS1_DATA_LINK_BATCH_PREFIX,
+} from "@/properties";
+
 export default function Home() {
+  const defaultContractAddress =
+    TracerAPI.deployedAddresses["mockTraceabilityContract"];
+  const defaultBatchId = TracerAPI.deployedAddresses["mockBatchId"];
+
+  const encodedBatchURL = TracerAPI.Utils.encodeBatchURI(
+    defaultBatchId,
+    defaultContractAddress,
+  );
+
+  const exampleViewPath = `${CLIENT_VIEW_PAGE_LOCATION}/${GS1_DATA_LINK_BATCH_PREFIX}/${encodedBatchURL}`;
+
   return (
     <main>
       <h1 className="text-center text-3xl font-bold">
         Supplychain Traceability Blockchain Dapp: Homepage
       </h1>
-      <a href="v/10/wCR9E01fiMPWq1VCqPaSHIwjprRna4snApe1yK9DfhM@nxrFS-8N0vbzRi6g-pT8YjANOo4/01/12313333333333">
-        View test
-      </a>
+      <a href={exampleViewPath}>View test</a>
     </main>
   );
 }

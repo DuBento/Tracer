@@ -57,6 +57,12 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
         return actors[addr_];
     }
 
+    function getActorName(
+        address addr_
+    ) public view override returns (string memory) {
+        return actors[addr_].name;
+    }
+
     function getVotes(address member_) public view override returns (uint8) {
         return members[member_].votingPower;
     }

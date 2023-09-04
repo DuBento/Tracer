@@ -19,21 +19,6 @@ export type PartialTransaction = Partial<Transaction> & {
   info?: PartialUpdate;
 };
 
-export type HumanReadableBatch = Omit<Batch, "updates" | "transactions"> & {
-  currentOwnerName: string;
-  updates: HumanReadableUpdate[];
-  transactions: HumanReadableTransaction[];
-};
-export type HumanReadableTransaction = Omit<Transaction, "info"> & {
-  receiverName: string;
-  info: HumanReadableUpdate;
-};
-export type HumanReadableUpdate = Update & {
-  ownerName: string;
-  date: string;
-  time: string;
-};
-
 const Traceability = {
   connect: async (address: string): Promise<Supplychain> =>
     Supplychain__factory.connect(address, await connectSigner()),

@@ -32,10 +32,11 @@ export default async function ViewPage({ params }: Props) {
   const member = await TracerAPI.UserRegistry.getMember(managerAddress);
 
   let batch = await TracerAPI.Traceability.getBatch(contractAddress, batchId);
-  if (!batch.id) throw new Error("Batch not found.");
+  if (!batch.id) return NotFoundPage();
 
-  batch = await TracerAPI.Utils.humanizeBatch(batch);
-  console.log("batch", batch);
+  const batchLog = await TracerAPI.Utils.getBatchLog(batch);
+  console.log({ batchLog });
+  batchLog.log.map((e) => console.log(e));
 
   return (
     <LogContainer>
@@ -52,3 +53,16 @@ export default async function ViewPage({ params }: Props) {
     </LogContainer>
   );
 }
+
+const NotFoundPage = () => {
+  return (
+    <div className="flex h-screen items-center justify-center bg-sage-800">
+      <div className="rounded-lg bg-white p-8 shadow-md">
+        <h1 className="mb-4 text-4xl font-semibold">No Batch Found</h1>
+        <p className="text-gray-600">
+          Sorry, the requested batch was not found.
+        </p>
+      </div>
+    </div>
+  );
+};
