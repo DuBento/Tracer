@@ -1,6 +1,7 @@
 "use client";
 
 import ChevronIcon from "@/public/images/chevronIcon";
+import { UpdateIndexDocument } from "@/services/StorageService";
 import { SVGProps, useState } from "react";
 import Event from "./event";
 
@@ -10,23 +11,52 @@ type Props = {
   contractAddress: string;
 };
 
-const mockValues = [
+type mockType = {
+  owner: string;
+  date: string;
+  hour: string;
+  events: UpdateIndexDocument & { date: string; hour: string }[];
+};
+
+const mockValues: mockType[] = [
   {
     owner: "Continente",
     date: "Jun 18, 2023",
     hour: "10:00",
     events: [
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
     ],
   },
@@ -36,16 +66,38 @@ const mockValues = [
     hour: "10:00",
     events: [
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
     ],
   },
@@ -55,16 +107,38 @@ const mockValues = [
     hour: "10:00",
     events: [
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
     ],
   },
@@ -74,16 +148,38 @@ const mockValues = [
     hour: "10:00",
     events: [
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
       {
-        description: "Storage conditions",
+        desc: "Storage conditions",
         date: "Jun 18, 2023",
         hour: "10:00",
-        files: ["TODO"],
+        imgs: [
+          "/images/mock/beach.jpg",
+          "/images/mock/crop.jpeg",
+          "/images/mock/food.jpeg",
+          "/images/mock/paintingWallpaper.png",
+          "/images/mock/storage.jpeg",
+          "/images/mock/walmart.webp",
+        ],
+        vids: [],
+        txt: [],
+        pdf: [],
+        other: [],
       },
     ],
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import BlockchainServices, { Batch } from "@/TracerAPI";
+import TracerAPI, { Batch } from "@/TracerAPI";
 import {
   CLIENT_VIEW_PAGE_LOCATION,
   GS1_DATA_LINK_BATCH_PREFIX,
@@ -22,12 +22,10 @@ const QRCode = (props: Props) => {
   const generateQrcode = async () => {
     if (!props.batch.id) return;
 
-    const encodedBatchURL = BlockchainServices.Utils.encodeBatchURI(
+    const encodedBatchURL = TracerAPI.Utils.encodeBatchURI(
       props.batch.id,
       props.contractAddress,
     );
-
-    console.log({ encodedBatchURL });
 
     let path = `${CLIENT_VIEW_PAGE_LOCATION}/${GS1_DATA_LINK_BATCH_PREFIX}/${encodedBatchURL}`;
     if (gtin) path = path.concat(`/${GS1_DATA_LINK_GTIN_PREFIX}/${gtin}`);
@@ -35,6 +33,8 @@ const QRCode = (props: Props) => {
       path,
       `${QR_CODE_PROTOCOL}://${window.location.host}`,
     ).toString();
+
+    console.log("Client view page:", url);
 
     setQrCodeElement(
       <div

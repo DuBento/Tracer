@@ -42,6 +42,10 @@ abstract contract IUserRegistry {
 
     function getActor(address addr_) public view virtual returns (Actor memory);
 
+    function getActorName(
+        address addr_
+    ) public view virtual returns (string memory);
+
     function getVotes(address member_) public view virtual returns (uint8);
 
     function getManagingContractAddress(
