@@ -40,5 +40,11 @@
       "name": "0_Displayed",
       "uri": "QmdoALK4JfxHsQqMkYALwh5mqRUMNSLrKVYogXUDqkkUjC"
     }
+  ],
+  "transaction": [
+    {
+      "name": "Transaction Document",
+      "uri": "QmNuse4iX7n9NFzXfA7pGNig8TGoWDytXjPwaSZi3uPPmf"
+    }
   ]
 }
