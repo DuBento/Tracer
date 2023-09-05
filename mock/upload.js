@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const secrets = require("./secrets.json");
+
 const composeMetadata = (description, files) => {
   const metadata = {
     desc: description,
@@ -92,11 +94,12 @@ async function upload(directoryPath) {
   }
 
   // request
-  const requestUrl = `http://127.0.0.1:5001/api/v0/add?wrap-with-directory=true`;
+  const requestUrl = `${secrets.STORAGE_API_ADD}?wrap-with-directory=true`;
 
   const res = await fetch(requestUrl, {
     method: "POST",
     body: formData,
+    headers: authHeader(),
   }).catch((e) => {
     throw new Error("Error interacting with storage server");
   });
@@ -116,6 +119,19 @@ async function upload(directoryPath) {
       return json.Hash;
     }
   }
+}
+
+function authHeader() {
+  const authHeader = new Headers();
+  if (secrets.STORAGE_API_KEY && secrets.STORAGE_API_KEY_SECRET)
+    authHeader.append(
+      "Authorization",
+      "Basic " +
+        Buffer.from(
+          secrets.STORAGE_API_KEY + ":" + secrets.STORAGE_API_KEY_SECRET
+        ).toString("base64")
+    );
+  return authHeader;
 }
 
 function cleanJSON(json) {
