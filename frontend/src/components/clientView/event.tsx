@@ -94,7 +94,7 @@ export default function Event(props: Props) {
         );
       } else {
         return (
-          <video className="h-full w-auto" controls loop autoPlay>
+          <video className="h-full w-auto" loop autoPlay>
             <source
               src={StorageService.generateResourceURL(uri, filename).toString()}
             />
