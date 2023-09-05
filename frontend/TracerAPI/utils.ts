@@ -58,7 +58,9 @@ export type BatchEvent = {
 const Utils = {
   parseTime: (ts: bigint): string => {
     const date = new Date(Number(ts * 1000n));
-    return `${date.getHours()}:${date.getMinutes()}`;
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${hours}:${minutes}`;
   },
 
   parseDate: (ts: bigint): string => {
