@@ -1,193 +1,17 @@
 "use client";
 
+import { BatchEvent, BatchLog } from "@/TracerAPI";
 import ChevronIcon from "@/public/images/chevronIcon";
-import { UpdateIndexDocument } from "@/services/StorageService";
 import { SVGProps, useState } from "react";
 import Event from "./event";
 
 type Props = {
-  ids: string[];
-  batchId: string;
-  contractAddress: string;
+  batchLog: BatchLog;
 };
-
-type mockType = {
-  owner: string;
-  date: string;
-  hour: string;
-  events: UpdateIndexDocument & { date: string; hour: string }[];
-};
-
-const mockValues: mockType[] = [
-  {
-    owner: "Continente",
-    date: "Jun 18, 2023",
-    hour: "10:00",
-    events: [
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-    ],
-  },
-  {
-    owner: "UPS",
-    date: "May 11, 2023",
-    hour: "10:00",
-    events: [
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-    ],
-  },
-  {
-    owner: "Leziria Distribution Center in Almeirim",
-    date: "May 10, 2023",
-    hour: "10:00",
-    events: [
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-    ],
-  },
-  {
-    owner: "Adega de Almeirim",
-    date: "May 08, 2023",
-    hour: "10:00",
-    events: [
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-      {
-        desc: "Storage conditions",
-        date: "Jun 18, 2023",
-        hour: "10:00",
-        imgs: [
-          "/images/mock/beach.jpg",
-          "/images/mock/crop.jpeg",
-          "/images/mock/food.jpeg",
-          "/images/mock/paintingWallpaper.png",
-          "/images/mock/storage.jpeg",
-          "/images/mock/walmart.webp",
-        ],
-        vids: [],
-        txt: [],
-        pdf: [],
-        other: [],
-      },
-    ],
-  },
-];
 
 export default function Log(props: Props) {
   const [expanded, setExpanded] = useState<boolean[]>(
-    mockValues.map(() => true),
+    props.batchLog.log.map(() => true),
   );
 
   function toggleExpansion(idx: number) {
@@ -198,15 +22,15 @@ export default function Log(props: Props) {
 
   return (
     <div className="h-screen w-screen overflow-auto bg-isabelline pb-10 pl-10 pr-8 pt-8 font-body">
-      <ol className="-mb- border-l-[2px] border-brunswick_green ">
-        {mockValues.map((value, idx) => (
+      <ol className="border-l-[2px] border-brunswick_green">
+        {props.batchLog.log.map((log, idx) => (
           <li key={idx} className="pb-2">
             <div className="flex items-start justify-between gap-4 align-top">
               <div className="z-10 -ml-[14px] flex-none">
                 <LogBulletPoint className="fill-brunswick_green" />
               </div>
               <h4 className="-mt-2 flex-grow text-xl leading-tight">
-                {value.owner}
+                {log.actorName}
               </h4>
               <div
                 className="mt-1 h-4 flex-none"
@@ -221,20 +45,24 @@ export default function Log(props: Props) {
               </div>
             </div>
 
-            {!expanded[idx] && (
-              <div className="mb-6 ml-6 text-xs font-light">{value.date}</div>
+            {!expanded[idx] && log.receivingDate && (
+              <div className="mb-6 ml-6 text-xs font-light">
+                {log.receivingDate}
+              </div>
             )}
 
             {expanded[idx] && (
               <>
-                <div className="mb-6 ml-6 text-xs font-light">
-                  {value.date} · {value.hour}
-                </div>
+                {log.receivingDate && log.receivingTime && (
+                  <div className="mb-6 ml-6 text-xs font-light">
+                    {log.receivingDate} · {log.receivingTime}
+                  </div>
+                )}
 
                 <ol>
-                  {value.events.map((event, idx) => (
-                    <li key={idx} className="mt-2">
-                      <Event {...event} />
+                  {log.events.map((event: BatchEvent, idx) => (
+                    <li key={idx} className="my-1">
+                      <Event event={event} />
                     </li>
                   ))}
                 </ol>

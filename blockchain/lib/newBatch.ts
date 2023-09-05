@@ -4,9 +4,10 @@ import { NewBatchEvent } from "../artifacts-frontend/typechain/supplychain/Suppl
 
 export async function newBatch(
   supplyChain: Supplychain,
-  description: string
+  description: string,
+  documentURI?: string
 ): Promise<bigint> {
-  const tx = await supplyChain.newBatch(description);
+  const tx = await supplyChain.newBatch(description, documentURI || "");
   const receipt = await tx.wait();
 
   if (receipt == null) throw new Error("Error completing transaction");

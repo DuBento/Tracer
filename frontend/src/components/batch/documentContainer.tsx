@@ -71,7 +71,7 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
 
         {data?.pdf.map((filename, idx) => (
           <div
-            key={`txt${idx}`}
+            key={`pdf${idx}`}
             className="col-span-2 aspect-video rounded-lg shadow-lg"
           >
             <iframe
@@ -83,7 +83,7 @@ const DocumentContainer = ({ uri }: DocumentContainerProps) => {
 
         {data?.other.map((filename, idx) => (
           <div
-            key={`txt${idx}`}
+            key={`other${idx}`}
             className="aspect-video rounded-lg p-2 shadow-lg"
           >
             <a

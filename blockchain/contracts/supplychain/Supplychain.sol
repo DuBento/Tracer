@@ -105,7 +105,8 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     }
 
     function newBatch(
-        string memory description_
+        string memory description_,
+        string memory documentURI_
     ) public allowedActor returns (uint256) {
         uint256 batchId = _generateId();
         Batch storage batch = batches[batchId];
@@ -115,7 +116,10 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
         batch.state = ConformityState.CONFORMITY_STATE_FUNCTIONING;
 
         // handle create transaction
-        Transaction memory transaction = _newTransaction(msg.sender, "");
+        Transaction memory transaction = _newTransaction(
+            msg.sender,
+            documentURI_
+        );
         batch.transactions.push(transaction);
 
         emit NewBatch(msg.sender, batch.id);

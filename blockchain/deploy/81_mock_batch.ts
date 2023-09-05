@@ -66,7 +66,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // Create new batch
   const batchId = await newBatch(
     traceabilityContract,
-    TRACEABILITY_MOCK_BATCH_DESCRIPTION
+    TRACEABILITY_MOCK_BATCH_DESCRIPTION,
+    mockUpload.transaction[0].uri
   );
 
   utils.storeAddress("mockBatchId", batchId.toString());
