@@ -1,6 +1,11 @@
 import base64url from "base64url";
-import { ethers } from "ethers";
-import { Batch, BatchId, Transaction, Update } from "./traceability";
+import { BigNumberish, ethers } from "ethers";
+import Traceability, {
+  Batch,
+  BatchId,
+  Transaction,
+  Update,
+} from "./traceability";
 import UserRegistry from "./userRegistry";
 
 const BATCH_URI_DELIMITER = "@";
@@ -20,26 +25,34 @@ export type HumanReadableUpdate = Update & {
   time: string;
 };
 
-type BatchLog = {
+export type BatchLog = {
   batchId: BatchId;
   currentOwnerName: string;
   currentOwnerAddress: string;
   state: string;
   warning: boolean;
-  description: string;
+  batchDescription: string;
+  contractDescription: string;
+  managerName: string;
+  managerInfo: string;
+  managerAddress: string;
   log: BatchEventLog[];
 };
 
-type BatchEventLog = {
+export type BatchEventLog = {
   actorName: string;
   actorAddress: string;
-  events: {
-    isTransaction: boolean;
-    ts: bigint;
-    date: string;
-    time: string;
-    documentURI: string;
-  }[];
+  receivingDate?: string;
+  receivingTime?: string;
+  events: BatchEvent[];
+};
+
+export type BatchEvent = {
+  isTransaction: boolean;
+  ts: bigint;
+  date: string;
+  time: string;
+  documentURI: string;
 };
 
 const Utils = {
@@ -69,12 +82,13 @@ const Utils = {
     const month = months[date.getMonth()];
     const year = date.getFullYear();
 
-    return `${day} ${month}, ${year}`;
+    return `${month} ${day}, ${year}`;
   },
 
   parseBatchState: (
-    state: number,
+    state: number | bigint,
   ): { stateDescription: string; warning: boolean } => {
+    if (typeof state == "bigint") state = Number(state);
     switch (state) {
       case 0:
         return { stateDescription: "Functioning", warning: false };
@@ -176,7 +190,20 @@ const Utils = {
     };
   },
 
-  getBatchLog: async (batch: Batch): Promise<BatchLog> => {
+  getBatchLog: async (
+    contractAddress: string,
+    batchId: BigNumberish,
+  ): Promise<BatchLog | undefined> => {
+    const batch = await Traceability.getBatch(contractAddress, batchId);
+    if (!batch.id) return undefined;
+
+    const managerAddress =
+      await Traceability.getContractManagerAddress(contractAddress);
+    const member = await UserRegistry.getMember(managerAddress);
+
+    const contractDescription =
+      await Traceability.getContractDescription(contractAddress);
+
     const actorNamesMap = await Utils.getActorNamesMemoized(batch);
     const { stateDescription, warning } = Utils.parseBatchState(batch.state);
 
@@ -219,16 +246,29 @@ const Utils = {
       if (existingActorEventLog == undefined) throw Error("Misformed batch");
 
       existingActorEventLog.events.push(event);
+
+      // update receiver date
+      const receiverActorLog = eventLog.find(
+        (log) => log.actorAddress == transaction.receiver,
+      );
+      if (receiverActorLog) {
+        receiverActorLog.receivingDate = Utils.parseDate(transaction.info.ts);
+        receiverActorLog.receivingTime = Utils.parseTime(transaction.info.ts);
+      }
     }
 
     return {
       batchId: batch.id,
       state: stateDescription,
       warning: warning,
-      description: batch.description,
+      contractDescription: contractDescription,
+      batchDescription: batch.description,
       currentOwnerName: actorNamesMap.get(batch.currentOwner) || "Unknown",
       currentOwnerAddress: batch.currentOwner,
-      log: eventLog,
+      managerName: member.name,
+      managerInfo: member.infoURI,
+      managerAddress: managerAddress,
+      log: eventLog.reverse(),
     };
   },
 };

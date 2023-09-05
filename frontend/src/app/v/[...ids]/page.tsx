@@ -17,38 +17,19 @@ export default async function ViewPage({ params }: Props) {
   const { batchId, contractAddress } = TracerAPI.Utils.decodeBatchURI(batchURI);
 
   // TODO sanitization
-  console.log("contractAddress", contractAddress);
 
-  const managerAddress =
-    await TracerAPI.Traceability.getContractManagerAddress(contractAddress);
-
-  console.log("managerAddress", managerAddress);
-
-  const contractDescription =
-    await TracerAPI.Traceability.getContractDescription(contractAddress);
-
-  console.log("contractDescription", contractDescription);
-
-  const member = await TracerAPI.UserRegistry.getMember(managerAddress);
-
-  let batch = await TracerAPI.Traceability.getBatch(contractAddress, batchId);
-  if (!batch.id) return NotFoundPage();
-
-  const batchLog = await TracerAPI.Utils.getBatchLog(batch);
+  const batchLog = await TracerAPI.Utils.getBatchLog(contractAddress, batchId);
+  if (!batchLog) return NotFoundPage();
   console.log({ batchLog });
   batchLog.log.map((e) => console.log(e));
 
   return (
     <LogContainer>
       <div className="sticky top-0 z-50 w-screen">
-        <Header member={member} contractDescription={contractDescription} />
+        <Header batchLog={batchLog} contractAddress={contractAddress} />
       </div>
       <div className="w-screen whitespace-normal break-words">
-        <Log
-          ids={params.ids}
-          batchId={batchId.toString()}
-          contractAddress={contractAddress}
-        />
+        <Log batchLog={batchLog} />
       </div>
     </LogContainer>
   );
