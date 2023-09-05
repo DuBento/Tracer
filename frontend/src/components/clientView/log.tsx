@@ -59,9 +59,9 @@ export default function Log(props: Props) {
                   </div>
                 )}
 
-                <ol>
+                <ol className="mb-2">
                   {log.events.map((event: BatchEvent, idx) => (
-                    <li key={idx} className="my-1">
+                    <li key={idx} className="mt-4">
                       <Event event={event} />
                     </li>
                   ))}
