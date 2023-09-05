@@ -11,7 +11,7 @@ type Props = {
 
 export default function Log(props: Props) {
   const [expanded, setExpanded] = useState<boolean[]>(
-    props.batchLog.log.map(() => true),
+    props.batchLog.log.map(() => false),
   );
 
   function toggleExpansion(idx: number) {

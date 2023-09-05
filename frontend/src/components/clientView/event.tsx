@@ -6,6 +6,7 @@ import StorageService from "@/services/StorageService";
 import Image from "next/image";
 import { useState } from "react";
 import useSWR from "swr";
+import Skeleton from "../common/skeleton";
 
 type Props = {
   event: BatchEvent;
@@ -22,6 +23,21 @@ export default function Event(props: Props) {
   );
 
   if (error) return <div>failed to load</div>;
+  if (isLoading)
+    return (
+      <div className="flex-start flex items-start justify-between gap-5 align-top">
+        <div className="-ml-[5px] mt-1 flex-none leading-tight">
+          <Skeleton className="h-32 w-full" />
+        </div>
+        <div className="-mt-1 flex-grow ">
+          <Skeleton className="mb-2 h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+        <div className="flex-none text-xs font-thin leading-tight">
+          <Skeleton className="h-4 w-20" />
+        </div>
+      </div>
+    );
   if (!data) return <div>empty data</div>;
 
   const sources = [
@@ -64,8 +80,9 @@ export default function Event(props: Props) {
           height="0"
           sizes={preview ? "50vw" : "100vw"}
           className="h-full w-auto"
-          placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcvLGrHgAGPAJfdxHGYQAAAABJRU5ErkJggg=="
+          placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjuHDlVgUAB+0C97ZeaKMAAAAASUVORK5CYII="
           alt={filename}
+          priority={idx <= 1}
         />
       );
     } else if (type === "vids") {
