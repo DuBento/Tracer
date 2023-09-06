@@ -197,10 +197,20 @@ const Utils = {
         documentURI: transaction.info.documentURI,
       };
 
-      const existingActorEventLog = eventLog.find(
+      let existingActorEventLog = eventLog.find(
         (log) => log.actorAddress == transaction.info.owner,
       );
-      if (existingActorEventLog == undefined) throw Error("Misformed batch");
+      if (existingActorEventLog == undefined) {
+        if (batch.transactions.length == 1) {
+          // Single transaction (initial batch state)
+          const len = eventLog.push({
+            actorName: actorNamesMap.get(transaction.info.owner) || "Unknown",
+            actorAddress: transaction.info.owner,
+            events: [event],
+          });
+          existingActorEventLog = eventLog[len - 1];
+        } else throw Error("Misformed batch");
+      }
 
       existingActorEventLog.events.push(event);
 

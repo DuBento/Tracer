@@ -23,6 +23,7 @@ const NewBatch = (props: Props) => {
     const newBatchId = await BlockchainServices.Traceability.newBatch(
       props.contractAddress,
       newBatchDescription,
+      "", // TODO: doocument URI support, for now use updates
     );
     setBatchId(newBatchId.toString());
   };
