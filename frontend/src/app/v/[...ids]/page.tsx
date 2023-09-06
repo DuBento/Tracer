@@ -34,8 +34,8 @@ export default async function ViewPage({ params }: Props) {
           <Warning />
         </div>
       )}
-      <div className="w-screen flex-grow whitespace-normal break-words">
-        <Log batchLog={batchLog} />
+      <div className="w-screen flex-grow whitespace-normal break-words fill-isabelline">
+        <Log batchLog={batchLog} bgFill="fill-isabelline" />
       </div>
     </LogContainer>
   );

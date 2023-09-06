@@ -1,6 +1,6 @@
 "use client";
 
-import TracerAPI, { Batch } from "@/TracerAPI";
+import TracerAPI from "@/TracerAPI";
 import GetBatch from "@/components/batch/getBatch";
 import NewBatch from "@/components/batch/newBatch";
 import Transaction from "@/components/batch/transaction";
@@ -9,7 +9,7 @@ import UpdateBatch from "@/components/batch/updateBatch";
 import { useState } from "react";
 
 const ManagementPage = () => {
-  const [batch, setBatch] = useState<Batch>();
+  const [batchId, setBatchId] = useState<string>();
   const [contractAddress, setContractAddress] = useState<string>(
     TracerAPI.deployedAddresses["mockTraceabilityContract"],
   );
@@ -23,22 +23,25 @@ const ManagementPage = () => {
       </div>
       <div className="w-full p-2">
         <GetBatch
-          {...{ batch, setBatch, contractAddress }}
+          {...{ batchId, setBatchId, contractAddress }}
           initialBatchId={defaultBatchId}
-        >
-          <div className="mx-10 border-b-2  border-red-100 py-2">
-            <UpdateBatch
-              batchId={batch?.id}
-              contractAddress={contractAddress}
-            />
-          </div>
-          <div className="mx-10 py-2">
-            <Transaction
-              batchId={batch?.id}
-              contractAddress={contractAddress}
-            />
-          </div>
-        </GetBatch>
+        />
+        {batchId && (
+          <>
+            <div className="mx-10 border-b-2  border-red-100 py-2">
+              <UpdateBatch
+                batchId={batchId}
+                contractAddress={contractAddress}
+              />
+            </div>
+            <div className="mx-10 py-2">
+              <Transaction
+                batchId={batchId}
+                contractAddress={contractAddress}
+              />
+            </div>
+          </>
+        )}
       </div>
     </main>
   );

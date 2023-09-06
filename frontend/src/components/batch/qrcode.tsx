@@ -1,6 +1,6 @@
 "use client";
 
-import TracerAPI, { Batch } from "@/TracerAPI";
+import TracerAPI from "@/TracerAPI";
 import {
   CLIENT_VIEW_PAGE_LOCATION,
   GS1_DATA_LINK_BATCH_PREFIX,
@@ -11,7 +11,7 @@ import { useState } from "react";
 import LogoQrCode from "../common/logoQrCode";
 
 interface Props {
-  batch: Batch;
+  batchId: string;
   contractAddress: string;
 }
 
@@ -20,10 +20,10 @@ const QRCode = (props: Props) => {
   const [qrCodeElement, setQrCodeElement] = useState<JSX.Element>();
 
   const generateQrcode = async () => {
-    if (!props.batch.id) return;
+    if (!props.batchId) return;
 
     const encodedBatchURL = TracerAPI.Utils.encodeBatchURI(
-      props.batch.id,
+      props.batchId,
       props.contractAddress,
     );
 
