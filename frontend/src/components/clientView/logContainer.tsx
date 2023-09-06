@@ -2,6 +2,7 @@
 import React from "react";
 
 type Props = {
+  className: string;
   children?: React.ReactNode;
 };
 
@@ -31,7 +32,7 @@ export default function LogContainer(props: Props) {
   return (
     <div
       id="cv-log-container"
-      className="relative h-screen max-h-screen overflow-y-scroll bg-isabelline"
+      className={`relative h-screen max-h-screen overflow-y-scroll bg-isabelline ${props.className}`}
       onScroll={(e) => resizeHeader(e)}
       onTransitionEnd={() => (transitioning = false)}
     >
