@@ -1,6 +1,7 @@
 import Header from "@/components/clientView/header";
 import Log from "@/components/clientView/log";
 import LogContainer from "@/components/clientView/logContainer";
+import Warning from "@/components/clientView/warning";
 import { GS1_DATA_LINK_BATCH_PREFIX } from "@/properties";
 import TracerAPI from "@/TracerAPI";
 
@@ -24,10 +25,15 @@ export default async function ViewPage({ params }: Props) {
   batchLog.log.map((e) => console.log(e));
 
   return (
-    <LogContainer className="flex h-screen flex-col">
+    <LogContainer className="flex h-screen max-h-screen flex-col">
       <div className="sticky top-0 z-50 w-screen">
         <Header batchLog={batchLog} contractAddress={contractAddress} />
       </div>
+      {batchLog.warning && (
+        <div className="mt-5 w-screen flex-none">
+          <Warning />
+        </div>
+      )}
       <div className="w-screen flex-grow whitespace-normal break-words">
         <Log batchLog={batchLog} />
       </div>
