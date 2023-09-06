@@ -42,8 +42,11 @@ export default function Info(props: Props) {
               </h2>
             </div>
             <p className="font-mono">{props.batchLog.contractDescription}</p>
-            <p className="pt-2">Info: {props.batchLog.managerInfo}</p>
-            <div className="flex gap-2 pt-2">
+            <div className="flex flex-wrap gap-2 pt-2 align-baseline">
+              <p className="">Info:</p>
+              <p className="">{props.batchLog.managerInfo}</p>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2">
               <p className="">Batch State:</p>
               <p className="font-bold">{props.batchLog.state}</p>
             </div>

@@ -43,5 +43,6 @@ export const MEMBER_DEV_VOTING_POWER = 49;
 
 // traceability mock
 export const TRACEABILITY_MOCK_ADDRESS_NAME = "mockTraceabilityContract";
+export const TRACEABILITY_MOCK_BATCH_ID_NAME = "mockBatchId";
 export const TRACEABILITY_MOCK_BATCH_DESCRIPTION =
   "Example batch for wine traceability";
