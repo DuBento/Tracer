@@ -12,6 +12,7 @@ export default function LogContainer(props: Props) {
 
     const container = document.getElementById("cv-log-container");
     var description = document.getElementById("cv-header-description");
+    console.log(container?.scrollTop);
 
     window.requestAnimationFrame(() => {
       if (container?.scrollTop! > 50 && description?.style.maxHeight != "0px") {
@@ -30,7 +31,7 @@ export default function LogContainer(props: Props) {
   return (
     <div
       id="cv-log-container"
-      className="relative max-h-screen overflow-y-scroll"
+      className="relative h-screen max-h-screen overflow-y-scroll bg-isabelline"
       onScroll={(e) => resizeHeader(e)}
       onTransitionEnd={() => (transitioning = false)}
     >
