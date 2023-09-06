@@ -8,6 +8,7 @@ import { newBatch, utils } from "../lib";
 import {
   TRACEABILITY_MOCK_ADDRESS_NAME,
   TRACEABILITY_MOCK_BATCH_DESCRIPTION,
+  TRACEABILITY_MOCK_BATCH_ID_NAME,
 } from "../properties";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -70,7 +71,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     mockUpload.transaction[0].uri
   );
 
-  utils.storeAddress("mockBatchId", batchId.toString());
+  utils.storeAddress(TRACEABILITY_MOCK_BATCH_ID_NAME, batchId.toString());
   log(`Batch created: id@${batchId.toString()}`);
 
   // Add updates and transactions
