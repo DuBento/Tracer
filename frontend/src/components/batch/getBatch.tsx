@@ -8,7 +8,7 @@ import QRCode from "./qrcode";
 
 interface Props {
   initialBatchId?: string;
-  batchId: string;
+  batchId?: string;
   setBatchId: (newId: string) => void;
   contractAddress: string;
 }

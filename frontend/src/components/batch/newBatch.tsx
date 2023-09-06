@@ -39,7 +39,7 @@ const NewBatch = (props: Props) => {
     <>
       <h2 className="font- text-2xl">New Batch</h2>
       <p className="text-base leading-6">Batch description</p>
-      <div className="my-2 ">
+      <div className="my-2">
         <input
           type="text"
           autoComplete="off"
