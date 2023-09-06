@@ -24,11 +24,11 @@ export default async function ViewPage({ params }: Props) {
   batchLog.log.map((e) => console.log(e));
 
   return (
-    <LogContainer>
+    <LogContainer className="flex h-screen flex-col">
       <div className="sticky top-0 z-50 w-screen">
         <Header batchLog={batchLog} contractAddress={contractAddress} />
       </div>
-      <div className="w-screen whitespace-normal break-words">
+      <div className="w-screen flex-grow whitespace-normal break-words">
         <Log batchLog={batchLog} />
       </div>
     </LogContainer>

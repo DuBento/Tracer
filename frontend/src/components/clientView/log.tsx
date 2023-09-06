@@ -21,8 +21,8 @@ export default function Log(props: Props) {
   }
 
   return (
-    <div className="h-screen w-screen pb-10 pl-10 pr-8 pt-8 font-body">
-      <ol className="border-l-[2px] border-brunswick_green">
+    <div className="h-full w-screen pb-10 pl-10 pr-8 pt-8 font-body">
+      <ol className="h-full border-l-[2px] border-brunswick_green">
         {props.batchLog.log.map((log, idx) => (
           <li key={idx} className="pb-2">
             <div className="flex items-start justify-between gap-4 align-top">
