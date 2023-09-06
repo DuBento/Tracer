@@ -171,7 +171,10 @@ export default function Event(props: Props) {
             <div
               key={`${idx}`}
               className="relative h-full shrink-0 snap-center overflow-hidden rounded-lg shadow-md"
-              onClick={() => expandImage(idx)}
+              onClick={(e) => {
+                e.stopPropagation();
+                expandImage(idx);
+              }}
             >
               {matchDataToHTML(filename, type, idx, true)}
             </div>
@@ -181,9 +184,14 @@ export default function Event(props: Props) {
 
       {/* Expanded view */}
       {expanded && (
-        <div onClick={exitFullscreen}>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            exitFullscreen();
+          }}
+        >
           <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-auto bg-black/20 p-4">
-            <div className="relative max-h-[90vh] w-full md:max-w-[90vh]">
+            <div className="relative max-h-[90vh] w-fit md:max-w-[90vh]">
               <div className="relative h-full w-full overflow-hidden rounded-lg shadow-md">
                 {matchDataToHTML(
                   sources[currentSrcIdx].filename,

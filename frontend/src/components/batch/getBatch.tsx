@@ -1,6 +1,6 @@
 "use client";
 
-import BlockchainServices, { Batch } from "@/TracerAPI";
+import BlockchainServices, { BatchLog } from "@/TracerAPI";
 import NotificationContext from "@/context/notificationContext";
 import { useContext, useState } from "react";
 import DisplayBatch from "./displayBatch";
@@ -8,32 +8,35 @@ import QRCode from "./qrcode";
 
 interface Props {
   initialBatchId?: string;
-  batch?: Batch;
-  setBatch: (newBatch: Batch) => void;
+  batchId: string;
+  setBatchId: (newId: string) => void;
   contractAddress: string;
-  children?: React.ReactNode;
 }
 
 const GetBatch = (props: Props) => {
   const [batchId, setBatchId] = useState<string>(
-    props.batch?.id ? props.batch.id.toString() : props.initialBatchId || "",
+    props.batchId || props.initialBatchId || "",
   );
+  const [batch, setBatch] = useState<BatchLog>();
 
   const notifications = useContext(NotificationContext);
 
   const handleFetchBatch = async () => {
-    try {
-      const batch = await BlockchainServices.Traceability.getBatch(
-        props.contractAddress,
-        batchId,
-      );
-      if (!batch.id) throw new Error("Batch not found.");
+    const batch = await BlockchainServices.Utils.getBatchLog(
+      props.contractAddress,
+      batchId,
+    );
+    if (!batch) throw new Error("Batch not found.");
 
-      props.setBatch(batch);
-    } catch (error: any) {
-      console.error(error);
-      notifications.error(error.message);
-    }
+    setBatch(batch);
+    props.setBatchId(batch.batchId.toString());
+  };
+
+  const handleFetchBatchNotify = async () => {
+    notifications.notifyPromise(handleFetchBatch(), {
+      loading: "Getting batch...",
+      success: "Done",
+    });
   };
 
   return (
@@ -57,26 +60,25 @@ const GetBatch = (props: Props) => {
           </div>
 
           <button
-            className="wfont-bold mt-4 rounded bg-red-300 px-2 py-1.5 hover:bg-red-200 hover:font-extrabold hover:text-white"
+            className="my-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
             type="submit"
-            onClick={handleFetchBatch}
+            onClick={handleFetchBatchNotify}
           >
             Submit
           </button>
         </div>
-        {props.batch && (
+        {batch && (
           <div className="w-56">
             <QRCode
-              batch={props.batch}
+              batchId={batch.batchId.toString()}
               contractAddress={props.contractAddress}
             />
           </div>
         )}
       </div>
-      {props.batch && (
+      {batch && (
         <>
-          <DisplayBatch batch={props.batch} />
-          {props.children}
+          <DisplayBatch batch={batch} />
         </>
       )}
     </>

@@ -1,29 +1,9 @@
 import base64url from "base64url";
 import { BigNumberish, ethers } from "ethers";
-import Traceability, {
-  Batch,
-  BatchId,
-  Transaction,
-  Update,
-} from "./traceability";
+import Traceability, { Batch, BatchId } from "./traceability";
 import UserRegistry from "./userRegistry";
 
 const BATCH_URI_DELIMITER = "@";
-
-export type HumanReadableBatch = Omit<Batch, "updates" | "transactions"> & {
-  currentOwnerName: string;
-  updates: HumanReadableUpdate[];
-  transactions: HumanReadableTransaction[];
-};
-export type HumanReadableTransaction = Omit<Transaction, "info"> & {
-  receiverName: string;
-  info: HumanReadableUpdate;
-};
-export type HumanReadableUpdate = Update & {
-  ownerName: string;
-  date: string;
-  time: string;
-};
 
 export type BatchLog = {
   batchId: BatchId;
@@ -165,31 +145,6 @@ const Utils = {
     }
 
     return actorNamesMap;
-  },
-
-  humanizeBatch: async (batch: Batch): Promise<HumanReadableBatch> => {
-    const actorNamesMap = await Utils.getActorNamesMemoized(batch);
-
-    return {
-      ...batch,
-      currentOwner: actorNamesMap.get(batch.currentOwner) || "Unknown",
-      updates: batch.updates.map((update) => ({
-        ...update,
-        ownerName: actorNamesMap.get(update.owner) || "Unknown",
-        date: "TODO parse date",
-        time: "TODO parse time",
-      })),
-      transactions: batch.transactions.map((transaction) => ({
-        ...transaction,
-        receiverName: actorNamesMap.get(transaction.receiver) || "Unknown",
-        info: {
-          ...transaction.info,
-          owner: actorNamesMap.get(transaction.info.owner) || "Unknown",
-          date: "TODO parse date",
-          time: "TODO parse time",
-        },
-      })),
-    };
   },
 
   getBatchLog: async (
