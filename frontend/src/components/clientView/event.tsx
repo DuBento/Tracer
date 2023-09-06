@@ -1,10 +1,11 @@
 "use client";
 
 import { BatchEvent } from "@/TracerAPI";
+import NotificationContext from "@/context/notificationContext";
 import ChevronIcon from "@/public/images/chevronIcon";
 import StorageService from "@/services/StorageService";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import useSWR from "swr";
 import Skeleton from "../common/skeleton";
 
@@ -16,13 +17,17 @@ export default function Event(props: Props) {
   const uri = props.event.documentURI;
   const [expanded, setExpanded] = useState(false);
   const [currentSrcIdx, setCurrentSrcIdx] = useState(0);
+  const notifications = useContext(NotificationContext);
 
   const { data, error, isLoading } = useSWR(
     uri,
     StorageService.fetchIndexDocument,
   );
 
-  if (error) return <div>failed to load</div>;
+  if (error) {
+    notifications.error("Failed to load event");
+    return <div>Failed to load</div>;
+  }
   if (isLoading)
     return (
       <div className="flex-start flex items-start justify-between gap-5 align-top">
@@ -38,7 +43,7 @@ export default function Event(props: Props) {
         </div>
       </div>
     );
-  if (!data) return <div>empty data</div>;
+  if (!data) return null;
 
   const sources = [
     ...data.imgs.map((filename) => ({ filename, type: "imgs" })),
@@ -76,11 +81,12 @@ export default function Event(props: Props) {
       return (
         <Image
           src={StorageService.generateResourceURL(uri, filename).toString()}
-          width="0"
-          height="0"
+          width="144"
+          height="144"
           sizes={preview ? "50vw" : "100vw"}
           className="h-full w-auto"
-          placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjuHDlVgUAB+0C97ZeaKMAAAAASUVORK5CYII="
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcUA8AAeUBMdl0U3EAAAAASUVORK5CYII"
           alt={filename}
           priority={idx <= 1}
         />
@@ -165,22 +171,24 @@ export default function Event(props: Props) {
       </div>
 
       {/* Preview scroll */}
-      <div className="ml-6 mt-3">
-        <div className="relative flex h-36 snap-x snap-mandatory gap-2 overflow-x-auto pb-4">
-          {sources.map(({ filename, type }, idx) => (
-            <div
-              key={`${idx}`}
-              className="relative h-full shrink-0 snap-center overflow-hidden rounded-lg shadow-md"
-              onClick={(e) => {
-                e.stopPropagation();
-                expandImage(idx);
-              }}
-            >
-              {matchDataToHTML(filename, type, idx, true)}
-            </div>
-          ))}
+      {sourcesCount > 0 && (
+        <div className="ml-6 mt-3">
+          <div className="relative flex h-36 snap-x snap-mandatory gap-2 overflow-x-auto pb-4">
+            {sources.map(({ filename, type }, idx) => (
+              <div
+                key={`${idx}`}
+                className="relative h-full shrink-0 snap-center overflow-hidden rounded-lg shadow-md"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  expandImage(idx);
+                }}
+              >
+                {matchDataToHTML(filename, type, idx, true)}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Expanded view */}
       {expanded && (

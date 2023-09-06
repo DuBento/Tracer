@@ -62,9 +62,10 @@ const Traceability = {
   newBatch: async (
     contractAddress: string,
     description: string,
+    documentURI: string,
   ): Promise<BatchId> =>
     Traceability.connect(contractAddress).then(async (contract) => {
-      const tx = await contract.newBatch(description);
+      const tx = await contract.newBatch(description, documentURI);
       const receipt = await tx.wait();
 
       if (receipt == null) throw new Error("Error completing transaction");
