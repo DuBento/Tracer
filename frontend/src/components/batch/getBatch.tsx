@@ -43,7 +43,7 @@ const GetBatch = (props: Props) => {
     <>
       <div className="my-2 flex h-40 w-full flex-row justify-between gap-6">
         <div className="flex-grow">
-          <h2 className="font-mono text-2xl ">Get Batch</h2>
+          <h2 className="font-mono text-2xl font-bold ">Get Batch</h2>
           <p className="text-base leading-6">Batch id</p>
           <div className="mt-2">
             <input
@@ -52,15 +52,16 @@ const GetBatch = (props: Props) => {
               type="text"
               autoComplete="fBatchId"
               value={batchId}
-              className="block w-full rounded-md border-0 bg-coolgray-500 
-              py-1.5 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
-              focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
+              placeholder={props.initialBatchId}
+              className="block w-full rounded-md border-0 bg-platinum 
+              py-1.5 text-gray-700 shadow ring-inset placeholder:text-gray-400
+              focus:ring-2 focus:ring-inset focus:ring-brown_sugar sm:text-sm sm:leading-6"
               onChange={(e) => setBatchId(e.target.value)}
             />
           </div>
 
           <button
-            className="my-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
+            className="my-4 rounded bg-redwood px-2 py-1.5 font-bold text-white hover:bg-bole hover:font-extrabold"
             type="submit"
             onClick={handleFetchBatchNotify}
           >

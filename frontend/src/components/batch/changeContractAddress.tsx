@@ -14,7 +14,7 @@ export default function ChangeContractAddress(props: Props) {
   return (
     <>
       <button
-        className="rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
+        className="rounded bg-redwood px-2 py-1.5 font-bold text-white hover:bg-bole hover:font-extrabold"
         onClick={() => setOpen(!open)}
       >
         <SettingsIcon className="h-6 w-6 fill-current text-white" />
@@ -44,7 +44,7 @@ export default function ChangeContractAddress(props: Props) {
               />
             </div>
             <button
-              className="my-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
+              className="my-4 rounded bg-redwood px-2 py-1.5 font-bold text-white hover:bg-bole hover:font-extrabold"
               onClick={() => {
                 props.setContractAddress(newContractAddress);
                 setOpen(false);

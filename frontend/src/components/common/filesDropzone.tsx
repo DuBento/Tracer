@@ -57,7 +57,7 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
       onDrop={handleDrop}
     >
       <div
-        className={`cursor-pointer rounded-lg border-[2px] border-dotted border-red-300 px-4 py-2
+        className={`cursor-pointer rounded-lg border-[2px] border-dotted border-redwood-800 px-4 py-2
         ${dragging ? "bg-bluegray-200" : "bg-coolgray-100"}`}
         onClick={handleFileInputClick}
       >
@@ -71,7 +71,7 @@ const FilesDropzone = ({ fileArray, setFileArray }: FilesDropzoneProps) => {
         />
         <div className="flex flex-row items-center space-x-4">
           <svg
-            className="h-8 w-8 text-red-300"
+            className="h-8 w-8 text-redwood-700"
             fill="currentColor"
             viewBox="0 0 102 66"
           >

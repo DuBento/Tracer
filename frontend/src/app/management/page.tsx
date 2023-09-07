@@ -18,14 +18,11 @@ const ManagementPage = () => {
   const defaultBatchId = TracerAPI.deployedAddresses["mockBatchId"];
 
   return (
-    <main className="relative h-screen w-full overflow-auto bg-bluegray-600 px-8 py-4  text-cyan-50">
+    <main className="bg-khaki text-oxford_blue relative h-screen w-full overflow-auto px-8 py-4">
       <div className="absolute right-0 top-0 pr-7 pt-7">
-        {" "}
-        <ChangeContractAddress
-          {...{ contractAddress, setContractAddress }}
-        />{" "}
+        <ChangeContractAddress {...{ contractAddress, setContractAddress }} />
       </div>
-      <div className="w-full border-b-2 border-red-100 p-2">
+      <div className="w-full border-b-2 border-redwood p-2">
         <NewBatch contractAddress={contractAddress} />
       </div>
       <div className="w-full p-2">
@@ -35,7 +32,7 @@ const ManagementPage = () => {
         />
         {batchId && (
           <>
-            <div className="mx-10 border-b-2  border-red-100 py-2">
+            <div className="mx-10 border-b-2 border-redwood py-2">
               <UpdateBatch
                 batchId={batchId}
                 contractAddress={contractAddress}

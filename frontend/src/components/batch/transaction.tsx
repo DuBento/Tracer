@@ -55,7 +55,7 @@ const Transaction = (props: Props) => {
 
   return (
     <>
-      <h2 className="font-mono text-2xl ">Send to</h2>
+      <h2 className="font-mono text-2xl font-bold">Send to</h2>
 
       <p className="text-base leading-6">Receiver</p>
       <div className="my-2">
@@ -64,9 +64,9 @@ const Transaction = (props: Props) => {
           name="fid"
           type="text"
           autoComplete="transactionReceiver"
-          className="block w-full rounded-md border-0 bg-coolgray-500 
-              py-1.5 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
-              focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 bg-platinum 
+              py-1.5 text-gray-700 shadow ring-inset placeholder:text-gray-400
+              focus:ring-2 focus:ring-inset focus:ring-brown_sugar sm:text-sm sm:leading-6"
           value={receiverAddress}
           onChange={(e) => setReceiverAddress(e.target.value)}
         />
@@ -78,9 +78,9 @@ const Transaction = (props: Props) => {
           id="fUpdtDocument"
           name="fUpdtDocument"
           autoComplete="off"
-          className="block w-full rounded-md border-0 bg-coolgray-500 
-              py-1.5 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
-              focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 bg-platinum 
+              py-1.5 text-gray-700 shadow ring-inset placeholder:text-gray-400
+              focus:ring-2 focus:ring-inset focus:ring-brown_sugar sm:text-sm sm:leading-6"
           value={updateDescription}
           onChange={(e) => setUpdateDescription(e.target.value)}
         />
@@ -91,7 +91,7 @@ const Transaction = (props: Props) => {
       </div>
 
       <button
-        className="my-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
+        className="my-4 rounded bg-redwood px-2 py-1.5 font-bold text-white hover:bg-bole hover:font-extrabold"
         type="submit"
         onClick={handleSendTransactionNotify}
       >
