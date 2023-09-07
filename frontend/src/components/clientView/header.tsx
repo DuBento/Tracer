@@ -15,7 +15,7 @@ export default function Header(props: Props) {
           <Logo className="fill-isabelline" />
         </div>
         <div className="mx-2 w-2/3 pt-4">
-          <p className="overflow-hidden text-ellipsis whitespace-nowrap text-center font-display text-4xl leading-none text-isabelline">
+          <p className="overflow-hidden text-ellipsis whitespace-nowrap text-center font-display text-3xl text-isabelline">
             {props.batchLog.managerName}
           </p>
           <p className="whites text-center font-display text-xl font-light leading-none text-isabelline">
