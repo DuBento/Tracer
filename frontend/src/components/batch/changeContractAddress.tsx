@@ -21,8 +21,14 @@ export default function ChangeContractAddress(props: Props) {
       </button>
 
       {open && (
-        <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-auto bg-black/20 p-4 shadow-lg">
-          <div className="overflow-hidden rounded-lg bg-platinum p-10">
+        <div
+          className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-auto bg-black/20 p-4 shadow-lg"
+          onClick={() => setOpen(!open)}
+        >
+          <div
+            className="overflow-hidden rounded-lg bg-platinum p-10"
+            onClick={(e) => e.stopPropagation()}
+          >
             <p className="font-mono font-bold leading-6 text-black">
               Contract address
             </p>
