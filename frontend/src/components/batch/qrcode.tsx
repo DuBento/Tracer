@@ -63,7 +63,7 @@ const QRCode = (props: Props) => {
         {qrCodeElement}
         <div className="ml-4 flex flex-col justify-center">
           <button
-            className="my-2 h-12 w-12 rounded-full bg-red-300 p-2 font-semibold hover:bg-red-400"
+            className="my-2 h-12 w-12 rounded-full bg-bole p-2 font-semibold text-white hover:bg-bole-200"
             onClick={() => setQrCodeElement(undefined)}
           >
             {/* close icon */}
@@ -76,7 +76,7 @@ const QRCode = (props: Props) => {
             </svg>
           </button>
           <button
-            className="my-2 h-12 w-12 rounded-full bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600"
+            className="my-2 h-12 w-12 rounded-full bg-brown_sugar p-2 font-semibold text-white hover:bg-redwood"
             onClick={downloadQrcode}
           >
             {/* download icon */}
@@ -94,7 +94,7 @@ const QRCode = (props: Props) => {
 
   return (
     <>
-      <h2 className="font-mono text-2xl ">QRCode</h2>
+      <h2 className="font-mono text-2xl font-bold">QRCode</h2>
       <p className="text-base leading-6">GTIN</p>
       <div className="mt-2">
         <input
@@ -105,9 +105,9 @@ const QRCode = (props: Props) => {
           autoComplete="GTIN"
           placeholder="Optional"
           value={gtin}
-          className="block w-full rounded-md border-0 bg-coolgray-500 
-              py-1.5 text-coolgray-200 shadow ring-1 ring-inset ring-coolgray-300 placeholder:text-gray-400 
-              focus:ring-2 focus:ring-inset focus:ring-red-200 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 bg-platinum 
+              py-1.5 text-gray-700 shadow ring-inset placeholder:text-gray-400
+              focus:ring-2 focus:ring-inset focus:ring-brown_sugar sm:text-sm sm:leading-6"
           onChange={(e) =>
             setGtin(e.target.value.replace(/\D/g, "").substring(0, 14))
           }
@@ -115,7 +115,7 @@ const QRCode = (props: Props) => {
       </div>
 
       <button
-        className="my-4 rounded bg-red-300 px-2 py-1.5 font-bold hover:bg-red-200 hover:font-extrabold hover:text-white"
+        className="my-4 rounded bg-redwood px-2 py-1.5 font-bold text-white hover:bg-bole hover:font-extrabold"
         type="submit"
         onClick={generateQrcode}
       >
