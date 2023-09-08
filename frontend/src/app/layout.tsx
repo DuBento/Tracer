@@ -26,7 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${lato.variable}`}>
+    <html
+      lang="en"
+      className={`h-full w-full ${montserrat.variable} ${lato.variable}`}
+    >
       <body>
         <Toaster position="bottom-left" reverseOrder={false} />
         {children}

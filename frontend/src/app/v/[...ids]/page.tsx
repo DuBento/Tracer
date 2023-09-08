@@ -17,12 +17,8 @@ export default async function ViewPage({ params }: Props) {
 
   const { batchId, contractAddress } = TracerAPI.Utils.decodeBatchURI(batchURI);
 
-  // TODO sanitization
-
   const batchLog = await TracerAPI.Utils.getBatchLog(contractAddress, batchId);
   if (!batchLog) return NotFoundPage();
-  console.log({ batchLog });
-  batchLog.log.map((e) => console.log(e));
 
   return (
     <LogContainer className="flex h-screen max-h-screen flex-col">
@@ -43,13 +39,15 @@ export default async function ViewPage({ params }: Props) {
 
 const NotFoundPage = () => {
   return (
-    <div className="flex h-screen items-center justify-center bg-sage-800">
-      <div className="rounded-lg bg-white p-8 shadow-md">
-        <h1 className="mb-4 text-4xl font-semibold">No Batch Found</h1>
-        <p className="text-gray-600">
-          Sorry, the requested batch was not found.
-        </p>
+    <a href="/">
+      <div className="flex h-screen items-center justify-center bg-sage-800">
+        <div className="rounded-lg bg-white p-8 shadow-md">
+          <h1 className="mb-4 text-4xl font-semibold">No Batch Found</h1>
+          <p className="text-gray-600">
+            Sorry, the requested batch was not found.
+          </p>
+        </div>
       </div>
-    </div>
+    </a>
   );
 };
