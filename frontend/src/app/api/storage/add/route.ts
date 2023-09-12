@@ -151,6 +151,5 @@ async function checkUserAccess(formData: FormData) {
       } seconds`,
     );
 
-  console.log(address);
   return true;
 }
