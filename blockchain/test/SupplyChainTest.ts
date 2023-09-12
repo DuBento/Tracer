@@ -3,8 +3,8 @@ import { expect } from "chai";
 import { deployments, ethers, getNamedAccounts } from "hardhat";
 
 import {
-  Supplychain,
-  SupplychainFactory,
+  Traceability,
+  TraceabilityContractFactory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import { newBatch, utils } from "../lib";
@@ -16,8 +16,8 @@ import * as Values from "./TestConfig";
   - Test transfer ownership
 */
 
-describe("Supplychain", function () {
-  var supplyChain: Supplychain;
+describe("Traceability", function () {
+  var Traceability: Traceability;
   var supplyChainAddress: string;
   var deployer: string;
   var manager: string;
@@ -34,7 +34,7 @@ describe("Supplychain", function () {
 
     await deployments.fixture("dao_addons");
 
-    // Add supplychain manager as memeber to user registry
+    // Add Traceability manager as memeber to user registry
     const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
     await userRegistry.addMember(
       supplychainManager,
@@ -43,12 +43,13 @@ describe("Supplychain", function () {
       Values.MEMBER_VOTING_POWER
     );
 
-    // Create new supplychain contract
-    const supplychainFactory = await utils.getContract<SupplychainFactory>(
-      "SupplychainFactory",
-      { signerAddress: deployer }
-    );
-    await supplychainFactory.create(
+    // Create new Traceability contract
+    const TraceabilityContractFactory =
+      await utils.getContract<TraceabilityContractFactory>(
+        "TraceabilityContractFactory",
+        { signerAddress: deployer }
+      );
+    await TraceabilityContractFactory.create(
       supplychainManager,
       SUPPLYCHAIN_CONTRACT_DESCRIPTION
     );
@@ -63,7 +64,7 @@ describe("Supplychain", function () {
       userRegistry.addContractToActor(contractAddress, actor2),
     ]);
 
-    const contract = await utils.getContract<Supplychain>("Supplychain", {
+    const contract = await utils.getContract<Traceability>("Traceability", {
       contractAddress: contractAddress,
       signerAddress: actor1,
     });
@@ -81,7 +82,7 @@ describe("Supplychain", function () {
 
   beforeEach(async function () {
     const values = await loadFixture(deploySupplychainFixture);
-    supplyChain = values.contract;
+    Traceability = values.contract;
     supplyChainAddress = values.contractAddress;
     deployer = values.deployer;
     manager = values.supplychainManager;
@@ -92,15 +93,15 @@ describe("Supplychain", function () {
 
   describe("Deployment", function () {
     it("Should set the right owner", async function () {
-      expect(await supplyChain.owner()).to.equal(deployer);
+      expect(await Traceability.owner()).to.equal(deployer);
     });
   });
 
   describe("Batches", function () {
     it("New batch should be properly initialized", async function () {
-      const id = await newBatch(supplyChain, Values.BATCH_DESCRIPTION);
+      const id = await newBatch(Traceability, Values.BATCH_DESCRIPTION);
 
-      const batch = await supplyChain.getBatch(id);
+      const batch = await Traceability.getBatch(id);
 
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
@@ -111,17 +112,17 @@ describe("Supplychain", function () {
     });
   });
 
-  describe("Supplychain updates", function () {
+  describe("Traceability updates", function () {
     let id: bigint;
 
     beforeEach(async function () {
-      id = await newBatch(supplyChain, Values.BATCH_DESCRIPTION);
+      id = await newBatch(Traceability, Values.BATCH_DESCRIPTION);
     });
 
     it("New update should be registered correctly", async function () {
-      await supplyChain.handleUpdate(id, Values.UPDATE_DOCUMENT_URI);
+      await Traceability.handleUpdate(id, Values.UPDATE_DOCUMENT_URI);
 
-      const batch = await supplyChain.getBatch(id);
+      const batch = await Traceability.getBatch(id);
       const updateIdx = batch.updates.length - 1;
 
       expect(batch.id).to.equal(id);
@@ -134,79 +135,79 @@ describe("Supplychain", function () {
 
     xit("New update with owner address different than tx sender", async function () {
       // Skipped
-      // const update: Supplychain.UpdateStruct = {
+      // const update: Traceability.UpdateStruct = {
       //   owner: actor2.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.add(1),
       // };
       // await expect(
-      //   supplyChain.handleUpdate(id, update)
+      //   Traceability.handleUpdate(id, update)
       // ).to.be.revertedWith("Update owner differs from message sender");
     });
 
     xit("New update with invalid timestamp, lower than previous update", async function () {
       // Skipped
-      // const update: Supplychain.UpdateStruct = {
+      // const update: Traceability.UpdateStruct = {
       //   owner: owner.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.sub(1),
       // };
       // await expect(
-      //   supplyChain.handleUpdate(id, update)
+      //   Traceability.handleUpdate(id, update)
       // ).to.be.revertedWith("Invalid update timestamp");
     });
 
     xit("New update with invalid timestamp, higher than block ts", async function () {
       // Skiped
-      // const update: Supplychain.UpdateStruct = {
+      // const update: Traceability.UpdateStruct = {
       //   owner: owner.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.add(9999),
       // };
-      // await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+      // await expect(Traceability.handleUpdate(id, update)).to.be.revertedWith(
       //   "Invalid update timestamp"
       // );
     });
 
     xit("New update with invalid timestamp, lower than batch genesis", async function () {
-      // const update: Supplychain.UpdateStruct = {
+      // const update: Traceability.UpdateStruct = {
       //   owner: owner.address,
       //   documentURI: Values.UPDATE_DOCUMENT_URI,
       //   ts: batchTs.sub(9999),
       // };
-      // await expect(supplyChain.handleUpdate(id, update)).to.be.revertedWith(
+      // await expect(Traceability.handleUpdate(id, update)).to.be.revertedWith(
       //   "Invalid update timestamp"
       // );
     });
 
     it("New update from actor that is not the current owner", async function () {
       // Change sender to normal actor
-      supplyChain = supplyChain.connect(await ethers.getSigner(actor1));
+      Traceability = Traceability.connect(await ethers.getSigner(actor1));
 
       await expect(
-        supplyChain.handleUpdate(id, Values.UPDATE_DOCUMENT_URI)
+        Traceability.handleUpdate(id, Values.UPDATE_DOCUMENT_URI)
       ).to.be.revertedWithCustomError(
-        supplyChain,
+        Traceability,
         "UserIsNotCurrentBatchOwner"
       );
     });
   });
 
-  describe("Supplychain transactions", function () {
+  describe("Traceability transactions", function () {
     let id: bigint;
 
     beforeEach(async function () {
-      id = await newBatch(supplyChain, Values.BATCH_DESCRIPTION);
+      id = await newBatch(Traceability, Values.BATCH_DESCRIPTION);
     });
 
     it("New transaction between actors works correctly", async function () {
-      await supplyChain.handleTransaction(
+      await Traceability.handleTransaction(
         id,
         actor1,
         Values.UPDATE_DOCUMENT_URI
       );
 
-      const batch = await supplyChain.getBatch(id);
+      const batch = await Traceability.getBatch(id);
       const transactionIdx = batch.transactions.length - 1;
 
       expect(batch.id).to.equal(id);
@@ -220,12 +221,12 @@ describe("Supplychain", function () {
 
     it("New transaction from actor that is not the current owner", async function () {
       // Change sender to normal actor
-      supplyChain = supplyChain.connect(await ethers.getSigner(actor1));
+      Traceability = Traceability.connect(await ethers.getSigner(actor1));
 
       await expect(
-        supplyChain.handleTransaction(id, actor2, Values.UPDATE_DOCUMENT_URI)
+        Traceability.handleTransaction(id, actor2, Values.UPDATE_DOCUMENT_URI)
       ).to.be.revertedWithCustomError(
-        supplyChain,
+        Traceability,
         "UserIsNotCurrentBatchOwner"
       );
     });

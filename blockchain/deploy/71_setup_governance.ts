@@ -3,7 +3,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import {
   Executor,
   GovernorContract,
-  SupplychainFactory,
+  TraceabilityContractFactory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import * as utils from "../lib/utils";
@@ -26,7 +26,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await Promise.all([
     setupExecutor(executorContract, deployer),
     setupUserRegistry(executorContract, deployer),
-    setupSupplychainFactory(executorContract, deployer),
+    setupTraceabilityContractFactory(executorContract, deployer),
   ]);
 };
 
@@ -63,20 +63,23 @@ const setupUserRegistry = async function (
   await transferOwnershipTx.wait();
 };
 
-const setupSupplychainFactory = async function (
+const setupTraceabilityContractFactory = async function (
   executorContract: Executor,
   deployer: string
 ) {
-  log("Setting up SupplychainFactory...");
+  log("Setting up TraceabilityContractFactory...");
 
   // Transfer owner to timelock
-  const supplychainFactoryContract =
-    await utils.getContract<SupplychainFactory>("SupplychainFactory", {
-      signerAddress: deployer,
-    });
+  const TraceabilityContractFactoryContract =
+    await utils.getContract<TraceabilityContractFactory>(
+      "TraceabilityContractFactory",
+      {
+        signerAddress: deployer,
+      }
+    );
 
   const transferOwnershipTx =
-    await supplychainFactoryContract.transferOwnership(
+    await TraceabilityContractFactoryContract.transferOwnership(
       await executorContract.getAddress()
     );
   await transferOwnershipTx.wait();

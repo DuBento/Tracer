@@ -1,30 +1,30 @@
 import {
-  Supplychain,
-  Supplychain__factory,
+  Traceability,
+  Traceability__factory,
 } from "@/TracerAPI/contracts/typechain";
 import { EventLog, ethers } from "ethers";
 import { connectEthereum, connectSigner } from "./connection";
-import { NewBatchEvent } from "./contracts/typechain/supplychain/Supplychain";
+import { NewBatchEvent } from "./contracts/typechain/Traceability/Traceability";
 
 // Types
 
-export type Batch = Supplychain.BatchStructOutput;
+export type Batch = Traceability.BatchStructOutput;
 export type BatchId = ethers.BigNumberish;
 
-export type Update = Supplychain.UpdateStructOutput;
+export type Update = Traceability.UpdateStructOutput;
 export type PartialUpdate = Partial<Update>;
 
-export type Transaction = Supplychain.TransactionStructOutput;
+export type Transaction = Traceability.TransactionStructOutput;
 export type PartialTransaction = Partial<Transaction> & {
   info?: PartialUpdate;
 };
 
 const Traceability = {
-  connect: async (address: string): Promise<Supplychain> =>
-    Supplychain__factory.connect(address, await connectSigner()),
+  connect: async (address: string): Promise<Traceability> =>
+    Traceability__factory.connect(address, await connectSigner()),
 
-  connectReadOnly: async (address: string): Promise<Supplychain> =>
-    Supplychain__factory.connect(address, await connectEthereum()),
+  connectReadOnly: async (address: string): Promise<Traceability> =>
+    Traceability__factory.connect(address, await connectEthereum()),
 
   // Read only methods
   getContractManagerAddress: async (contractAddress: string): Promise<string> =>
@@ -44,7 +44,7 @@ const Traceability = {
 
   listenOnNewBatchEvent: async (contractAddress: string) => {
     Traceability.connectReadOnly(contractAddress).then(
-      async (contract: Supplychain) => {
+      async (contract: Traceability) => {
         const currentAddress = await contract.getAddress();
         const filter = contract.filters.NewBatch(currentAddress);
 

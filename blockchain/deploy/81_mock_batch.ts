@@ -3,7 +3,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import mockUpload from "../../mock/mockUpload.json";
-import { Supplychain, UserRegistry } from "../artifacts-frontend/typechain";
+import { Traceability, UserRegistry } from "../artifacts-frontend/typechain";
 import { newBatch, utils } from "../lib";
 import {
   TRACEABILITY_MOCK_ADDRESS_NAME,
@@ -56,8 +56,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   }
 
   // Get traceability contract
-  let traceabilityContract = await utils.getContract<Supplychain>(
-    "Supplychain",
+  let traceabilityContract = await utils.getContract<Traceability>(
+    "Traceability",
     {
       contractAddress: traceabilityAddress,
       signerAddress: actors[0],

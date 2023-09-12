@@ -7,7 +7,7 @@ import "../DAO/IUserRegistry.sol";
 import "../OpenZeppelin/interfaces/IERC6372.sol";
 import "../OpenZeppelin/utils/math/SafeCast.sol";
 
-contract Supplychain is Ownable, ConformityState, IERC6372 {
+contract Traceability is Ownable, ConformityState, IERC6372 {
     // Type declarations
     struct Batch {
         uint256 id;

@@ -1,5 +1,5 @@
 {
-  "name": "contracts",
+  "name": "tracer-contracts",
   "version": "1.0.0",
   "description": "Etheruem smart contracts for supply chain traceability and management",
   "main": "index.js",

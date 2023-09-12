@@ -1,7 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import {
-  SupplychainFactory,
+  TraceabilityContractFactory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import * as utils from "../lib/utils";
@@ -24,12 +24,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     signerAddress: deployer,
   });
 
-  const supplychainFactory = await utils.getContract<SupplychainFactory>(
-    "SupplychainFactory"
-  );
+  const TraceabilityContractFactory =
+    await utils.getContract<TraceabilityContractFactory>(
+      "TraceabilityContractFactory"
+    );
 
-  await userRegistry.setSupplychainFactoryAddress(
-    await supplychainFactory.getAddress()
+  await userRegistry.setTraceabilityContractFactoryAddress(
+    await TraceabilityContractFactory.getAddress()
   );
 
   // @dev Add member for development

@@ -8,14 +8,14 @@ import "./IUserRegistry.sol";
 contract UserRegistry is IUserRegistry, Ownable, ConformityState {
     // State variables
     uint256 public memberCount;
-    address private supplychainFactory;
+    address private TraceabilityContractFactory;
 
     mapping(address => Member) members;
     mapping(address => Actor) actors;
 
     // Modifiers
     modifier onlyOwnerOrFactoryContract() {
-        if (!isOwner() && msg.sender != supplychainFactory)
+        if (!isOwner() && msg.sender != TraceabilityContractFactory)
             revert UserNotOwner();
         _;
     }
@@ -23,7 +23,7 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
     modifier onlyOwnerOrFactoryOrManager(address contract_) {
         if (
             !isOwner() &&
-            msg.sender != supplychainFactory &&
+            msg.sender != TraceabilityContractFactory &&
             members[msg.sender].managingContractAddress != contract_
         ) revert UserNotOwner();
         _;
@@ -38,10 +38,10 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
     //* fallback function (if exists)
 
     //* external
-    function setSupplychainFactoryAddress(
+    function setTraceabilityContractFactoryAddress(
         address addr_
     ) external override onlyOwner {
-        supplychainFactory = addr_;
+        TraceabilityContractFactory = addr_;
     }
 
     //* public

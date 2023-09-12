@@ -1,13 +1,13 @@
 import { ethers } from "ethers";
-import { Supplychain } from "../artifacts-frontend/typechain";
-import { NewBatchEvent } from "../artifacts-frontend/typechain/supplychain/Supplychain";
+import { Traceability } from "../artifacts-frontend/typechain";
+import { NewBatchEvent } from "../artifacts-frontend/typechain/Traceability/Traceability";
 
 export async function newBatch(
-  supplyChain: Supplychain,
+  Traceability: Traceability,
   description: string,
   documentURI?: string
 ): Promise<bigint> {
-  const tx = await supplyChain.newBatch(description, documentURI || "");
+  const tx = await Traceability.newBatch(description, documentURI || "");
   const receipt = await tx.wait();
 
   if (receipt == null) throw new Error("Error completing transaction");

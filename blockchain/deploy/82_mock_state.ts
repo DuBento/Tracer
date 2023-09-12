@@ -1,7 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { Supplychain } from "../artifacts-frontend/typechain";
+import { Traceability } from "../artifacts-frontend/typechain";
 import { execute, propose, utils, vote } from "../lib";
 import {
   TRACEABILITY_MOCK_ADDRESS_NAME,
@@ -32,8 +32,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const batchId = utils.getStoredAddress(TRACEABILITY_MOCK_BATCH_ID_NAME);
 
   // Get traceability contract
-  let traceabilityContractAsManager = await utils.getContract<Supplychain>(
-    "Supplychain",
+  let traceabilityContractAsManager = await utils.getContract<Traceability>(
+    "Traceability",
     {
       contractAddress: traceabilityAddress,
       signerAddress: supplychainManager,
@@ -44,7 +44,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await traceabilityContractAsManager.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
 
   const encodedFunctionCall = await utils.encodeFunctionCall(
-    "Supplychain",
+    "Traceability",
     "changeConformityState",
     [batchId, nextState.toString()]
   );

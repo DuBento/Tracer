@@ -2,14 +2,14 @@ import { ethers } from "hardhat";
 import { saveFrontendFiles, storeAddress } from "./utils";
 
 async function main() {
-  const Supplychain = await ethers.getContractFactory("Supplychain");
-  const supplychain = await Supplychain.deploy();
+  const Traceability = await ethers.getContractFactory("Traceability");
+  const Traceability = await Traceability.deploy();
 
-  await supplychain.waitForDeployment();
+  await Traceability.waitForDeployment();
 
-  console.log(`Supplychain smart contract: deployed!`);
+  console.log(`Traceability smart contract: deployed!`);
 
-  storeAddress("Supplychain", await supplychain.getAddress());
+  storeAddress("Traceability", await Traceability.getAddress());
   saveFrontendFiles();
 }
 

@@ -21,7 +21,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   storeAddress(TRACEABILITY_MOCK_ADDRESS_NAME, contractAddress);
 
-  log(`Supplychain smart contract: deployed @ ${contractAddress}`);
+  log(`Traceability smart contract: deployed @ ${contractAddress}`);
 };
 
 module.exports = func;

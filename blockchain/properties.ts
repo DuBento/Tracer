@@ -26,7 +26,7 @@ export const VOTING_PERIOD = 5; // 5 blocks
 export const SUPPLYCHAIN_CREATE_METHOD = "create";
 export const SUPPLYCHAIN_CONTRACT_DESCRIPTION = "Sustainable";
 export const SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION =
-  "Create a new supplychain contract";
+  "Create a new Traceability contract";
 
 export const USER_REGISTRY_ADD_MEMBER_METHOD = "addMember";
 export const USER_REGISTRY_ADD_MEMBER_DESCRIPTION =

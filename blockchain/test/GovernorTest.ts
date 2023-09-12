@@ -3,9 +3,9 @@ import { deployments, ethers, getNamedAccounts } from "hardhat";
 import {
   Executor,
   GovernorContract,
-  Supplychain,
-  SupplychainFactory,
-  Supplychain__factory,
+  Traceability,
+  TraceabilityContractFactory,
+  Traceability__factory,
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import {
@@ -34,7 +34,7 @@ import {
 describe("Governor", function () {
   let governorContract: GovernorContract;
   let executor: Executor;
-  let supplychainFactory: SupplychainFactory;
+  let TraceabilityContractFactory: TraceabilityContractFactory;
   let userRegistry: UserRegistry;
 
   beforeEach(async function () {
@@ -43,23 +43,24 @@ describe("Governor", function () {
       "GovernorContract"
     );
     executor = await utils.getContract<Executor>("Executor");
-    supplychainFactory = await utils.getContract<SupplychainFactory>(
-      "SupplychainFactory"
-    );
+    TraceabilityContractFactory =
+      await utils.getContract<TraceabilityContractFactory>(
+        "TraceabilityContractFactory"
+      );
     userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
 
     console.log(`#####
     GovernorContract: ${await governorContract.getAddress()}
     Executor: ${await executor.getAddress()}
     Executor owner: ${await executor.owner()}
-    SupplychainFactory: ${await supplychainFactory.getAddress()}
+    TraceabilityContractFactory: ${await TraceabilityContractFactory.getAddress()}
     UserRegistry: ${await userRegistry.getAddress()}
     #####`);
   });
 
   it("Succesfully deploys and Executor contract is the correct owner", async function () {
     // used to show gas report for deplpoyment
-    expect(await supplychainFactory.owner()).to.equal(
+    expect(await TraceabilityContractFactory.owner()).to.equal(
       await executor.getAddress()
     );
   });
@@ -87,7 +88,7 @@ describe("Governor", function () {
       );
     });
 
-    xit("Add supplychain contract to actor", async function () {
+    xit("Add Traceability contract to actor", async function () {
       // TODO: not trival due to contract ownership
     });
 
@@ -203,10 +204,10 @@ describe("Governor", function () {
     });
   });
 
-  describe("Supplychain factory", function () {
+  describe("Traceability factory", function () {
     let supplychainContractAddress: string;
-    let supplychainContractAsManager: Supplychain;
-    let supplychainContractAsActor1: Supplychain;
+    let supplychainContractAsManager: Traceability;
+    let supplychainContractAsActor1: Traceability;
     let supplychainManager: string;
     let actor1: string;
 
@@ -251,23 +252,23 @@ describe("Governor", function () {
       const { deployer } = await getNamedAccounts();
       console.log("deployer address :", deployer);
 
-      supplychainContractAsManager = Supplychain__factory.connect(
+      supplychainContractAsManager = Traceability__factory.connect(
         contractAddress,
         await ethers.getSigner(supplychainManager)
       );
-      supplychainContractAsActor1 = Supplychain__factory.connect(
+      supplychainContractAsActor1 = Traceability__factory.connect(
         contractAddress,
         await ethers.getSigner(actor1)
       );
     });
 
-    it("Propose, vote and execute a new supplychain contract", async function () {
+    it("Propose, vote and execute a new Traceability contract", async function () {
       expect(await supplychainContractAsManager.owner()).to.equal(
         await executor.getAddress()
       );
     });
 
-    it("Interact with onlyOwner functions of the new supplychain contract (via governace)", async function () {
+    it("Interact with onlyOwner functions of the new Traceability contract (via governace)", async function () {
       const batchId = await newBatch(
         supplychainContractAsActor1,
         BATCH_DESCRIPTION
@@ -277,7 +278,7 @@ describe("Governor", function () {
         await supplychainContractAsManager.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
 
       const encodedFunctionCall = await utils.encodeFunctionCall(
-        "Supplychain",
+        "Traceability",
         "changeConformityState",
         [batchId.toString(), nextState.toString()]
       );

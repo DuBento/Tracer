@@ -34,7 +34,9 @@ abstract contract IUserRegistry {
     error UserCannotManageContract();
     error InvalidVotingPower(uint8 votingPower);
 
-    function setSupplychainFactoryAddress(address addr_) external virtual;
+    function setTraceabilityContractFactoryAddress(
+        address addr_
+    ) external virtual;
 
     function getMember(
         address addr_

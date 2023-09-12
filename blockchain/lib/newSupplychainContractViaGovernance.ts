@@ -10,16 +10,17 @@ import {
 } from "../properties";
 
 const encodeFunctionCallPromise = (memberAddress: string) =>
-  utils.encodeFunctionCall("SupplychainFactory", SUPPLYCHAIN_CREATE_METHOD, [
-    memberAddress,
-    SUPPLYCHAIN_CONTRACT_DESCRIPTION,
-  ]);
+  utils.encodeFunctionCall(
+    "TraceabilityContractFactory",
+    SUPPLYCHAIN_CREATE_METHOD,
+    [memberAddress, SUPPLYCHAIN_CONTRACT_DESCRIPTION]
+  );
 
 async function proposeCreateSupplychain(memberAddress: string) {
   const encodedFunctionCall = await encodeFunctionCallPromise(memberAddress);
 
   const proposalId = await propose(
-    await utils.getContractAddress("SupplychainFactory"),
+    await utils.getContractAddress("TraceabilityContractFactory"),
     encodedFunctionCall,
     SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION
   );
@@ -40,7 +41,7 @@ async function executeSupplychainContractCreation(
   const encodedFunctionCall = await encodeFunctionCallPromise(memberAddress);
 
   await execute(
-    await utils.getContractAddress("SupplychainFactory"),
+    await utils.getContractAddress("TraceabilityContractFactory"),
     encodedFunctionCall,
     SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION
   );

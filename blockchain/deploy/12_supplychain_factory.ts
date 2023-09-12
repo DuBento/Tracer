@@ -9,17 +9,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await getNamedAccounts();
 
   log(padCenter(scriptName(__filename), 50));
-  log("Deploying SupplychainFactory...");
+  log("Deploying TraceabilityContractFactory...");
 
   const userRegistry = await get("UserRegistry");
 
-  const supplychainFactory = await deploy("SupplychainFactory", {
-    from: deployer,
-    args: [userRegistry.address],
-    log: true,
-    // TODO verify if live on network
-  });
-  log(`SupplychainFactory at ${supplychainFactory.address}`);
+  const TraceabilityContractFactory = await deploy(
+    "TraceabilityContractFactory",
+    {
+      from: deployer,
+      args: [userRegistry.address],
+      log: true,
+      // TODO verify if live on network
+    }
+  );
+  log(`TraceabilityContractFactory at ${TraceabilityContractFactory.address}`);
 };
 
 module.exports = func;

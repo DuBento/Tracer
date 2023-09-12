@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-import "./Supplychain.sol";
+import "./Traceability.sol";
 import "../custom/Clone.sol";
 import "../custom/Ownable.sol";
 import "../DAO/IUserRegistry.sol";
 
-contract SupplychainFactory is Ownable {
+contract TraceabilityContractFactory is Ownable {
     address immutable defaultImplementation;
     IUserRegistry private userRegistry;
 
     constructor(address userRegistry_) {
         userRegistry = IUserRegistry(userRegistry_);
-        defaultImplementation = address(new Supplychain());
+        defaultImplementation = address(new Traceability());
     }
 
     function create(
@@ -22,7 +22,7 @@ contract SupplychainFactory is Ownable {
         address clone = Clones.clone(defaultImplementation);
 
         // initialize the clone
-        Supplychain(clone).init(
+        Traceability(clone).init(
             userRegistry,
             msg.sender,
             supplychainManager_,
