@@ -22,7 +22,12 @@ const UpdateBatch = (props: Props) => {
     if (!updateDescription && files.length == 0)
       throw new Error("No files or description provided");
 
-    return StorageService.uploadDocuments(updateDescription, files)
+    return StorageService.uploadDocuments(
+      updateDescription,
+      files,
+      props.contractAddress,
+      props.batchId.toString(),
+    )
       .then((URI) =>
         BlockchainServices.Traceability.pushNewUpdate(
           props.contractAddress,

@@ -1,9 +1,16 @@
+import CryptoService, { FORMDATA_SIGNATURE_KEY } from "./CryptoService";
+
 const gateway = process.env.NEXT_PUBLIC_IPFS_GATEWAY;
 if (!gateway) throw new Error("Undefined gateway for storage service");
 
 export const STORAGE_API_ADD = "/api/storage/add";
 
 export const INDEX_FILE = "index.json";
+
+export const FORMDATA_DESCRIPTION_KEY = "description";
+export const FORMDATA_FILES_KEY = "file";
+export const FORMDATA_CONTRACT_ADDRESS_KEY = "contractAddress";
+export const FORMDATA_BATCH_ID_KEY = "batchId";
 
 export type UpdateIndexDocument = {
   desc: string;
@@ -68,10 +75,19 @@ const StorageService = {
   uploadDocuments: async (
     description: string,
     files: File[],
+    contractAddress: string,
+    batchId: string,
   ): Promise<string> => {
     const formData = new FormData();
-    formData.append("description", description);
-    files.forEach((file) => formData.append("file", file));
+    formData.append(FORMDATA_DESCRIPTION_KEY, description);
+    files.forEach((file) => formData.append(FORMDATA_FILES_KEY, file));
+    formData.append(FORMDATA_CONTRACT_ADDRESS_KEY, contractAddress);
+    formData.append(FORMDATA_BATCH_ID_KEY, batchId);
+
+    const signature = await CryptoService.ethSignFormData(formData);
+
+    formData.append(FORMDATA_SIGNATURE_KEY, signature);
+
     return await fetch(STORAGE_API_ADD, {
       method: "POST",
       body: formData,

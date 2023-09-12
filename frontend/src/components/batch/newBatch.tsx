@@ -58,7 +58,7 @@ const NewBatch = (props: Props) => {
       </button>
 
       {batchId && (
-        <p className="font-sans text-base font-semibold">
+        <p className="max-w-full break-words font-sans text-base font-semibold">
           {batchId.toString()}
         </p>
       )}

@@ -1,4 +1,16 @@
-import { INDEX_FILE, composeMetadata } from "@/services/StorageService";
+import TracerAPI from "@/TracerAPI";
+import CryptoService, {
+  FORMDATA_SIGNATURE_KEY,
+  FORMDATA_TIMESTAMP_KEY,
+} from "@/services/CryptoService";
+import {
+  FORMDATA_BATCH_ID_KEY,
+  FORMDATA_CONTRACT_ADDRESS_KEY,
+  FORMDATA_DESCRIPTION_KEY,
+  FORMDATA_FILES_KEY,
+  INDEX_FILE,
+  composeMetadata,
+} from "@/services/StorageService";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -9,9 +21,9 @@ export async function POST(request: Request) {
     const files = requestFormData.getAll("file");
 
     // asserts
-    checkAddFileRequestData(description, files);
+    await checkValidRequest(requestFormData);
     checkAvailableIndexFilename(files);
-    // TODO check permisson from user
+    await checkUserAccess(requestFormData);
 
     // fit with metadata
     const metadata = composeMetadata(description as string, files as File[]);
@@ -83,12 +95,62 @@ function checkAvailableIndexFilename(files: FormDataEntryValue[]) {
     throw new Error(`File name cannot be the same as ${INDEX_FILE}`);
 }
 
-function checkAddFileRequestData(
-  description: FormDataEntryValue | null,
-  files: FormDataEntryValue[],
-) {
+async function checkValidRequest(formData: FormData) {
+  const description = formData.get(FORMDATA_DESCRIPTION_KEY);
+  const contractAddress = formData.get(FORMDATA_CONTRACT_ADDRESS_KEY);
+  const batchId = formData.get(FORMDATA_BATCH_ID_KEY);
+  const signature = formData.get(FORMDATA_SIGNATURE_KEY);
+  const timestamp = formData.get(FORMDATA_TIMESTAMP_KEY);
+  const files = formData.getAll(FORMDATA_FILES_KEY);
+
   if (!description || !(typeof description == "string"))
-    throw new Error("Missing form data fields: description");
+    throw new Error(`Missing form data fields: ${FORMDATA_DESCRIPTION_KEY}`);
+  if (!contractAddress || !(typeof contractAddress == "string"))
+    throw new Error(
+      `Missing form data fields: ${FORMDATA_CONTRACT_ADDRESS_KEY}`,
+    );
+  if (!batchId || !(typeof batchId == "string"))
+    throw new Error(`Missing form data fields: ${FORMDATA_BATCH_ID_KEY}`);
+  if (!signature || !(typeof signature == "string"))
+    throw new Error(`Missing form data fields: ${FORMDATA_SIGNATURE_KEY}`);
+  if (!timestamp || !(typeof timestamp == "string"))
+    throw new Error(`Missing form data fields: ${FORMDATA_TIMESTAMP_KEY}`);
   if (files && !files.every((file) => file instanceof File))
     throw new Error("Wrong form data format: files");
+}
+
+async function checkUserAccess(formData: FormData) {
+  const signature = formData.get("signature") as string;
+  const address = CryptoService.verifySignature(formData, signature);
+
+  const contractAddress = formData.get("contractAddress") as string;
+
+  // Check if actor is registred and linked to the contract
+  const hasPermission = await TracerAPI.UserRegistry.checkAccess(
+    contractAddress,
+    address,
+  );
+  if (!hasPermission) throw new Error("User does not have permission");
+
+  // Check additional security components
+  const timestamp = BigInt(formData.get(FORMDATA_TIMESTAMP_KEY) as string);
+  const batchId = formData.get(FORMDATA_BATCH_ID_KEY) as string;
+  const batch = await TracerAPI.Traceability.getBatch(contractAddress, batchId);
+  if (!batch.id) throw new Error("Batch does not exist");
+
+  const greaterUpdateTimestamps = batch.updates
+    .concat(batch.transactions.map((tx) => tx.info))
+    .map((update) => update.ts)
+    .filter((ts) => ts > timestamp)
+    .sort();
+  const valid = greaterUpdateTimestamps.length == 0;
+  if (!valid)
+    throw new Error(
+      `Timestamp is not valid. Wait ${
+        greaterUpdateTimestamps[greaterUpdateTimestamps.length - 1] - timestamp
+      } seconds`,
+    );
+
+  console.log(address);
+  return true;
 }

@@ -24,6 +24,14 @@ const UserRegistry = {
     UserRegistry.connectReadOnly().then((contract) =>
       contract.getActorName(address),
     ),
+
+  checkAccess: async (
+    contractAddress: string,
+    address: string,
+  ): Promise<boolean> =>
+    UserRegistry.connectReadOnly().then((contract) =>
+      contract.checkAccess(contractAddress, address),
+    ),
 };
 
 export default UserRegistry;

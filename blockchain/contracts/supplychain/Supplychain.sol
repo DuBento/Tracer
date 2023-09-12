@@ -215,10 +215,6 @@ contract Supplychain is Ownable, ConformityState, IERC6372 {
     }
 
     function _assertAllowedActor(address addr_) private view {
-        // console.log("Supplychain: assertAllowedActor");
-        // console.log("Supplychain: userRegistry");
-        // console.logAddress(address(userRegistry));
-
         if (!userRegistry.checkAccess(address(this), addr_))
             revert UserNotAllowedToTransact();
     }
