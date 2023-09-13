@@ -19,7 +19,6 @@ const NewBatch = (props: Props) => {
   const handleCreateNewBatch = async () => {
     if (!newBatchDescription) throw new Error("Batch description is empty");
 
-    console.log(props.contractAddress);
     const newBatchId = await BlockchainServices.Traceability.newBatch(
       props.contractAddress,
       newBatchDescription,

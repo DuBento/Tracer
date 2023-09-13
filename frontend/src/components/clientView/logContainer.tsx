@@ -13,7 +13,6 @@ export default function LogContainer(props: Props) {
 
     const container = document.getElementById("cv-log-container");
     var description = document.getElementById("cv-header-description");
-    console.log(container?.scrollTop);
 
     window.requestAnimationFrame(() => {
       if (container?.scrollTop! > 50 && description?.style.maxHeight != "0px") {

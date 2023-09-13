@@ -11,9 +11,9 @@ export default function Header(props: Props) {
   return (
     <div className="bg-wine bg-cover bg-center pb-3">
       <div className="max-w-screen flex min-w-0 flex-row justify-between">
-        <div className="m-[10px] h-12 w-12 flex-none">
+        <a className="m-[10px] h-12 w-12 flex-none" href="/">
           <Logo className="fill-isabelline" />
-        </div>
+        </a>
         <div className="mx-2 w-2/3 pt-4">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-center font-display text-3xl text-isabelline">
             {props.batchLog.managerName}
