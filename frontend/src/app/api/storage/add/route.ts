@@ -120,10 +120,10 @@ async function checkValidRequest(formData: FormData) {
 }
 
 async function checkUserAccess(formData: FormData) {
-  const signature = formData.get("signature") as string;
+  const signature = formData.get(FORMDATA_SIGNATURE_KEY) as string;
   const address = CryptoService.verifySignature(formData, signature);
 
-  const contractAddress = formData.get("contractAddress") as string;
+  const contractAddress = formData.get(FORMDATA_CONTRACT_ADDRESS_KEY) as string;
 
   // Check if actor is registred and linked to the contract
   const hasPermission = await TracerAPI.UserRegistry.checkAccess(

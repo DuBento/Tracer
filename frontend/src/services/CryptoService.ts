@@ -28,6 +28,7 @@ const CryptoService = {
     // Convert the FormData object to a string
     const formDataString = Array.from(formData.entries())
       .filter((entry) => entry[0] != FORMDATA_SIGNATURE_KEY)
+      .sort()
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .join("&");
     const dataBytes = toUtf8Bytes(formDataString);
