@@ -8,7 +8,10 @@ import {
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import { newBatch, utils } from "../lib";
-import { SUPPLYCHAIN_CONTRACT_DESCRIPTION } from "../properties";
+import {
+  SUPPLYCHAIN_CONTRACT_DESCRIPTION,
+  SUPPLYCHAIN_REQUIRED_UPDATE_ATTRIBUTE_KEYS,
+} from "../properties";
 import * as Values from "./TestConfig";
 
 /* 
@@ -51,7 +54,8 @@ describe("Traceability", function () {
       );
     await TraceabilityContractFactory.create(
       supplychainManager,
-      SUPPLYCHAIN_CONTRACT_DESCRIPTION
+      SUPPLYCHAIN_CONTRACT_DESCRIPTION,
+      SUPPLYCHAIN_REQUIRED_UPDATE_ATTRIBUTE_KEYS
     );
 
     const contractAddress = (await userRegistry.getMember(supplychainManager))
@@ -120,7 +124,11 @@ describe("Traceability", function () {
     });
 
     it("New update should be registered correctly", async function () {
-      await Traceability.handleUpdate(id, Values.UPDATE_DOCUMENT_URI);
+      await Traceability.handleUpdate(
+        id,
+        Values.UPDATE_DOCUMENT_URI,
+        Values.UPDATE_ATTRIBUTE_VALUES
+      );
 
       const batch = await Traceability.getBatch(id);
       const updateIdx = batch.updates.length - 1;
@@ -185,7 +193,11 @@ describe("Traceability", function () {
       Traceability = Traceability.connect(await ethers.getSigner(actor1));
 
       await expect(
-        Traceability.handleUpdate(id, Values.UPDATE_DOCUMENT_URI)
+        Traceability.handleUpdate(
+          id,
+          Values.UPDATE_DOCUMENT_URI,
+          Values.UPDATE_ATTRIBUTE_VALUES
+        )
       ).to.be.revertedWithCustomError(
         Traceability,
         "UserIsNotCurrentBatchOwner"
@@ -204,7 +216,8 @@ describe("Traceability", function () {
       await Traceability.handleTransaction(
         id,
         actor1,
-        Values.UPDATE_DOCUMENT_URI
+        Values.UPDATE_DOCUMENT_URI,
+        Values.UPDATE_ATTRIBUTE_VALUES
       );
 
       const batch = await Traceability.getBatch(id);
@@ -224,7 +237,12 @@ describe("Traceability", function () {
       Traceability = Traceability.connect(await ethers.getSigner(actor1));
 
       await expect(
-        Traceability.handleTransaction(id, actor2, Values.UPDATE_DOCUMENT_URI)
+        Traceability.handleTransaction(
+          id,
+          actor2,
+          Values.UPDATE_DOCUMENT_URI,
+          Values.UPDATE_ATTRIBUTE_VALUES
+        )
       ).to.be.revertedWithCustomError(
         Traceability,
         "UserIsNotCurrentBatchOwner"

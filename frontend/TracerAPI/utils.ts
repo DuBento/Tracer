@@ -16,6 +16,7 @@ export type BatchLog = {
   managerName: string;
   managerInfo: string;
   managerAddress: string;
+  requiredTransactionAttributesKeys: string[];
   log: BatchEventLog[];
 };
 
@@ -29,6 +30,7 @@ export type BatchEventLog = {
 
 export type BatchEvent = {
   isTransaction: boolean;
+  transactionAttributes?: string[];
   ts: bigint;
   date: string;
   time: string;
@@ -90,31 +92,37 @@ const Utils = {
   },
 
   encodeBatchURI: (id: BatchId | string, contractAddress: string): string => {
-    if (typeof id == "string") id = BigInt(id);
-    const idBytes = id.toString(16);
-    const idBuffer = Buffer.from(idBytes, "hex");
+    if (typeof id === "string") id = BigInt(id);
 
-    const contractAddressBytes = contractAddress.replace("0x", "");
-    const contractAddressBuffer = Buffer.from(contractAddressBytes, "hex");
+    const idHex = id.toString(16); // Convert BigInt to hexadecimal string
+    const encodedID = base64url.encode(idHex, "hex");
 
-    return `${base64url.encode(
-      idBuffer,
-    )}${BATCH_URI_DELIMITER}${base64url.encode(contractAddressBuffer)}`;
+    const contractAddressHex = contractAddress.replace("0x", "");
+    const encodedContractAddress = base64url.encode(contractAddressHex, "hex");
+
+    return `${encodedID}${BATCH_URI_DELIMITER}${encodedContractAddress}`;
   },
 
   decodeBatchURI: (
     encodedText: string,
   ): { batchId: BatchId; contractAddress: string } => {
     const encodedParts = encodedText.split(BATCH_URI_DELIMITER);
-    if (encodedParts.length != 2) throw new Error("Invalid encoded batch URL");
+    if (encodedParts.length !== 2) throw new Error("Invalid encoded batch URL");
 
     const [batchIdEncoded, contractAddressEncoded] = encodedParts;
 
+    const batchIdHex = base64url.decode(batchIdEncoded, "hex"); // Decode and get the hexadecimal string
+    const contractAddressBytes = base64url.decode(
+      contractAddressEncoded,
+      "hex",
+    );
+
+    // Parse the hexadecimal string as a BigInt
+    const batchId = BigInt(`0x${batchIdHex}`);
+
     return {
-      batchId: BigInt(`0x${base64url.decode(batchIdEncoded, "hex")}`),
-      contractAddress: ethers.getAddress(
-        base64url.decode(contractAddressEncoded, "hex"),
-      ),
+      batchId,
+      contractAddress: ethers.getAddress(`0x${contractAddressBytes}`),
     };
   },
 
@@ -152,7 +160,10 @@ const Utils = {
     batchId: BigNumberish,
   ): Promise<BatchLog | undefined> => {
     const batch = await Traceability.getBatch(contractAddress, batchId);
+    console.log({ batch });
     if (!batch.id) return undefined;
+
+    console.log("Getting batch log");
 
     const managerAddress =
       await Traceability.getContractManagerAddress(contractAddress);
@@ -161,10 +172,54 @@ const Utils = {
     const contractDescription =
       await Traceability.getContractDescription(contractAddress);
 
+    const requiredTransactionAttributesKeys =
+      await Traceability.getRequiredTransactionAttributesKeys(contractAddress);
+
     const actorNamesMap = await Utils.getActorNamesMemoized(batch);
     const { stateDescription, warning } = Utils.parseBatchState(batch.state);
 
     const eventLog: BatchEventLog[] = [];
+    for (const transaction of batch.transactions) {
+      const event = {
+        isTransaction: true,
+        transactionAttributes: transaction.additionalAttributesValues,
+        ts: transaction.info.ts,
+        date: Utils.parseDate(transaction.info.ts),
+        time: Utils.parseTime(transaction.info.ts),
+        documentURI: transaction.info.documentURI,
+      };
+
+      const existingActorEventLog = eventLog.find(
+        (log) => log.actorAddress == transaction.info.owner,
+      );
+      if (existingActorEventLog == undefined) {
+        eventLog.push({
+          actorName: actorNamesMap.get(transaction.info.owner) || "Unknown",
+          actorAddress: transaction.info.owner,
+          events: [event],
+        });
+      } else {
+        existingActorEventLog.events.unshift(event);
+      }
+
+      // update receiver date
+      const receivingActor = eventLog.find(
+        (log) => log.actorAddress == transaction.receiver,
+      );
+      if (receivingActor == undefined) {
+        eventLog.push({
+          actorName: actorNamesMap.get(transaction.receiver) || "Unknown",
+          actorAddress: transaction.receiver,
+          receivingDate: Utils.parseDate(transaction.info.ts),
+          receivingTime: Utils.parseTime(transaction.info.ts),
+          events: [],
+        });
+      } else {
+        receivingActor.receivingDate = Utils.parseDate(transaction.info.ts);
+        receivingActor.receivingTime = Utils.parseTime(transaction.info.ts);
+      }
+    }
+
     for (const update of batch.updates) {
       const event = {
         isTransaction: false,
@@ -174,54 +229,12 @@ const Utils = {
         documentURI: update.documentURI,
       };
 
-      const existingActorEventLog = eventLog.find(
+      let existingActorEventLog = eventLog.find(
         (log) => log.actorAddress == update.owner,
       );
-      if (existingActorEventLog == undefined) {
-        eventLog.push({
-          actorName: actorNamesMap.get(update.owner) || "Unknown",
-          actorAddress: update.owner,
-          events: [event],
-        });
-      } else {
-        existingActorEventLog.events.push(event);
-      }
-    }
+      if (existingActorEventLog == undefined) throw Error("Misformed batch");
 
-    for (const transaction of batch.transactions) {
-      const event = {
-        isTransaction: true,
-        ts: transaction.info.ts,
-        date: Utils.parseDate(transaction.info.ts),
-        time: Utils.parseTime(transaction.info.ts),
-        documentURI: transaction.info.documentURI,
-      };
-
-      let existingActorEventLog = eventLog.find(
-        (log) => log.actorAddress == transaction.info.owner,
-      );
-      if (existingActorEventLog == undefined) {
-        if (batch.transactions.length == 1) {
-          // Single transaction (initial batch state)
-          const len = eventLog.push({
-            actorName: actorNamesMap.get(transaction.info.owner) || "Unknown",
-            actorAddress: transaction.info.owner,
-            events: [event],
-          });
-          existingActorEventLog = eventLog[len - 1];
-        } else throw Error("Misformed batch");
-      }
-
-      existingActorEventLog.events.push(event);
-
-      // update receiver date
-      const receiverActorLog = eventLog.find(
-        (log) => log.actorAddress == transaction.receiver,
-      );
-      if (receiverActorLog) {
-        receiverActorLog.receivingDate = Utils.parseDate(transaction.info.ts);
-        receiverActorLog.receivingTime = Utils.parseTime(transaction.info.ts);
-      }
+      existingActorEventLog.events.unshift(event);
     }
 
     return {
@@ -235,6 +248,7 @@ const Utils = {
       managerName: member.name,
       managerInfo: member.infoURI,
       managerAddress: managerAddress,
+      requiredTransactionAttributesKeys: requiredTransactionAttributesKeys,
       log: eventLog.reverse(),
     };
   },

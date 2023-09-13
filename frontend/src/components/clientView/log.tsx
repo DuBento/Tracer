@@ -69,7 +69,12 @@ export default function Log(props: Props) {
                 <ol className="mb-2">
                   {log.events.map((event: BatchEvent, idx) => (
                     <li key={idx} className="mt-4">
-                      <Event event={event} />
+                      <Event
+                        event={event}
+                        requiredAttributes={
+                          props.batchLog.requiredTransactionAttributesKeys
+                        }
+                      />
                     </li>
                   ))}
                 </ol>

@@ -1,6 +1,6 @@
 "use client";
 
-import BlockchainServices, { BatchId } from "@/TracerAPI";
+import TracerAPI, { BatchId } from "@/TracerAPI";
 import NotificationContext from "@/context/notificationContext";
 import StorageService from "@/services/StorageService";
 import { useContext, useState } from "react";
@@ -29,7 +29,7 @@ const UpdateBatch = (props: Props) => {
       props.batchId.toString(),
     )
       .then((URI) =>
-        BlockchainServices.Traceability.pushNewUpdate(
+        TracerAPI.Traceability.pushNewUpdate(
           props.contractAddress,
           props.batchId!,
           URI,

@@ -4,7 +4,10 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { newMemberViaGovernance } from "../lib/newMemberViaGovernance";
 import { newSupplychainContractViaGovernance } from "../lib/newSupplychainContractViaGovernance";
 import { padCenter, scriptName, storeAddress } from "../lib/utils";
-import { TRACEABILITY_MOCK_ADDRESS_NAME } from "../properties";
+import {
+  TRACEABILITY_MOCK_ADDRESS_NAME,
+  TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS,
+} from "../properties";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -16,7 +19,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { member } = await newMemberViaGovernance(supplychainManager);
 
   const { contractAddress } = await newSupplychainContractViaGovernance(
-    supplychainManager
+    supplychainManager,
+    TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS
   );
 
   storeAddress(TRACEABILITY_MOCK_ADDRESS_NAME, contractAddress);

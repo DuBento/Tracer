@@ -102,14 +102,14 @@ export async function increaseTime(seconds: number) {
 export async function encodeFunctionCall(
   contractName: string,
   methodName: string,
-  args: string[]
+  args: (string | string[])[]
 ): Promise<string> {
   const contractFactory = await ethers.getContractFactory(contractName);
 
   console.log(`Encoding ${methodName} with args ${args} => on ${contractName}`);
   const encodedFunctionCall = contractFactory.interface.encodeFunctionData(
     methodName,
-    await args
+    args
   );
   return encodedFunctionCall;
 }

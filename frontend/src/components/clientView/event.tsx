@@ -11,6 +11,7 @@ import Skeleton from "../common/skeleton";
 
 type Props = {
   event: BatchEvent;
+  requiredAttributes?: string[];
 };
 
 export default function Event(props: Props) {
@@ -169,6 +170,17 @@ export default function Event(props: Props) {
           {props.event.date} · {props.event.time}
         </div>
       </div>
+
+      {props.event.transactionAttributes?.map((attr, idx) => {
+        let key = "unknown";
+        if (props.requiredAttributes)
+          key = props.requiredAttributes[idx] || "unknown";
+        return (
+          <div className="ml-6 mt-1 text-sm font-light" key={idx}>
+            {`${key}: ${attr}`}
+          </div>
+        );
+      })}
 
       {/* Preview scroll */}
       {sourcesCount > 0 && (

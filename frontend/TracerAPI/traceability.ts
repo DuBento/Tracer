@@ -4,7 +4,7 @@ import {
 } from "@/TracerAPI/contracts/typechain";
 import { EventLog, ethers } from "ethers";
 import { connectEthereum, connectSigner } from "./connection";
-import { NewBatchEvent } from "./contracts/typechain/Traceability/Traceability";
+import { NewBatchEvent } from "./contracts/typechain/supplychain/Traceability";
 
 // Types
 
@@ -35,6 +35,13 @@ const Traceability = {
   getContractDescription: async (contractAddress: string): Promise<string> =>
     Traceability.connectReadOnly(contractAddress).then((contract) =>
       contract.getContractDescription(),
+    ),
+
+  getRequiredTransactionAttributesKeys: async (
+    contractAddress: string,
+  ): Promise<string[]> =>
+    Traceability.connectReadOnly(contractAddress).then((contract) =>
+      contract.getRequiredTransactionAttributesKeys(),
     ),
 
   getBatch: async (contractAddress: string, id: BatchId): Promise<Batch> =>
@@ -97,15 +104,21 @@ const Traceability = {
     id: BatchId,
     receiver: string,
     documentURI: string,
+    requiredAttributes: string[],
   ): Promise<void> =>
     await Traceability.connect(contractAddress).then(async (contract) => {
       if (!ethers.isAddress(receiver))
         throw new Error("No receiver associated with transaction");
 
       console.log("Sending transaction:");
-      console.log({ id, receiver, documentURI });
+      console.log({ id, receiver, documentURI, requiredAttributes });
 
-      const tx = await contract.handleTransaction(id, receiver, documentURI);
+      const tx = await contract.handleTransaction(
+        id,
+        receiver,
+        documentURI,
+        requiredAttributes,
+      );
       tx.wait();
     }),
 };

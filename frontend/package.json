@@ -11,10 +11,8 @@
   },
   "dependencies": {
     "autoprefixer": "^10.4.15",
-    "axios": "^1.5.0",
     "base64url": "^3.0.1",
     "ethers": "^6.7.1",
-    "formidable": "^3.5.1",
     "next": "^13.4.19",
     "postcss": "^8.4.28",
     "qrcode": "^1.5.3",
@@ -26,7 +24,6 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@types/formidable": "^3.4.2",
     "@types/node": "20.5.7",
     "@types/qrcode": "^1.5.1",
     "@types/react": "18.2.21",

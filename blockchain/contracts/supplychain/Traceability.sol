@@ -27,14 +27,17 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
     struct Transaction {
         address receiver;
         Update info;
+        string[] additionalAttributesValues;
     }
 
     // State variables
+    mapping(uint256 => Batch) batches;
+
     IUserRegistry private userRegistry;
     address private manager;
     string private contractDescription;
 
-    mapping(uint256 => Batch) batches;
+    string[] private requiredTransactionAttributesKeys;
 
     // Events
     event NewBatch(address indexed owner, uint256 id);
@@ -44,6 +47,7 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
     error BatchDoesNotExist();
     error UserNotAllowedToTransact();
     error BatchFunctioningPause();
+    error InvalidAdditionalUpdateAttributes();
 
     // Modifiers
     modifier allowedActor() {
@@ -69,13 +73,15 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         IUserRegistry userRegistry_,
         address owner_,
         address manager_,
-        string calldata contractDescription_
+        string calldata contractDescription_,
+        string[] memory requiredTransactionAttributesKeys_
     ) external {
         if (address(userRegistry) == address(0)) {
             // init can only be called once
             userRegistry = IUserRegistry(userRegistry_);
             manager = manager_;
             contractDescription = contractDescription_;
+            requiredTransactionAttributesKeys = requiredTransactionAttributesKeys_;
 
             super.init(owner_);
         }
@@ -100,6 +106,14 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         return contractDescription;
     }
 
+    function getRequiredTransactionAttributesKeys()
+        public
+        view
+        returns (string[] memory)
+    {
+        return requiredTransactionAttributesKeys;
+    }
+
     function getBatch(uint256 id_) public view returns (Batch memory) {
         return batches[id_];
     }
@@ -118,7 +132,8 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         // handle create transaction
         Transaction memory transaction = _newTransaction(
             msg.sender,
-            documentURI_
+            documentURI_,
+            new string[](0)
         );
         batch.transactions.push(transaction);
 
@@ -142,16 +157,19 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
     function handleTransaction(
         uint256 id_,
         address receiver_,
-        string memory documentURI_
+        string memory documentURI_,
+        string[] memory additionalAttributesValues_
     ) public allowedActor {
         Batch storage batch = batches[id_];
         _assertValidUpdate(batch);
         _assertAllowedActor(receiver_);
         _assertBatchFunctioning(batch);
+        _assertValidAdditionalAttributes(additionalAttributesValues_);
 
         Transaction memory transaction = _newTransaction(
             receiver_,
-            documentURI_
+            documentURI_,
+            additionalAttributesValues_
         );
         batch.transactions.push(transaction);
 
@@ -182,9 +200,15 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
 
     function _newTransaction(
         address receiver_,
-        string memory documentURI_
+        string memory documentURI_,
+        string[] memory additionalAttributesValues_
     ) internal view returns (Transaction memory) {
-        return Transaction(receiver_, _newUpdate(documentURI_));
+        return
+            Transaction(
+                receiver_,
+                _newUpdate(documentURI_),
+                additionalAttributesValues_
+            );
     }
 
     //* private
@@ -222,5 +246,14 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
     function _assertBatchFunctioning(Batch storage batch_) private view {
         if (batch_.state != ConformityState.CONFORMITY_STATE_FUNCTIONING)
             revert BatchFunctioningPause();
+    }
+
+    function _assertValidAdditionalAttributes(
+        string[] memory additionalAttributesValues_
+    ) private view {
+        if (
+            additionalAttributesValues_.length !=
+            requiredTransactionAttributesKeys.length
+        ) revert InvalidAdditionalUpdateAttributes();
     }
 }

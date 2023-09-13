@@ -87,16 +87,6 @@ const StorageService = {
     const signature = await CryptoService.ethSignFormData(formData);
     formData.append(FORMDATA_SIGNATURE_KEY, signature);
 
-    console.log(
-      `Verified: ${CryptoService.verifySignature(formData, signature)}`,
-    );
-
-    console.log(`Uploading formadata:`);
-    // Display the key/value pairs
-    for (var pair of Array.from(formData.entries()).sort()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
-
     return await fetch(STORAGE_API_ADD, {
       method: "POST",
       body: formData,

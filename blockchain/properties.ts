@@ -46,3 +46,6 @@ export const TRACEABILITY_MOCK_ADDRESS_NAME = "mockTraceabilityContract";
 export const TRACEABILITY_MOCK_BATCH_ID_NAME = "mockBatchId";
 export const TRACEABILITY_MOCK_BATCH_DESCRIPTION =
   "Example batch for wine traceability";
+export const TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS = ["Price paid"];
+export const TRACEABILITY_MOCK_STARTING_PRICE = 5;
+export const TRACEABILITY_MOCK_PRICE_INCREMENT = 2;

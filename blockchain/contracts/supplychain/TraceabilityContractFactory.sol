@@ -17,7 +17,8 @@ contract TraceabilityContractFactory is Ownable {
 
     function create(
         address supplychainManager_,
-        string calldata contractDescription_
+        string calldata contractDescription_,
+        string[] memory requiredUpdateAttributesKeys_
     ) external onlyOwner returns (address) {
         address clone = Clones.clone(defaultImplementation);
 
@@ -26,7 +27,8 @@ contract TraceabilityContractFactory is Ownable {
             userRegistry,
             msg.sender,
             supplychainManager_,
-            contractDescription_
+            contractDescription_,
+            requiredUpdateAttributesKeys_
         );
 
         userRegistry.updateMember(supplychainManager_, clone);

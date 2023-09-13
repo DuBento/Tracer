@@ -9,15 +9,28 @@ import {
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
 } from "../properties";
 
-const encodeFunctionCallPromise = (memberAddress: string) =>
+const encodeFunctionCallPromise = (
+  memberAddress: string,
+  requiredUpdateAttributeKeys?: string[]
+) =>
   utils.encodeFunctionCall(
     "TraceabilityContractFactory",
     SUPPLYCHAIN_CREATE_METHOD,
-    [memberAddress, SUPPLYCHAIN_CONTRACT_DESCRIPTION]
+    [
+      memberAddress,
+      SUPPLYCHAIN_CONTRACT_DESCRIPTION,
+      requiredUpdateAttributeKeys || [],
+    ]
   );
 
-async function proposeCreateSupplychain(memberAddress: string) {
-  const encodedFunctionCall = await encodeFunctionCallPromise(memberAddress);
+async function proposeCreateSupplychain(
+  memberAddress: string,
+  requiredUpdateAttributeKeys?: string[]
+) {
+  const encodedFunctionCall = await encodeFunctionCallPromise(
+    memberAddress,
+    requiredUpdateAttributeKeys
+  );
 
   const proposalId = await propose(
     await utils.getContractAddress("TraceabilityContractFactory"),
@@ -36,9 +49,13 @@ async function voteFor(proposalId: string) {
 }
 
 async function executeSupplychainContractCreation(
-  memberAddress: string
+  memberAddress: string,
+  requiredUpdateAttributeKeys?: string[]
 ): Promise<string> {
-  const encodedFunctionCall = await encodeFunctionCallPromise(memberAddress);
+  const encodedFunctionCall = await encodeFunctionCallPromise(
+    memberAddress,
+    requiredUpdateAttributeKeys
+  );
 
   await execute(
     await utils.getContractAddress("TraceabilityContractFactory"),
@@ -54,14 +71,19 @@ async function executeSupplychainContractCreation(
 }
 
 export async function newSupplychainContractViaGovernance(
-  memberAddress: string
+  memberAddress: string,
+  requiredUpdateAttributeKeys?: string[]
 ) {
-  const proposalId = await proposeCreateSupplychain(memberAddress);
+  const proposalId = await proposeCreateSupplychain(
+    memberAddress,
+    requiredUpdateAttributeKeys
+  );
 
   await voteFor(proposalId.toString());
 
   const contractAddress = await executeSupplychainContractCreation(
-    memberAddress
+    memberAddress,
+    requiredUpdateAttributeKeys
   );
   console.log(`Address of created contract: ${contractAddress}`);
 

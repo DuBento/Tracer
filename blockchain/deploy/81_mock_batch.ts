@@ -9,6 +9,8 @@ import {
   TRACEABILITY_MOCK_ADDRESS_NAME,
   TRACEABILITY_MOCK_BATCH_DESCRIPTION,
   TRACEABILITY_MOCK_BATCH_ID_NAME,
+  TRACEABILITY_MOCK_PRICE_INCREMENT,
+  TRACEABILITY_MOCK_STARTING_PRICE,
 } from "../properties";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -76,6 +78,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // Add updates and transactions
   actorIdx = 0;
+  let price = TRACEABILITY_MOCK_STARTING_PRICE;
 
   for (const [transactionKey, trasactionUpdates] of Object.entries(
     mockUpload
@@ -97,9 +100,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await traceabilityContract.handleTransaction(
       batchId,
       actors[actorIdx + 1],
-      mockUpload.transaction[0].uri
+      mockUpload.transaction[0].uri,
+      [`${price}.00$`]
     );
+
     actorIdx++;
+    price += TRACEABILITY_MOCK_PRICE_INCREMENT;
   }
 };
 
