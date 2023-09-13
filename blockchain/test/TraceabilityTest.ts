@@ -8,10 +8,7 @@ import {
   UserRegistry,
 } from "../artifacts-frontend/typechain";
 import { newBatch, utils } from "../lib";
-import {
-  SUPPLYCHAIN_CONTRACT_DESCRIPTION,
-  SUPPLYCHAIN_REQUIRED_UPDATE_ATTRIBUTE_KEYS,
-} from "../properties";
+import { SUPPLYCHAIN_CONTRACT_DESCRIPTION } from "../properties";
 import * as Values from "./TestConfig";
 
 /* 
@@ -55,7 +52,7 @@ describe("Traceability", function () {
     await TraceabilityContractFactory.create(
       supplychainManager,
       SUPPLYCHAIN_CONTRACT_DESCRIPTION,
-      SUPPLYCHAIN_REQUIRED_UPDATE_ATTRIBUTE_KEYS
+      Values.TRANSACTION_REQUIRED_ATTRIBUTE_KEYS
     );
 
     const contractAddress = (await userRegistry.getMember(supplychainManager))
@@ -124,11 +121,7 @@ describe("Traceability", function () {
     });
 
     it("New update should be registered correctly", async function () {
-      await Traceability.handleUpdate(
-        id,
-        Values.UPDATE_DOCUMENT_URI,
-        Values.UPDATE_ATTRIBUTE_VALUES
-      );
+      await Traceability.handleUpdate(id, Values.UPDATE_DOCUMENT_URI);
 
       const batch = await Traceability.getBatch(id);
       const updateIdx = batch.updates.length - 1;
@@ -193,11 +186,7 @@ describe("Traceability", function () {
       Traceability = Traceability.connect(await ethers.getSigner(actor1));
 
       await expect(
-        Traceability.handleUpdate(
-          id,
-          Values.UPDATE_DOCUMENT_URI,
-          Values.UPDATE_ATTRIBUTE_VALUES
-        )
+        Traceability.handleUpdate(id, Values.UPDATE_DOCUMENT_URI)
       ).to.be.revertedWithCustomError(
         Traceability,
         "UserIsNotCurrentBatchOwner"
@@ -217,7 +206,7 @@ describe("Traceability", function () {
         id,
         actor1,
         Values.UPDATE_DOCUMENT_URI,
-        Values.UPDATE_ATTRIBUTE_VALUES
+        Values.TRANSACTION_REQUIRED_ATTRIBUTE_VALUES
       );
 
       const batch = await Traceability.getBatch(id);
@@ -241,7 +230,7 @@ describe("Traceability", function () {
           id,
           actor2,
           Values.UPDATE_DOCUMENT_URI,
-          Values.UPDATE_ATTRIBUTE_VALUES
+          Values.TRANSACTION_REQUIRED_ATTRIBUTE_VALUES
         )
       ).to.be.revertedWithCustomError(
         Traceability,

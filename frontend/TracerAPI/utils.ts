@@ -163,8 +163,6 @@ const Utils = {
     console.log({ batch });
     if (!batch.id) return undefined;
 
-    console.log("Getting batch log");
-
     const managerAddress =
       await Traceability.getContractManagerAddress(contractAddress);
     const member = await UserRegistry.getMember(managerAddress);

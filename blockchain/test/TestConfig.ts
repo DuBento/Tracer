@@ -1,7 +1,8 @@
 // Constants
 export const BATCH_DESCRIPTION = "Batch test description";
 export const UPDATE_DOCUMENT_URI = "<test update uri>";
-export const UPDATE_ATTRIBUTE_VALUES = [];
+export const TRANSACTION_REQUIRED_ATTRIBUTE_KEYS: string[] = [];
+export const TRANSACTION_REQUIRED_ATTRIBUTE_VALUES: string[] = [];
 
 export const PROPOSAL_DESCRIPTION = "Proposal test description";
 export const PROPOSAL_VOTE_FOR = 1;
