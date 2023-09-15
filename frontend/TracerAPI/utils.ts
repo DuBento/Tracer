@@ -160,7 +160,6 @@ const Utils = {
     batchId: BigNumberish,
   ): Promise<BatchLog | undefined> => {
     const batch = await Traceability.getBatch(contractAddress, batchId);
-    console.log({ batch });
     if (!batch.id) return undefined;
 
     const managerAddress =
