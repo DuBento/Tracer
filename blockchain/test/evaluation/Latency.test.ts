@@ -11,7 +11,9 @@ describe("Latency evaluation", function () {
     console.log("Current block: ", currentBlockNumber);
 
     const oldBlock = await ethers.provider.getBlock(
-      currentBlockNumber - NUMBER_OF_BLOCK_FOR_AVERAGE
+      currentBlockNumber > NUMBER_OF_BLOCK_FOR_AVERAGE
+        ? currentBlockNumber - NUMBER_OF_BLOCK_FOR_AVERAGE
+        : 0
     );
 
     if (!currentBlock || !oldBlock) {
