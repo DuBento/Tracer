@@ -1,4 +1,4 @@
-import { getNamedAccounts } from "hardhat";
+import { getNamedAccounts, network } from "hardhat";
 import { Traceability } from "../../artifacts-frontend/typechain";
 import { newBatch, utils } from "../../lib";
 import { TRACEABILITY_MOCK_ADDRESS_NAME } from "../../properties";
@@ -6,7 +6,8 @@ import { BATCH_DESCRIPTION } from "../TestConfig";
 
 describe("Traceability evaluation", function () {
   const traceabilityAddress = utils.getStoredAddress(
-    TRACEABILITY_MOCK_ADDRESS_NAME
+    TRACEABILITY_MOCK_ADDRESS_NAME,
+    network.name
   );
   var actor1: string;
   var actor2: string;
@@ -15,6 +16,7 @@ describe("Traceability evaluation", function () {
     const namedAccounts = await getNamedAccounts();
     actor1 = namedAccounts.actor1;
     actor2 = namedAccounts.actor2;
+    console.log(network.name);
   });
 
   it("New batch", async function () {

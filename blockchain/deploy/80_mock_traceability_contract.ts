@@ -1,6 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import { network } from "hardhat";
 import { newMemberViaGovernance } from "../lib/newMemberViaGovernance";
 import { newSupplychainContractViaGovernance } from "../lib/newSupplychainContractViaGovernance";
 import { padCenter, scriptName, storeAddress } from "../lib/utils";
@@ -23,7 +24,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS
   );
 
-  storeAddress(TRACEABILITY_MOCK_ADDRESS_NAME, contractAddress);
+  storeAddress(TRACEABILITY_MOCK_ADDRESS_NAME, contractAddress, network.name);
 
   log(`Traceability smart contract: deployed @ ${contractAddress}`);
 };

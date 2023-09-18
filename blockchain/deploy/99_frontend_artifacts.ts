@@ -1,6 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import { network } from "hardhat";
 import {
   padCenter,
   saveFrontendFiles,
@@ -16,7 +17,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const allDeployments = await deployments.all();
   for (let contractName in allDeployments) {
-    storeAddress(contractName, allDeployments[contractName].address);
+    storeAddress(
+      contractName,
+      allDeployments[contractName].address,
+      network.name
+    );
   }
 
   saveFrontendFiles();

@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { saveFrontendFiles, storeAddress } from "./utils";
 
 async function main() {
@@ -9,7 +9,7 @@ async function main() {
 
   console.log(`Traceability smart contract: deployed!`);
 
-  storeAddress("Traceability", await Traceability.getAddress());
+  storeAddress("Traceability", await Traceability.getAddress(), network.name);
   saveFrontendFiles();
 }
 

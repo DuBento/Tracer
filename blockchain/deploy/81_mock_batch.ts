@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -29,7 +29,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const actors = [actor1, actor2, actor3, actor4, actor5];
 
   const traceabilityAddress = utils.getStoredAddress(
-    TRACEABILITY_MOCK_ADDRESS_NAME
+    TRACEABILITY_MOCK_ADDRESS_NAME,
+    network.name
   );
 
   // Add actors to user registry
@@ -79,7 +80,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     mockUpload.transaction[0].uri
   );
 
-  utils.storeAddress(TRACEABILITY_MOCK_BATCH_ID_NAME, batchId.toString());
+  utils.storeAddress(
+    TRACEABILITY_MOCK_BATCH_ID_NAME,
+    batchId.toString(),
+    network.name
+  );
   log(`Batch created: id@${batchId.toString()}`);
 
   // Add updates and transactions
@@ -114,7 +119,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       );
       log(`Transaction added: ${transactionKey} by ${actors[actorIdx]}`);
     } catch (error) {
-      console.error(error);
+      log(`Error during transaction ${error}`);
       throw error;
     }
 

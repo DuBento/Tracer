@@ -1,6 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import { network } from "hardhat";
 import { Traceability } from "../artifacts-frontend/typechain";
 import { execute, propose, utils, vote } from "../lib";
 import {
@@ -27,9 +28,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   log(utils.padCenter(utils.scriptName(__filename), 50));
 
   const traceabilityAddress = utils.getStoredAddress(
-    TRACEABILITY_MOCK_ADDRESS_NAME
+    TRACEABILITY_MOCK_ADDRESS_NAME,
+    network.name
   );
-  const batchId = utils.getStoredAddress(TRACEABILITY_MOCK_BATCH_ID_NAME);
+  const batchId = utils.getStoredAddress(
+    TRACEABILITY_MOCK_BATCH_ID_NAME,
+    network.name
+  );
 
   // Get traceability contract
   let traceabilityContractAsManager = await utils.getContract<Traceability>(
