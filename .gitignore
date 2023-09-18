@@ -23,7 +23,8 @@ artifacts-frontend/
 secrets.json
 
 # Hardhat deploy
-deployments/
+blockchain/deployments/localhost
+blockchain/deployments/ganache
 proposals.json
 
 ## Frontend

@@ -23,11 +23,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   log(padCenter(scriptName(__filename), 50));
 
-  await Promise.all([
-    setupExecutor(executorContract, deployer),
-    setupUserRegistry(executorContract, deployer),
-    setupTraceabilityContractFactory(executorContract, deployer),
-  ]);
+  await setupExecutor(executorContract, deployer);
+  await setupUserRegistry(executorContract, deployer);
+  await setupTraceabilityContractFactory(executorContract, deployer);
 };
 
 const setupExecutor = async function (
@@ -41,8 +39,16 @@ const setupExecutor = async function (
     { signerAddress: deployer }
   );
 
-  executorContract.transferOwnership(await governorContract.getAddress());
-  log("Executor owner: ", await executorContract.owner());
+  if (
+    (await executorContract.owner()) == (await governorContract.getAddress())
+  ) {
+    log("Executor already owned by GovernorContract. Skipping...");
+    return;
+  }
+
+  return executorContract
+    .transferOwnership(await governorContract.getAddress())
+    .then((tx) => tx.wait());
 };
 
 const setupUserRegistry = async function (
@@ -57,10 +63,17 @@ const setupUserRegistry = async function (
     { signerAddress: deployer }
   );
 
-  const transferOwnershipTx = await userRegistryContract.transferOwnership(
-    await executorContract.getAddress()
-  );
-  await transferOwnershipTx.wait();
+  if (
+    (await userRegistryContract.owner()) ==
+    (await executorContract.getAddress())
+  ) {
+    log("UserRegistry already owned by ExecutorContract. Skipping...");
+    return;
+  }
+
+  return userRegistryContract
+    .transferOwnership(await executorContract.getAddress())
+    .then((tx) => tx.wait());
 };
 
 const setupTraceabilityContractFactory = async function (
@@ -70,7 +83,7 @@ const setupTraceabilityContractFactory = async function (
   log("Setting up TraceabilityContractFactory...");
 
   // Transfer owner to timelock
-  const TraceabilityContractFactoryContract =
+  const traceabilityContractFactoryContract =
     await utils.getContract<TraceabilityContractFactory>(
       "TraceabilityContractFactory",
       {
@@ -78,11 +91,19 @@ const setupTraceabilityContractFactory = async function (
       }
     );
 
-  const transferOwnershipTx =
-    await TraceabilityContractFactoryContract.transferOwnership(
-      await executorContract.getAddress()
+  if (
+    (await traceabilityContractFactoryContract.owner()) ==
+    (await executorContract.getAddress())
+  ) {
+    log(
+      "Traceability Contract Factory already owned by ExecutorContract. Skipping..."
     );
-  await transferOwnershipTx.wait();
+    return;
+  }
+
+  return traceabilityContractFactoryContract
+    .transferOwnership(await executorContract.getAddress())
+    .then((tx) => tx.wait());
 };
 
 module.exports = func;

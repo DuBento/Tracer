@@ -49,11 +49,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const actorName = mockActor
       .replace(/^\d+_/, "")
       .replace(/\w/, (c) => c.toUpperCase());
-    await userRegistry.addActor(actors[actorIdx], actorName, "");
-    await userRegistry.addContractToActor(
-      traceabilityAddress,
-      actors[actorIdx]
-    );
+
+    try {
+      await userRegistry.addActor(actors[actorIdx], actorName, "");
+      await userRegistry.addContractToActor(
+        traceabilityAddress,
+        actors[actorIdx]
+      );
+    } catch (error) {
+      log(`Actor ${actorName} already exists`);
+    }
+
     actorIdx++;
   }
 
@@ -95,14 +101,22 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       log(`Update added: ${update.name} by ${actors[actorIdx]}`);
     }
 
-    // Add transaction
-    if (actorIdx + 1 > actors.length - 1) break;
-    await traceabilityContract.handleTransaction(
-      batchId,
-      actors[actorIdx + 1],
-      mockUpload.transaction[0].uri,
-      [`${price}.00$`]
-    );
+    log(`Moving to transactions...`);
+
+    try {
+      // Add transaction
+      if (actorIdx + 1 > actors.length - 1) break;
+      await traceabilityContract.handleTransaction(
+        batchId,
+        actors[actorIdx + 1],
+        mockUpload.transaction[0].uri,
+        [`${price}.00$`]
+      );
+      log(`Transaction added: ${transactionKey} by ${actors[actorIdx]}`);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
 
     actorIdx++;
     price += TRACEABILITY_MOCK_PRICE_INCREMENT;

@@ -1,4 +1,4 @@
-import { UserRegistry } from "../artifacts-frontend/typechain";
+import { IUserRegistry, UserRegistry } from "../artifacts-frontend/typechain";
 import {
   USER_REGISTRY_ADD_MEMBER_DESCRIPTION,
   USER_REGISTRY_ADD_MEMBER_METHOD,
@@ -51,20 +51,30 @@ async function executeNewMemberProposal(memberAddress: string) {
     encodedFunctionCall,
     USER_REGISTRY_ADD_MEMBER_DESCRIPTION
   );
+}
 
-  // check that the contract was created
+async function getMember(
+  memberAddress: string
+): Promise<IUserRegistry.MemberStructOutput> {
   const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
   const member = await userRegistry.getMember(memberAddress);
   return member;
 }
 
 export async function newMemberViaGovernance(memberAddress: string) {
+  let member = await getMember(memberAddress);
+  if (member.addr == memberAddress) {
+    console.log(`${memberAddress} already member, skipping...`);
+    return { member, proposalId: null };
+  }
+
   const proposalId = await proposeNewMember(memberAddress);
 
   await voteFor(proposalId.toString());
 
-  const member = await executeNewMemberProposal(memberAddress);
-  console.log(`Member added: ${member}`);
+  await executeNewMemberProposal(memberAddress);
+  console.log(`Member added: ${memberAddress}`);
+  member = await getMember(memberAddress);
 
-  return { proposalId, member };
+  return { member, proposalId };
 }

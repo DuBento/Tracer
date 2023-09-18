@@ -2,6 +2,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { padCenter, scriptName } from "../lib/utils";
+import { BLOCK_CONFIRMATIONS } from "../properties";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -19,7 +20,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       from: deployer,
       args: [userRegistry.address],
       log: true,
-      // TODO verify if live on network
+      // we need to wait if on a live network so we can verify properly
+      waitConfirmations: BLOCK_CONFIRMATIONS,
     }
   );
   log(`TraceabilityContractFactory at ${TraceabilityContractFactory.address}`);

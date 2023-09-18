@@ -1,5 +1,5 @@
 // Constants
-export const BATCH_DESCRIPTION = "Batch test description";
+export const BATCH_DESCRIPTION = "Batch description with 31 chars";
 export const UPDATE_DOCUMENT_URI = "<test update uri>";
 export const TRANSACTION_REQUIRED_ATTRIBUTE_KEYS: string[] = [];
 export const TRANSACTION_REQUIRED_ATTRIBUTE_VALUES: string[] = [];

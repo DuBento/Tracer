@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { UserRegistry } from "../artifacts-frontend/typechain";
 import { execute } from "../lib/execute";
 import { propose } from "../lib/propose";
@@ -70,10 +71,26 @@ async function executeSupplychainContractCreation(
   return contractAddress;
 }
 
+async function checkExistingContract(memberAddress: string): Promise<string> {
+  const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
+  const contractAddress = (await userRegistry.getMember(memberAddress))
+    .managingContractAddress;
+  return contractAddress;
+}
+
 export async function newSupplychainContractViaGovernance(
   memberAddress: string,
   requiredUpdateAttributeKeys?: string[]
 ) {
+  const existingContractOrEmpty = await checkExistingContract(memberAddress);
+
+  if (existingContractOrEmpty != ethers.ZeroAddress) {
+    console.log(
+      `Address of existing contract: ${existingContractOrEmpty}. Skipping...`
+    );
+    return { proposalId: 0, contractAddress: existingContractOrEmpty };
+  }
+
   const proposalId = await proposeCreateSupplychain(
     memberAddress,
     requiredUpdateAttributeKeys

@@ -1,0 +1,767 @@
+{
+  "address": "0x565415B86Fa97002c848E02bbC2f34BEdC4fc00A",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ActorDoesNotExist",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ForbiddenTransferToZeroAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidConformityState",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "votingPower",
+          "type": "uint8"
+        }
+      ],
+      "name": "InvalidVotingPower",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MemberDoesNotExist",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TransactionNotFromOriginalActorAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UserAlreadyExists",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UserCannotManageContract",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UserNotOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED",
+      "outputs": [
+        {
+          "internalType": "enum ConformityState.State",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CONFORMITY_STATE_FUNCTIONING",
+      "outputs": [
+        {
+          "internalType": "enum ConformityState.State",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CONFORMITY_STATE_WAITING_REVIEW",
+      "outputs": [
+        {
+          "internalType": "enum ConformityState.State",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name_",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "infoURI_",
+          "type": "string"
+        }
+      ],
+      "name": "addActor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "contract_",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "actor_",
+          "type": "address"
+        }
+      ],
+      "name": "addContractToActor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name_",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "infoURI_",
+          "type": "string"
+        },
+        {
+          "internalType": "uint8",
+          "name": "votingPower_",
+          "type": "uint8"
+        }
+      ],
+      "name": "addMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sender_",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "contractAddress_",
+          "type": "address"
+        }
+      ],
+      "name": "assertOpFromContractManager",
+      "outputs": [],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "contract_",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        }
+      ],
+      "name": "checkAccess",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        }
+      ],
+      "name": "getActor",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "internalType": "enum ConformityState.State",
+              "name": "state",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "infoURI",
+              "type": "string"
+            },
+            {
+              "internalType": "address[]",
+              "name": "participatingContracts",
+              "type": "address[]"
+            }
+          ],
+          "internalType": "struct IUserRegistry.Actor",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        }
+      ],
+      "name": "getActorName",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        }
+      ],
+      "name": "getManagingContractAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        }
+      ],
+      "name": "getMember",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "internalType": "uint8",
+              "name": "votingPower",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum ConformityState.State",
+              "name": "state",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "managingContractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "infoURI",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct IUserRegistry.Member",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "member_",
+          "type": "address"
+        }
+      ],
+      "name": "getVotes",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sender_",
+          "type": "address"
+        }
+      ],
+      "name": "init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "memberCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        }
+      ],
+      "name": "setTraceabilityContractFactoryAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name_",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "infoURI_",
+          "type": "string"
+        }
+      ],
+      "name": "updateActor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        },
+        {
+          "internalType": "enum ConformityState.State",
+          "name": "newState_",
+          "type": "uint8"
+        }
+      ],
+      "name": "updateActorState",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name_",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "infoURI_",
+          "type": "string"
+        }
+      ],
+      "name": "updateMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "managingContractAddress_",
+          "type": "address"
+        }
+      ],
+      "name": "updateMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr_",
+          "type": "address"
+        },
+        {
+          "internalType": "enum ConformityState.State",
+          "name": "newState_",
+          "type": "uint8"
+        }
+      ],
+      "name": "updateMemberState",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x30801a43c239b362199929a9eeeb791110aa679afed05977b0676eacaeba8977",
+  "receipt": {
+    "to": null,
+    "from": "0x90A84A551585BcC79D35Cc737e1A54DfD9ca8eF6",
+    "contractAddress": "0x565415B86Fa97002c848E02bbC2f34BEdC4fc00A",
+    "transactionIndex": 2,
+    "gasUsed": "1315089",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x16347d063e6e8d916a2826f6ce59b7912f9106a0b1afd9fa5c6a3c062e03faf1",
+    "transactionHash": "0x30801a43c239b362199929a9eeeb791110aa679afed05977b0676eacaeba8977",
+    "logs": [],
+    "blockNumber": 4312821,
+    "cumulativeGasUsed": "2611637",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "f7d442adf3a01c94d3c08e2deef7bbc6",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"ActorDoesNotExist\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ForbiddenTransferToZeroAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidConformityState\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"votingPower\",\"type\":\"uint8\"}],\"name\":\"InvalidVotingPower\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MemberDoesNotExist\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TransactionNotFromOriginalActorAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UserAlreadyExists\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UserCannotManageContract\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UserNotOwner\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED\",\"outputs\":[{\"internalType\":\"enum ConformityState.State\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"CONFORMITY_STATE_FUNCTIONING\",\"outputs\":[{\"internalType\":\"enum ConformityState.State\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"CONFORMITY_STATE_WAITING_REVIEW\",\"outputs\":[{\"internalType\":\"enum ConformityState.State\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name_\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"infoURI_\",\"type\":\"string\"}],\"name\":\"addActor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"contract_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"actor_\",\"type\":\"address\"}],\"name\":\"addContractToActor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name_\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"infoURI_\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"votingPower_\",\"type\":\"uint8\"}],\"name\":\"addMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress_\",\"type\":\"address\"}],\"name\":\"assertOpFromContractManager\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"contract_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"}],\"name\":\"checkAccess\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"}],\"name\":\"getActor\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"enum ConformityState.State\",\"name\":\"state\",\"type\":\"uint8\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"infoURI\",\"type\":\"string\"},{\"internalType\":\"address[]\",\"name\":\"participatingContracts\",\"type\":\"address[]\"}],\"internalType\":\"struct IUserRegistry.Actor\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"}],\"name\":\"getActorName\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"}],\"name\":\"getManagingContractAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"}],\"name\":\"getMember\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"votingPower\",\"type\":\"uint8\"},{\"internalType\":\"enum ConformityState.State\",\"name\":\"state\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"managingContractAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"infoURI\",\"type\":\"string\"}],\"internalType\":\"struct IUserRegistry.Member\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"member_\",\"type\":\"address\"}],\"name\":\"getVotes\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender_\",\"type\":\"address\"}],\"name\":\"init\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"memberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"}],\"name\":\"setTraceabilityContractFactoryAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name_\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"infoURI_\",\"type\":\"string\"}],\"name\":\"updateActor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"},{\"internalType\":\"enum ConformityState.State\",\"name\":\"newState_\",\"type\":\"uint8\"}],\"name\":\"updateActorState\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name_\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"infoURI_\",\"type\":\"string\"}],\"name\":\"updateMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"managingContractAddress_\",\"type\":\"address\"}],\"name\":\"updateMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr_\",\"type\":\"address\"},{\"internalType\":\"enum ConformityState.State\",\"name\":\"newState_\",\"type\":\"uint8\"}],\"name\":\"updateMemberState\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"init(address)\":{\"details\":\"For use after cloning a contract, where initial memory is 0\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/DAO/UserRegistry.sol\":\"UserRegistry\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":1000},\"remappings\":[]},\"sources\":{\"contracts/ConformityState.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.8.19;\\n\\ncontract ConformityState {\\n    enum State {\\n        FUNCTIONING,\\n        CORRECTIVE_MEASURE_NEEDED,\\n        WAITING_REVIEW\\n    }\\n\\n    State public constant CONFORMITY_STATE_FUNCTIONING = State.FUNCTIONING;\\n    State public constant CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED =\\n        State.CORRECTIVE_MEASURE_NEEDED;\\n    State public constant CONFORMITY_STATE_WAITING_REVIEW =\\n        State.WAITING_REVIEW;\\n\\n    // Errors\\n    error InvalidConformityState();\\n\\n    function assertValidConformityState(State state_) internal pure {\\n        if (\\n            state_ != State.FUNCTIONING &&\\n            state_ != State.CORRECTIVE_MEASURE_NEEDED &&\\n            state_ != State.WAITING_REVIEW\\n        ) revert InvalidConformityState();\\n    }\\n}\\n\",\"keccak256\":\"0x218bd1f046511e60abbe3260e066efe507bd153c399b24d737abcc7c6c7f928e\",\"license\":\"Apache-2.0\"},\"contracts/DAO/IUserRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.8.19;\\n\\nimport \\\"../ConformityState.sol\\\";\\n\\n/** @dev @TODO docs\\n */\\nabstract contract IUserRegistry {\\n    uint8 constant MAX_VOTING_POWER = 49;\\n\\n    // Type declarations\\n    struct Member {\\n        address addr;\\n        uint8 votingPower;\\n        ConformityState.State state;\\n        address managingContractAddress;\\n        string name;\\n        string infoURI;\\n    }\\n\\n    struct Actor {\\n        address addr;\\n        ConformityState.State state;\\n        string name;\\n        string infoURI;\\n        address[] participatingContracts;\\n    }\\n\\n    // Errors\\n    error UserAlreadyExists();\\n    error MemberDoesNotExist();\\n    error ActorDoesNotExist();\\n    error TransactionNotFromOriginalActorAddress();\\n    error UserCannotManageContract();\\n    error InvalidVotingPower(uint8 votingPower);\\n\\n    function setTraceabilityContractFactoryAddress(\\n        address addr_\\n    ) external virtual;\\n\\n    function getMember(\\n        address addr_\\n    ) public view virtual returns (Member memory);\\n\\n    function getActor(address addr_) public view virtual returns (Actor memory);\\n\\n    function getActorName(\\n        address addr_\\n    ) public view virtual returns (string memory);\\n\\n    function getVotes(address member_) public view virtual returns (uint8);\\n\\n    function getManagingContractAddress(\\n        address addr_\\n    ) public view virtual returns (address);\\n\\n    function addMember(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_,\\n        uint8 votingPower_\\n    ) public virtual;\\n\\n    function updateMember(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_\\n    ) public virtual;\\n\\n    function updateMember(\\n        address addr_,\\n        address managingContractAddress_\\n    ) public virtual;\\n\\n    function updateMemberState(\\n        address addr_,\\n        ConformityState.State newState_\\n    ) public virtual;\\n\\n    function addActor(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_\\n    ) public virtual;\\n\\n    function updateActor(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_\\n    ) public virtual;\\n\\n    function updateActorState(\\n        address addr_,\\n        ConformityState.State newState_\\n    ) public virtual;\\n\\n    function addContractToActor(\\n        address contract_,\\n        address actor_\\n    ) public virtual;\\n\\n    function checkAccess(\\n        address contract_,\\n        address addr_\\n    ) public view virtual returns (bool);\\n}\\n\",\"keccak256\":\"0x9bdbf52d0c0c337c3c4f685b7d2d8ead3d529cebcb71869f719dfc8dbb346450\",\"license\":\"Apache-2.0\"},\"contracts/DAO/UserRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.8.19;\\n\\nimport \\\"../custom/Ownable.sol\\\";\\nimport \\\"../ConformityState.sol\\\";\\nimport \\\"./IUserRegistry.sol\\\";\\n\\ncontract UserRegistry is IUserRegistry, Ownable, ConformityState {\\n    // State variables\\n    uint256 public memberCount;\\n    address private TraceabilityContractFactory;\\n\\n    mapping(address => Member) members;\\n    mapping(address => Actor) actors;\\n\\n    // Modifiers\\n    modifier onlyOwnerOrFactoryContract() {\\n        if (!isOwner() && msg.sender != TraceabilityContractFactory)\\n            revert UserNotOwner();\\n        _;\\n    }\\n\\n    modifier onlyOwnerOrFactoryOrManager(address contract_) {\\n        if (\\n            !isOwner() &&\\n            msg.sender != TraceabilityContractFactory &&\\n            members[msg.sender].managingContractAddress != contract_\\n        ) revert UserNotOwner();\\n        _;\\n    }\\n\\n    // Functions\\n\\n    //* constructor\\n\\n    //* receive function\\n\\n    //* fallback function (if exists)\\n\\n    //* external\\n    function setTraceabilityContractFactoryAddress(\\n        address addr_\\n    ) external override onlyOwner {\\n        TraceabilityContractFactory = addr_;\\n    }\\n\\n    //* public\\n    function getMember(\\n        address addr_\\n    ) public view override returns (Member memory) {\\n        return members[addr_];\\n    }\\n\\n    function getActor(\\n        address addr_\\n    ) public view override returns (Actor memory) {\\n        return actors[addr_];\\n    }\\n\\n    function getActorName(\\n        address addr_\\n    ) public view override returns (string memory) {\\n        return actors[addr_].name;\\n    }\\n\\n    function getVotes(address member_) public view override returns (uint8) {\\n        return members[member_].votingPower;\\n    }\\n\\n    function getManagingContractAddress(\\n        address addr_\\n    ) public view override returns (address) {\\n        return members[addr_].managingContractAddress;\\n    }\\n\\n    function addMember(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_,\\n        uint8 votingPower_\\n    ) public override onlyOwner {\\n        _assertMemberDoesNotExist(addr_);\\n        _assertValidVotingPower(votingPower_);\\n\\n        memberCount++;\\n\\n        Member storage member = members[addr_];\\n        member.addr = addr_;\\n        member.name = name_;\\n        member.infoURI = infoURI_;\\n        member.votingPower = votingPower_;\\n        member.state = ConformityState.CONFORMITY_STATE_FUNCTIONING;\\n    }\\n\\n    function updateMember(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_\\n    ) public override onlyOwner {\\n        Member storage member = members[addr_];\\n        _assertMemberExists(member);\\n\\n        member.name = name_;\\n        member.infoURI = infoURI_;\\n    }\\n\\n    function updateMember(\\n        address addr_,\\n        address managingContractAddress_\\n    ) public override onlyOwnerOrFactoryContract {\\n        Member storage member = members[addr_];\\n        _assertMemberExists(member);\\n\\n        member.managingContractAddress = managingContractAddress_;\\n    }\\n\\n    function updateMemberState(\\n        address addr_,\\n        ConformityState.State newState_\\n    ) public override onlyOwner {\\n        Member storage member = members[addr_];\\n        ConformityState.assertValidConformityState(newState_);\\n        _assertMemberExists(member);\\n\\n        member.state = newState_;\\n    }\\n\\n    function addActor(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_\\n    ) public override {\\n        _assertActorDoesNotExist(addr_);\\n\\n        Actor storage actor = actors[addr_];\\n        actor.addr = addr_;\\n        actor.name = name_;\\n        actor.infoURI = infoURI_;\\n        actor.state = ConformityState.CONFORMITY_STATE_FUNCTIONING;\\n    }\\n\\n    function updateActor(\\n        address addr_,\\n        string calldata name_,\\n        string calldata infoURI_\\n    ) public override {\\n        Actor storage actor = actors[addr_];\\n        _assertActorExists(actor);\\n        _assertSenderIsActor(actor);\\n\\n        actor.name = name_;\\n        actor.infoURI = infoURI_;\\n    }\\n\\n    function updateActorState(\\n        address addr_,\\n        ConformityState.State newState_\\n    ) public override onlyOwner {\\n        Actor storage actor = actors[addr_];\\n        ConformityState.assertValidConformityState(newState_);\\n        _assertActorExists(actor);\\n\\n        actor.state = newState_;\\n    }\\n\\n    function addContractToActor(\\n        address contract_,\\n        address actor_\\n    ) public override onlyOwnerOrFactoryOrManager(contract_) {\\n        actors[actor_].participatingContracts.push(contract_);\\n    }\\n\\n    function checkAccess(\\n        address contract_,\\n        address addr_\\n    ) public view override returns (bool) {\\n        address[] memory contracts = actors[addr_].participatingContracts;\\n        for (uint i = 0; i < contracts.length; i++) {\\n            if (contracts[i] == contract_) {\\n                return true;\\n            }\\n        }\\n        return false;\\n    }\\n\\n    //* internal\\n\\n    //* private\\n\\n    //* asserts\\n    function assertOpFromContractManager(\\n        address sender_,\\n        address contractAddress_\\n    ) public view {\\n        if (getManagingContractAddress(sender_) != contractAddress_)\\n            revert(\\\"UserCannotManageContract();\\\");\\n    }\\n\\n    function _assertMemberDoesNotExist(address addr_) internal view {\\n        if (members[addr_].addr != address(0)) revert UserAlreadyExists();\\n    }\\n\\n    function _assertActorDoesNotExist(address addr_) internal view {\\n        if (actors[addr_].addr != address(0)) revert UserAlreadyExists();\\n    }\\n\\n    function _assertMemberExists(Member storage member_) internal view {\\n        if (member_.addr == address(0)) revert MemberDoesNotExist();\\n    }\\n\\n    function _assertActorExists(Actor storage actor_) internal view {\\n        if (actor_.addr == address(0)) revert ActorDoesNotExist();\\n    }\\n\\n    function _assertSenderIsActor(Actor storage actor_) internal view {\\n        if (actor_.addr != msg.sender)\\n            revert TransactionNotFromOriginalActorAddress();\\n    }\\n\\n    function _assertValidVotingPower(uint8 votingPower_) internal pure {\\n        if (votingPower_ > MAX_VOTING_POWER)\\n            revert InvalidVotingPower(votingPower_);\\n    }\\n}\\n\",\"keccak256\":\"0x4f24bae61d29d88acf98c3c6e5c1c6654f54576aaf97cb50004d9d7cac8ce805\",\"license\":\"Apache-2.0\"},\"contracts/custom/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.8.19;\\n\\ncontract Ownable {\\n    address public owner;\\n\\n    error UserNotOwner();\\n    error ForbiddenTransferToZeroAddress();\\n\\n    constructor() {\\n        owner = msg.sender;\\n    }\\n\\n    modifier onlyOwner() {\\n        _assertIsOwner();\\n        _;\\n    }\\n\\n    /** \\n        @dev For use after cloning a contract, where initial memory is 0\\n    */\\n    function init(address sender_) public {\\n        if (owner == address(0)) owner = sender_;\\n    }\\n\\n    function isOwner() public view returns (bool) {\\n        return msg.sender == owner;\\n    }\\n\\n    function transferOwnership(address newOwner) public onlyOwner {\\n        if (newOwner == address(0)) revert ForbiddenTransferToZeroAddress();\\n        owner = newOwner;\\n    }\\n\\n    function _assertIsOwner() internal view {\\n        if (!isOwner()) revert UserNotOwner();\\n    }\\n}\\n\",\"keccak256\":\"0x7d7751e0df61c0500007a8c511e7c77651f8b0130fecd2c7e20b6066ed89944f\",\"license\":\"Apache-2.0\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50600080546001600160a01b03191633179055611674806100326000396000f3fe608060405234801561001057600080fd5b50600436106101985760003560e01c8063856e0d1a116100e3578063a8cc25991161008c578063e77d623b11610066578063e77d623b146103cb578063f2fde38b146103de578063f78fa143146103f157600080fd5b8063a8cc259914610381578063bed37b4214610394578063c022a4791461039c57600080fd5b806395d271b3116100bd57806395d271b3146103145780639ab24eb014610327578063a51b3a1c1461036c57600080fd5b8063856e0d1a146102c35780638da5cb5b146102d65780638f32d59b1461030157600080fd5b8063407887fa1161014557806362e1f7451161011f57806362e1f7451461027a578063634bebf61461029d57806376af28ed146102b057600080fd5b8063407887fa146102275780634138d1671461023a57806361a94fdd1461025a57600080fd5b806319ab453c1161017657806319ab453c146101e15780632ada2596146101f45780633f66a4511461021457600080fd5b80630bc8c66f1461019d57806310d763f2146101b257806311aee380146101c5575b600080fd5b6101b06101ab366004611125565b6103f9565b005b6101b06101c03660046111a6565b61044b565b6101ce60015481565b6040519081526020015b60405180910390f35b6101b06101ef3660046111e1565b6104ab565b6102076102023660046111e1565b6104da565b6040516101d89190611281565b6101b0610222366004611125565b6106c5565b6101b0610235366004611304565b61070d565b61024d6102483660046111e1565b6107c1565b6040516101d89190611337565b61026d6102683660046111e1565b6109e3565b6040516101d891906113e7565b61028d610288366004611304565b610a92565b60405190151581526020016101d8565b6101b06102ab3660046113fa565b610b6b565b6101b06102be366004611304565b610c29565b6101b06102d1366004611304565b610cb1565b6000546102e9906001600160a01b031681565b6040516001600160a01b0390911681526020016101d8565b6000546001600160a01b0316331461028d565b6101b0610322366004611125565b610d43565b61035a6103353660046111e1565b6001600160a01b0316600090815260036020526040902054600160a01b900460ff1690565b60405160ff90911681526020016101d8565b610374600281565b6040516101d89190611493565b6101b061038f3660046111e1565b610da7565b610374600181565b6102e96103aa3660046111e1565b6001600160a01b039081166000908152600360205260409020600101541690565b6101b06103d93660046111a6565b610dd1565b6101b06103ec3660046111e1565b610e27565b610374600081565b6001600160a01b038516600090815260046020526040902061041a81610e91565b61042381610ed2565b60018101610432858783611540565b5060028101610442838583611540565b50505050505050565b610453610f15565b6001600160a01b038216600090815260036020526040902061047482610f41565b61047d81610fca565b80548290829060ff60a81b1916600160a81b8360028111156104a1576104a1611203565b0217905550505050565b6000546001600160a01b03166104d757600080546001600160a01b0319166001600160a01b0383161790555b50565b6105116040805160c08101825260008082526020820181905290918201908152600060208201526060604082018190529081015290565b6001600160a01b03808316600090815260036020908152604091829020825160c0810184528154948516815260ff600160a01b8604811693820193909352939092840191600160a81b90910416600281111561056f5761056f611203565b600281111561058057610580611203565b815260018201546001600160a01b031660208201526002820180546040909201916105aa906114b7565b80601f01602080910402602001604051908101604052809291908181526020018280546105d6906114b7565b80156106235780601f106105f857610100808354040283529160200191610623565b820191906000526020600020905b81548152906001019060200180831161060657829003601f168201915b5050505050815260200160038201805461063c906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610668906114b7565b80156106b55780601f1061068a576101008083540402835291602001916106b5565b820191906000526020600020905b81548152906001019060200180831161069857829003601f168201915b5050505050815250509050919050565b6106cd610f15565b6001600160a01b03851660009081526003602052604090206106ee81610fca565b600281016106fd858783611540565b5060038101610442838583611540565b60005482906001600160a01b0316331415801561073557506002546001600160a01b03163314155b801561075f5750336000908152600360205260409020600101546001600160a01b03828116911614155b1561077c5760405162fa70d360e01b815260040160405180910390fd5b506001600160a01b0390811660009081526004602090815260408220600301805460018101825590835291200180546001600160a01b03191692909116919091179055565b6107f46040805160a081019091526000808252602082019081526020016060815260200160608152602001606081525090565b6001600160a01b03828116600090815260046020908152604091829020825160a0810190935280549384168352919290830190600160a01b900460ff16600281111561084257610842611203565b600281111561085357610853611203565b8152602001600182018054610867906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610893906114b7565b80156108e05780601f106108b5576101008083540402835291602001916108e0565b820191906000526020600020905b8154815290600101906020018083116108c357829003601f168201915b505050505081526020016002820180546108f9906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610925906114b7565b80156109725780601f1061094757610100808354040283529160200191610972565b820191906000526020600020905b81548152906001019060200180831161095557829003601f168201915b50505050508152602001600382018054806020026020016040519081016040528092919081815260200182805480156106b557602002820191906000526020600020905b81546001600160a01b031681526001909101906020018083116109b6575050505050815250509050919050565b6001600160a01b0381166000908152600460205260409020600101805460609190610a0d906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610a39906114b7565b8015610a865780601f10610a5b57610100808354040283529160200191610a86565b820191906000526020600020905b815481529060010190602001808311610a6957829003601f168201915b50505050509050919050565b6001600160a01b038116600090815260046020908152604080832060030180548251818502810185019093528083528493830182828015610afc57602002820191906000526020600020905b81546001600160a01b03168152600190910190602001808311610ade575b5050505050905060005b8151811015610b5e57846001600160a01b0316828281518110610b2b57610b2b611601565b60200260200101516001600160a01b031603610b4c57600192505050610b65565b80610b5681611617565b915050610b06565b5060009150505b92915050565b610b73610f15565b610b7c8661100b565b610b8581611044565b60018054906000610b9583611617565b90915550506001600160a01b038616600081815260036020526040902080546001600160a01b031916909117815560028101610bd2868883611540565b5060038101610be2848683611540565b50805460ff92909216600160a01b0260ff60a81b19167fffffffffffffffffffff0000ffffffffffffffffffffffffffffffffffffffff9092169190911790555050505050565b6000546001600160a01b03163314158015610c4f57506002546001600160a01b03163314155b15610c6c5760405162fa70d360e01b815260040160405180910390fd5b6001600160a01b0382166000908152600360205260409020610c8d81610fca565b60010180546001600160a01b0319166001600160a01b039290921691909117905550565b6001600160a01b03828116600090815260036020526040902060010154811690821614610d3f576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601b60248201527f5573657243616e6e6f744d616e616765436f6e747261637428293b000000000060448201526064015b60405180910390fd5b5050565b610d4c85611087565b6001600160a01b038516600081815260046020526040902080546001600160a01b031916909117815560018101610d84858783611540565b5060028101610d94838583611540565b50805460ff60a01b191690555050505050565b610daf610f15565b600280546001600160a01b0319166001600160a01b0392909216919091179055565b610dd9610f15565b6001600160a01b0382166000908152600460205260409020610dfa82610f41565b610e0381610e91565b80548290829060ff60a01b1916600160a01b8360028111156104a1576104a1611203565b610e2f610f15565b6001600160a01b038116610e6f576040517f83a3770b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600080546001600160a01b0319166001600160a01b0392909216919091179055565b80546001600160a01b03166104d7576040517f6f46a36500000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80546001600160a01b031633146104d7576040517ff85e2be200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6000546001600160a01b03163314610f3f5760405162fa70d360e01b815260040160405180910390fd5b565b6000816002811115610f5557610f55611203565b14158015610f7557506001816002811115610f7257610f72611203565b14155b8015610f9357506002816002811115610f9057610f90611203565b14155b156104d7576040517f339aba6600000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80546001600160a01b03166104d7576040517f7384f7ad00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6001600160a01b0381811660009081526003602052604090205416156104d7576040516361a21cbf60e11b815260040160405180910390fd5b603160ff821611156104d7576040517fbadcf9c400000000000000000000000000000000000000000000000000000000815260ff82166004820152602401610d36565b6001600160a01b0381811660009081526004602052604090205416156104d7576040516361a21cbf60e11b815260040160405180910390fd5b80356001600160a01b03811681146110d757600080fd5b919050565b60008083601f8401126110ee57600080fd5b50813567ffffffffffffffff81111561110657600080fd5b60208301915083602082850101111561111e57600080fd5b9250929050565b60008060008060006060868803121561113d57600080fd5b611146866110c0565b9450602086013567ffffffffffffffff8082111561116357600080fd5b61116f89838a016110dc565b9096509450604088013591508082111561118857600080fd5b50611195888289016110dc565b969995985093965092949392505050565b600080604083850312156111b957600080fd5b6111c2836110c0565b91506020830135600381106111d657600080fd5b809150509250929050565b6000602082840312156111f357600080fd5b6111fc826110c0565b9392505050565b634e487b7160e01b600052602160045260246000fd5b6003811061123757634e487b7160e01b600052602160045260246000fd5b9052565b6000815180845260005b8181101561126157602081850181015186830182015201611245565b506000602082860101526020601f19601f83011685010191505092915050565b6020815260006001600160a01b0380845116602084015260ff602085015116604084015260408401516112b76060850182611219565b5080606085015116608084015250608083015160c060a08401526112de60e084018261123b565b905060a0840151601f198483030160c08501526112fb828261123b565b95945050505050565b6000806040838503121561131757600080fd5b611320836110c0565b915061132e602084016110c0565b90509250929050565b600060208083526001600160a01b0380855116828501528185015161135f6040860182611219565b50604085015160a0606086015261137960c086018261123b565b90506060860151601f1980878403016080880152611397838361123b565b608089015188820390920160a089015281518082529186019350600092508501905b808310156113db578351851682529285019260019290920191908501906113b9565b50979650505050505050565b6020815260006111fc602083018461123b565b6000806000806000806080878903121561141357600080fd5b61141c876110c0565b9550602087013567ffffffffffffffff8082111561143957600080fd5b6114458a838b016110dc565b9097509550604089013591508082111561145e57600080fd5b5061146b89828a016110dc565b909450925050606087013560ff8116811461148557600080fd5b809150509295509295509295565b60208101610b658284611219565b634e487b7160e01b600052604160045260246000fd5b600181811c908216806114cb57607f821691505b6020821081036114eb57634e487b7160e01b600052602260045260246000fd5b50919050565b601f82111561153b57600081815260208120601f850160051c810160208610156115185750805b601f850160051c820191505b8181101561153757828155600101611524565b5050505b505050565b67ffffffffffffffff831115611558576115586114a1565b61156c8361156683546114b7565b836114f1565b6000601f8411600181146115a057600085156115885750838201355b600019600387901b1c1916600186901b1783556115fa565b600083815260209020601f19861690835b828110156115d157868501358255602094850194600190920191016115b1565b50868210156115ee5760001960f88860031b161c19848701351681555b505060018560011b0183555b5050505050565b634e487b7160e01b600052603260045260246000fd5b60006001820161163757634e487b7160e01b600052601160045260246000fd5b506001019056fea26469706673582212205492e5850efaca6e75f43ae108f877e6382a4bbeb50ca481333810534379f65364736f6c63430008130033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101985760003560e01c8063856e0d1a116100e3578063a8cc25991161008c578063e77d623b11610066578063e77d623b146103cb578063f2fde38b146103de578063f78fa143146103f157600080fd5b8063a8cc259914610381578063bed37b4214610394578063c022a4791461039c57600080fd5b806395d271b3116100bd57806395d271b3146103145780639ab24eb014610327578063a51b3a1c1461036c57600080fd5b8063856e0d1a146102c35780638da5cb5b146102d65780638f32d59b1461030157600080fd5b8063407887fa1161014557806362e1f7451161011f57806362e1f7451461027a578063634bebf61461029d57806376af28ed146102b057600080fd5b8063407887fa146102275780634138d1671461023a57806361a94fdd1461025a57600080fd5b806319ab453c1161017657806319ab453c146101e15780632ada2596146101f45780633f66a4511461021457600080fd5b80630bc8c66f1461019d57806310d763f2146101b257806311aee380146101c5575b600080fd5b6101b06101ab366004611125565b6103f9565b005b6101b06101c03660046111a6565b61044b565b6101ce60015481565b6040519081526020015b60405180910390f35b6101b06101ef3660046111e1565b6104ab565b6102076102023660046111e1565b6104da565b6040516101d89190611281565b6101b0610222366004611125565b6106c5565b6101b0610235366004611304565b61070d565b61024d6102483660046111e1565b6107c1565b6040516101d89190611337565b61026d6102683660046111e1565b6109e3565b6040516101d891906113e7565b61028d610288366004611304565b610a92565b60405190151581526020016101d8565b6101b06102ab3660046113fa565b610b6b565b6101b06102be366004611304565b610c29565b6101b06102d1366004611304565b610cb1565b6000546102e9906001600160a01b031681565b6040516001600160a01b0390911681526020016101d8565b6000546001600160a01b0316331461028d565b6101b0610322366004611125565b610d43565b61035a6103353660046111e1565b6001600160a01b0316600090815260036020526040902054600160a01b900460ff1690565b60405160ff90911681526020016101d8565b610374600281565b6040516101d89190611493565b6101b061038f3660046111e1565b610da7565b610374600181565b6102e96103aa3660046111e1565b6001600160a01b039081166000908152600360205260409020600101541690565b6101b06103d93660046111a6565b610dd1565b6101b06103ec3660046111e1565b610e27565b610374600081565b6001600160a01b038516600090815260046020526040902061041a81610e91565b61042381610ed2565b60018101610432858783611540565b5060028101610442838583611540565b50505050505050565b610453610f15565b6001600160a01b038216600090815260036020526040902061047482610f41565b61047d81610fca565b80548290829060ff60a81b1916600160a81b8360028111156104a1576104a1611203565b0217905550505050565b6000546001600160a01b03166104d757600080546001600160a01b0319166001600160a01b0383161790555b50565b6105116040805160c08101825260008082526020820181905290918201908152600060208201526060604082018190529081015290565b6001600160a01b03808316600090815260036020908152604091829020825160c0810184528154948516815260ff600160a01b8604811693820193909352939092840191600160a81b90910416600281111561056f5761056f611203565b600281111561058057610580611203565b815260018201546001600160a01b031660208201526002820180546040909201916105aa906114b7565b80601f01602080910402602001604051908101604052809291908181526020018280546105d6906114b7565b80156106235780601f106105f857610100808354040283529160200191610623565b820191906000526020600020905b81548152906001019060200180831161060657829003601f168201915b5050505050815260200160038201805461063c906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610668906114b7565b80156106b55780601f1061068a576101008083540402835291602001916106b5565b820191906000526020600020905b81548152906001019060200180831161069857829003601f168201915b5050505050815250509050919050565b6106cd610f15565b6001600160a01b03851660009081526003602052604090206106ee81610fca565b600281016106fd858783611540565b5060038101610442838583611540565b60005482906001600160a01b0316331415801561073557506002546001600160a01b03163314155b801561075f5750336000908152600360205260409020600101546001600160a01b03828116911614155b1561077c5760405162fa70d360e01b815260040160405180910390fd5b506001600160a01b0390811660009081526004602090815260408220600301805460018101825590835291200180546001600160a01b03191692909116919091179055565b6107f46040805160a081019091526000808252602082019081526020016060815260200160608152602001606081525090565b6001600160a01b03828116600090815260046020908152604091829020825160a0810190935280549384168352919290830190600160a01b900460ff16600281111561084257610842611203565b600281111561085357610853611203565b8152602001600182018054610867906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610893906114b7565b80156108e05780601f106108b5576101008083540402835291602001916108e0565b820191906000526020600020905b8154815290600101906020018083116108c357829003601f168201915b505050505081526020016002820180546108f9906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610925906114b7565b80156109725780601f1061094757610100808354040283529160200191610972565b820191906000526020600020905b81548152906001019060200180831161095557829003601f168201915b50505050508152602001600382018054806020026020016040519081016040528092919081815260200182805480156106b557602002820191906000526020600020905b81546001600160a01b031681526001909101906020018083116109b6575050505050815250509050919050565b6001600160a01b0381166000908152600460205260409020600101805460609190610a0d906114b7565b80601f0160208091040260200160405190810160405280929190818152602001828054610a39906114b7565b8015610a865780601f10610a5b57610100808354040283529160200191610a86565b820191906000526020600020905b815481529060010190602001808311610a6957829003601f168201915b50505050509050919050565b6001600160a01b038116600090815260046020908152604080832060030180548251818502810185019093528083528493830182828015610afc57602002820191906000526020600020905b81546001600160a01b03168152600190910190602001808311610ade575b5050505050905060005b8151811015610b5e57846001600160a01b0316828281518110610b2b57610b2b611601565b60200260200101516001600160a01b031603610b4c57600192505050610b65565b80610b5681611617565b915050610b06565b5060009150505b92915050565b610b73610f15565b610b7c8661100b565b610b8581611044565b60018054906000610b9583611617565b90915550506001600160a01b038616600081815260036020526040902080546001600160a01b031916909117815560028101610bd2868883611540565b5060038101610be2848683611540565b50805460ff92909216600160a01b0260ff60a81b19167fffffffffffffffffffff0000ffffffffffffffffffffffffffffffffffffffff9092169190911790555050505050565b6000546001600160a01b03163314158015610c4f57506002546001600160a01b03163314155b15610c6c5760405162fa70d360e01b815260040160405180910390fd5b6001600160a01b0382166000908152600360205260409020610c8d81610fca565b60010180546001600160a01b0319166001600160a01b039290921691909117905550565b6001600160a01b03828116600090815260036020526040902060010154811690821614610d3f576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601b60248201527f5573657243616e6e6f744d616e616765436f6e747261637428293b000000000060448201526064015b60405180910390fd5b5050565b610d4c85611087565b6001600160a01b038516600081815260046020526040902080546001600160a01b031916909117815560018101610d84858783611540565b5060028101610d94838583611540565b50805460ff60a01b191690555050505050565b610daf610f15565b600280546001600160a01b0319166001600160a01b0392909216919091179055565b610dd9610f15565b6001600160a01b0382166000908152600460205260409020610dfa82610f41565b610e0381610e91565b80548290829060ff60a01b1916600160a01b8360028111156104a1576104a1611203565b610e2f610f15565b6001600160a01b038116610e6f576040517f83a3770b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600080546001600160a01b0319166001600160a01b0392909216919091179055565b80546001600160a01b03166104d7576040517f6f46a36500000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80546001600160a01b031633146104d7576040517ff85e2be200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6000546001600160a01b03163314610f3f5760405162fa70d360e01b815260040160405180910390fd5b565b6000816002811115610f5557610f55611203565b14158015610f7557506001816002811115610f7257610f72611203565b14155b8015610f9357506002816002811115610f9057610f90611203565b14155b156104d7576040517f339aba6600000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80546001600160a01b03166104d7576040517f7384f7ad00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6001600160a01b0381811660009081526003602052604090205416156104d7576040516361a21cbf60e11b815260040160405180910390fd5b603160ff821611156104d7576040517fbadcf9c400000000000000000000000000000000000000000000000000000000815260ff82166004820152602401610d36565b6001600160a01b0381811660009081526004602052604090205416156104d7576040516361a21cbf60e11b815260040160405180910390fd5b80356001600160a01b03811681146110d757600080fd5b919050565b60008083601f8401126110ee57600080fd5b50813567ffffffffffffffff81111561110657600080fd5b60208301915083602082850101111561111e57600080fd5b9250929050565b60008060008060006060868803121561113d57600080fd5b611146866110c0565b9450602086013567ffffffffffffffff8082111561116357600080fd5b61116f89838a016110dc565b9096509450604088013591508082111561118857600080fd5b50611195888289016110dc565b969995985093965092949392505050565b600080604083850312156111b957600080fd5b6111c2836110c0565b91506020830135600381106111d657600080fd5b809150509250929050565b6000602082840312156111f357600080fd5b6111fc826110c0565b9392505050565b634e487b7160e01b600052602160045260246000fd5b6003811061123757634e487b7160e01b600052602160045260246000fd5b9052565b6000815180845260005b8181101561126157602081850181015186830182015201611245565b506000602082860101526020601f19601f83011685010191505092915050565b6020815260006001600160a01b0380845116602084015260ff602085015116604084015260408401516112b76060850182611219565b5080606085015116608084015250608083015160c060a08401526112de60e084018261123b565b905060a0840151601f198483030160c08501526112fb828261123b565b95945050505050565b6000806040838503121561131757600080fd5b611320836110c0565b915061132e602084016110c0565b90509250929050565b600060208083526001600160a01b0380855116828501528185015161135f6040860182611219565b50604085015160a0606086015261137960c086018261123b565b90506060860151601f1980878403016080880152611397838361123b565b608089015188820390920160a089015281518082529186019350600092508501905b808310156113db578351851682529285019260019290920191908501906113b9565b50979650505050505050565b6020815260006111fc602083018461123b565b6000806000806000806080878903121561141357600080fd5b61141c876110c0565b9550602087013567ffffffffffffffff8082111561143957600080fd5b6114458a838b016110dc565b9097509550604089013591508082111561145e57600080fd5b5061146b89828a016110dc565b909450925050606087013560ff8116811461148557600080fd5b809150509295509295509295565b60208101610b658284611219565b634e487b7160e01b600052604160045260246000fd5b600181811c908216806114cb57607f821691505b6020821081036114eb57634e487b7160e01b600052602260045260246000fd5b50919050565b601f82111561153b57600081815260208120601f850160051c810160208610156115185750805b601f850160051c820191505b8181101561153757828155600101611524565b5050505b505050565b67ffffffffffffffff831115611558576115586114a1565b61156c8361156683546114b7565b836114f1565b6000601f8411600181146115a057600085156115885750838201355b600019600387901b1c1916600186901b1783556115fa565b600083815260209020601f19861690835b828110156115d157868501358255602094850194600190920191016115b1565b50868210156115ee5760001960f88860031b161c19848701351681555b505060018560011b0183555b5050505050565b634e487b7160e01b600052603260045260246000fd5b60006001820161163757634e487b7160e01b600052601160045260246000fd5b506001019056fea26469706673582212205492e5850efaca6e75f43ae108f877e6382a4bbeb50ca481333810534379f65364736f6c63430008130033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "init(address)": {
+        "details": "For use after cloning a contract, where initial memory is 0"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 5634,
+        "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+        "label": "owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 608,
+        "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+        "label": "memberCount",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 610,
+        "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+        "label": "TraceabilityContractFactory",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_address"
+      },
+      {
+        "astId": 615,
+        "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+        "label": "members",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_address,t_struct(Member)448_storage)"
+      },
+      {
+        "astId": 620,
+        "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+        "label": "actors",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_address,t_struct(Actor)461_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_address)dyn_storage": {
+        "base": "t_address",
+        "encoding": "dynamic_array",
+        "label": "address[]",
+        "numberOfBytes": "32"
+      },
+      "t_enum(State)5": {
+        "encoding": "inplace",
+        "label": "enum ConformityState.State",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_struct(Actor)461_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct IUserRegistry.Actor)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Actor)461_storage"
+      },
+      "t_mapping(t_address,t_struct(Member)448_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct IUserRegistry.Member)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Member)448_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Actor)461_storage": {
+        "encoding": "inplace",
+        "label": "struct IUserRegistry.Actor",
+        "members": [
+          {
+            "astId": 450,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "addr",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 453,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "state",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_enum(State)5"
+          },
+          {
+            "astId": 455,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "name",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 457,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "infoURI",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 460,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "participatingContracts",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_array(t_address)dyn_storage"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_struct(Member)448_storage": {
+        "encoding": "inplace",
+        "label": "struct IUserRegistry.Member",
+        "members": [
+          {
+            "astId": 436,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "addr",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 438,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "votingPower",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 441,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "state",
+            "offset": 21,
+            "slot": "0",
+            "type": "t_enum(State)5"
+          },
+          {
+            "astId": 443,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "managingContractAddress",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 445,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "name",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 447,
+            "contract": "contracts/DAO/UserRegistry.sol:UserRegistry",
+            "label": "infoURI",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_string_storage"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint8": {
+        "encoding": "inplace",
+        "label": "uint8",
+        "numberOfBytes": "1"
+      }
+    }
+  }
+}

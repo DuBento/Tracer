@@ -29,17 +29,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       "TraceabilityContractFactory"
     );
 
-  await userRegistry.setTraceabilityContractFactoryAddress(
+  if ((await userRegistry.getMember(deployer)).addr == deployer) {
+    log("Setup already done. Skipping...");
+    return;
+  }
+
+  let tx = await userRegistry.setTraceabilityContractFactoryAddress(
     await TraceabilityContractFactory.getAddress()
   );
+  tx.wait();
 
   // @dev Add member for development
-  await userRegistry.addMember(
+  tx = await userRegistry.addMember(
     deployer,
     MEMBER_DEV_NAME,
     MEMBER_DEV_INFO_URI,
     MEMBER_DEV_VOTING_POWER
   );
+  tx.wait();
 };
 
 module.exports = func;

@@ -1,6 +1,7 @@
 import path from "path";
 
 export const DEVELOPMENT_CHAINS = ["hardhat", "localhost"];
+export const BLOCK_CONFIRMATIONS = 1;
 
 export const FRONTEND_ARTIFACTS_PATH = "./artifacts-frontend";
 export const CONTRACTS_DIR = path.join(__dirname, FRONTEND_ARTIFACTS_PATH);
@@ -20,8 +21,7 @@ export const CONTRACT_ADDRESS_FILE = path.join(
 export const PROPOSALS_FILE = "proposals.json";
 
 // governor contract
-export const VOTING_DELAY = 1; // 1 block
-export const VOTING_PERIOD = 5; // 5 blocks
+export const VOTING_PERIOD = 50400; // 1 week
 
 export const SUPPLYCHAIN_CREATE_METHOD = "create";
 export const SUPPLYCHAIN_CONTRACT_DESCRIPTION = "Sustainable";

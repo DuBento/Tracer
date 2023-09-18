@@ -16,7 +16,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await getNamedAccounts();
   log(padCenter(scriptName(__filename), 50));
 
-  const { member } = await newMemberViaGovernance(supplychainManager);
+  await newMemberViaGovernance(supplychainManager);
 
   const { contractAddress } = await newSupplychainContractViaGovernance(
     supplychainManager,

@@ -2,7 +2,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { padCenter, scriptName } from "../lib/utils";
-import { VOTING_PERIOD } from "../properties";
+import { BLOCK_CONFIRMATIONS, VOTING_PERIOD } from "../properties";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments } = hre;
@@ -19,7 +19,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [executor.address, userRegistry.address, VOTING_PERIOD],
     log: true,
-    // TODO verify if live on network
+    // we need to wait if on a live network so we can verify properly
+    waitConfirmations: BLOCK_CONFIRMATIONS,
   });
 
   log(`GovernorContract at ${governorContract.address}`);
