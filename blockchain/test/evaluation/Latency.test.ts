@@ -8,7 +8,7 @@ describe("Latency evaluation", function () {
   it(`Average block time for ${NUMBER_OF_BLOCK_FOR_AVERAGE} blocks`, async function () {
     const currentBlockNumber = await ethers.provider.getBlockNumber();
     const currentBlock = await ethers.provider.getBlock(currentBlockNumber);
-    console.log("Current block: ", currentBlockNumber);
+    console.log("Current block (ms): ", currentBlockNumber);
 
     const oldBlock = await ethers.provider.getBlock(
       currentBlockNumber > NUMBER_OF_BLOCK_FOR_AVERAGE
@@ -25,5 +25,12 @@ describe("Latency evaluation", function () {
       (currentBlock.timestamp - oldBlock.timestamp) /
         NUMBER_OF_BLOCK_FOR_AVERAGE
     );
+  });
+
+  it(`Approximate network latency`, async function () {
+    const startTime = performance.now();
+    await ethers.provider.getBlockNumber();
+    const endTime = performance.now();
+    console.log("Network latency (ms): ", endTime - startTime);
   });
 });

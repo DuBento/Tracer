@@ -120,7 +120,7 @@ const config: HardhatUserConfig = {
     enabled: true,
     currency: "EUR",
     gasPrice: 21,
-    showTimeSpent: true,
+    // showTimeSpent: true,
     coinmarketcap: secrets.COIN_MARKET_CAP_API_KEY,
   },
 };

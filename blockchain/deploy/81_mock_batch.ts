@@ -10,6 +10,7 @@ import {
   TRACEABILITY_MOCK_BATCH_DESCRIPTION,
   TRACEABILITY_MOCK_BATCH_ID_NAME,
   TRACEABILITY_MOCK_PRICE_INCREMENT,
+  TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS,
   TRACEABILITY_MOCK_STARTING_PRICE,
 } from "../properties";
 
@@ -111,11 +112,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     try {
       // Add transaction
       if (actorIdx + 1 > actors.length - 1) break;
+      const attributes = new Array(
+        TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS.length
+      ).fill(`${price}.00$`);
+
       await traceabilityContract.handleTransaction(
         batchId,
         actors[actorIdx + 1],
         mockUpload.transaction[0].uri,
-        [`${price}.00$`]
+        attributes
       );
       log(`Transaction added: ${transactionKey} by ${actors[actorIdx]}`);
     } catch (error) {

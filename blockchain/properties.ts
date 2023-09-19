@@ -41,11 +41,17 @@ export const MEMBER_DEV_INFO_URI = "<member dev uri>";
 // bigger than quorum and less than max voting power. For development, able to pass proposals with only one member
 export const MEMBER_DEV_VOTING_POWER = 49;
 
+// Evaluation contract
+export const TRACEABILITY_EVALUATION_ADDRESS_NAME =
+  "evaluationTraceabilityContract";
+export const TRACEABILITY_EVALUATION_REQUIRED_UPDATE_ATTRIBUTES_KEYS = [];
+
 // traceability mock
 export const TRACEABILITY_MOCK_ADDRESS_NAME = "mockTraceabilityContract";
 export const TRACEABILITY_MOCK_BATCH_ID_NAME = "mockBatchId";
 export const TRACEABILITY_MOCK_BATCH_DESCRIPTION =
   "Example batch for wine traceability";
-export const TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS = ["Price paid"];
+export const TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS = [];
+// export const TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS = ["Price paid"];
 export const TRACEABILITY_MOCK_STARTING_PRICE = 5;
 export const TRACEABILITY_MOCK_PRICE_INCREMENT = 2;
