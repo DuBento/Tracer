@@ -111,7 +111,7 @@ export async function encodeFunctionCall(
 ): Promise<string> {
   const contractFactory = await ethers.getContractFactory(contractName);
 
-  console.log(`Encoding ${methodName} with args ${args} => on ${contractName}`);
+  // console.log(`Encoding ${methodName} with args ${args} => on ${contractName}`);
   const encodedFunctionCall = contractFactory.interface.encodeFunctionData(
     methodName,
     args

@@ -30,7 +30,6 @@ import {
   PROPOSAL_VOTE_DESCRIPTION,
 } from "./TestConfig";
 
-// console.log = () => {};
 describe("Governor", function () {
   let governorContract: GovernorContract;
   let executor: Executor;
@@ -49,13 +48,13 @@ describe("Governor", function () {
       );
     userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
 
-    console.log(`#####
-    GovernorContract: ${await governorContract.getAddress()}
-    Executor: ${await executor.getAddress()}
-    Executor owner: ${await executor.owner()}
-    TraceabilityContractFactory: ${await TraceabilityContractFactory.getAddress()}
-    UserRegistry: ${await userRegistry.getAddress()}
-    #####`);
+    // console.log(`#####
+    // GovernorContract: ${await governorContract.getAddress()}
+    // Executor: ${await executor.getAddress()}
+    // Executor owner: ${await executor.owner()}
+    // TraceabilityContractFactory: ${await TraceabilityContractFactory.getAddress()}
+    // UserRegistry: ${await userRegistry.getAddress()}
+    // #####`);
   });
 
   it("Succesfully deploys and Executor contract is the correct owner", async function () {
@@ -143,21 +142,21 @@ describe("Governor", function () {
         newState.toString()
       );
 
-      const proposalId = await propose(
+      const { proposalId } = await propose(
         await utils.getContractAddress("UserRegistry"),
         encodedCall,
         USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION,
         newMember
       );
 
-      let state = await vote(
+      const { proposalState } = await vote(
         proposalId.toString(),
         1,
         PROPOSAL_VOTE_DESCRIPTION,
         newMember
       );
 
-      expect(state).to.equal(3); // 3 = Succeeded
+      expect(proposalState).to.equal(3); // 3 = Succeeded
     });
 
     it("Propose with registered actor succesfully", async function () {
@@ -167,7 +166,7 @@ describe("Governor", function () {
         await userRegistry.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
       const encodedCall = await encodeFunctionCall(actor1, newState.toString());
 
-      const proposalId = await propose(
+      const { proposalId } = await propose(
         await utils.getContractAddress("UserRegistry"),
         encodedCall,
         USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION,
@@ -185,14 +184,14 @@ describe("Governor", function () {
         await userRegistry.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
       const encodedCall = await encodeFunctionCall(actor1, newState.toString());
 
-      const proposalId = await propose(
+      const { proposalId } = await propose(
         await utils.getContractAddress("UserRegistry"),
         encodedCall,
         USER_REGISTRY_UPDATE_MEMBER_DESCRIPTION,
         actor1
       );
 
-      let state = await vote(
+      const { proposalState } = await vote(
         proposalId.toString(),
         1,
         PROPOSAL_VOTE_DESCRIPTION,
@@ -200,7 +199,7 @@ describe("Governor", function () {
         true
       );
 
-      expect(state).to.equal(4); // 4 = Expired
+      expect(proposalState).to.equal(4); // 4 = Expired
     });
   });
 
@@ -235,22 +234,23 @@ describe("Governor", function () {
 
       await userRegistry.addActor(actor1, ACTOR_NAME, ACTOR_INFO_URI);
 
-      console.log(
-        `### Address of supplychainManager: ${supplychainManager}
-        ###UserReg member: ${await userRegistry.getMember(supplychainManager)}`
+      // console.log(
+      //   `### Address of supplychainManager: ${supplychainManager}
+      //   ###UserReg member: ${await userRegistry.getMember(supplychainManager)}`
+      // );
+      const { contractAddress } = await newSupplychainContractViaGovernance(
+        supplychainManager
       );
-      const { contractAddress, proposalId } =
-        await newSupplychainContractViaGovernance(supplychainManager);
       supplychainContractAddress = contractAddress;
 
-      console.log(`###User Registry addContract to actor...`);
+      // console.log(`###User Registry addContract to actor...`);
       await userRegistry
         .connect(await ethers.getSigner(supplychainManager))
         .addContractToActor(contractAddress, actor1);
 
-      console.log(`###User Registry ${await userRegistry.getActor(actor1)}`);
+      // console.log(`###User Registry ${await userRegistry.getActor(actor1)}`);
       const { deployer } = await getNamedAccounts();
-      console.log("deployer address :", deployer);
+      // console.log("deployer address :", deployer);
 
       supplychainContractAsManager = Traceability__factory.connect(
         contractAddress,
@@ -283,17 +283,13 @@ describe("Governor", function () {
         [batchId.toString(), nextState.toString()]
       );
 
-      const proposalId = await propose(
+      const { proposalId } = await propose(
         supplychainContractAddress,
         encodedFunctionCall,
         PROPOSAL_DESCRIPTION
       );
 
-      const proposalState = await vote(
-        proposalId.toString(),
-        1 /* For */,
-        PROPOSAL_VOTE_DESCRIPTION
-      );
+      await vote(proposalId.toString(), 1 /* For */, PROPOSAL_VOTE_DESCRIPTION);
 
       await execute(
         supplychainContractAddress,

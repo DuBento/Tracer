@@ -1,13 +1,14 @@
 import { assert } from "chai";
-import { ethers, getNamedAccounts, network } from "hardhat";
+import { deployments, ethers, getNamedAccounts, network } from "hardhat";
 import { Traceability } from "../../artifacts-frontend/typechain";
 import { NewBatchEvent } from "../../artifacts-frontend/typechain/Traceability/Traceability";
 import { utils } from "../../lib";
 import {
+  DEVELOPMENT_CHAINS,
   TRACEABILITY_MOCK_ADDRESS_NAME,
   TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS,
 } from "../../properties";
-import { EVALUATION_32_STRING, UPDATE_DOCUMENT_URI } from "../TestConfig";
+import { EVALUATION_32_CHAR_STRING, UPDATE_DOCUMENT_URI } from "../TestConfig";
 
 describe("Traceability evaluation", function () {
   const traceabilityAddress = utils.getStoredAddress(
@@ -20,6 +21,9 @@ describe("Traceability evaluation", function () {
   var batchId: string;
 
   before(async () => {
+    if (DEVELOPMENT_CHAINS.includes(network.name)) {
+      await deployments.fixture(["all"]);
+    }
     const namedAccounts = await getNamedAccounts();
     actor1 = namedAccounts.actor1;
     actor2 = namedAccounts.actor2;
@@ -37,7 +41,7 @@ describe("Traceability evaluation", function () {
     // Create new batch
     const startTime = performance.now();
     const tx = await traceabilityContract.newBatch(
-      EVALUATION_32_STRING,
+      EVALUATION_32_CHAR_STRING,
       UPDATE_DOCUMENT_URI
     );
     const receipt = await tx.wait();
@@ -70,7 +74,7 @@ describe("Traceability evaluation", function () {
   it("Transaction", async () => {
     const attributes = new Array(
       TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS.length
-    ).fill(EVALUATION_32_STRING);
+    ).fill(EVALUATION_32_CHAR_STRING);
 
     const startTime = performance.now();
     const tx = await traceabilityContract.handleTransaction(

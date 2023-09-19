@@ -7,7 +7,7 @@ async function newMemberAndSupplychainContract() {
 
   const { member } = await newMemberViaGovernance(supplychainManager);
 
-  return newSupplychainContractViaGovernance(supplychainManager);
+  return await newSupplychainContractViaGovernance(supplychainManager);
 }
 
 newMemberAndSupplychainContract()

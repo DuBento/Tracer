@@ -9,6 +9,7 @@ import {
   SUPPLYCHAIN_CREATE_METHOD,
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
 } from "../properties";
+import { EVALUATION_32_CHAR_STRING } from "../test/TestConfig";
 
 const encodeFunctionCallPromise = (
   memberAddress: string,
@@ -33,42 +34,34 @@ async function proposeCreateSupplychain(
     requiredUpdateAttributeKeys
   );
 
-  const proposalId = await propose(
+  return await propose(
     await utils.getContractAddress("TraceabilityContractFactory"),
     encodedFunctionCall,
     SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION
   );
-
-  return proposalId;
 }
 
 async function voteFor(proposalId: string) {
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
-  const reason = "I like it!";
-  await vote(proposalId, decision, reason);
+  const reason = EVALUATION_32_CHAR_STRING;
+  return await vote(proposalId, decision, reason);
 }
 
 async function executeSupplychainContractCreation(
   memberAddress: string,
   requiredUpdateAttributeKeys?: string[]
-): Promise<string> {
+) {
   const encodedFunctionCall = await encodeFunctionCallPromise(
     memberAddress,
     requiredUpdateAttributeKeys
   );
 
-  await execute(
+  return await execute(
     await utils.getContractAddress("TraceabilityContractFactory"),
     encodedFunctionCall,
     SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION
   );
-
-  // check that the contract was created
-  const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
-  const contractAddress = (await userRegistry.getMember(memberAddress))
-    .managingContractAddress;
-  return contractAddress;
 }
 
 async function checkExistingContract(memberAddress: string): Promise<string> {
@@ -91,18 +84,26 @@ export async function newSupplychainContractViaGovernance(
     return { proposalId: 0, contractAddress: existingContractOrEmpty };
   }
 
-  const proposalId = await proposeCreateSupplychain(
+  const { proposalId, gasUsed: gasUsedPropose } =
+    await proposeCreateSupplychain(memberAddress, requiredUpdateAttributeKeys);
+
+  const { gasUsed: gasUsedVote } = await voteFor(proposalId.toString());
+
+  const { gasUsed: gasUsedExecute } = await executeSupplychainContractCreation(
     memberAddress,
     requiredUpdateAttributeKeys
   );
 
-  await voteFor(proposalId.toString());
-
-  const contractAddress = await executeSupplychainContractCreation(
-    memberAddress,
-    requiredUpdateAttributeKeys
-  );
-  console.log(`Address of created contract: ${contractAddress}`);
-
-  return { proposalId, contractAddress };
+  // check that the contract was created
+  const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
+  const contractAddress = (await userRegistry.getMember(memberAddress))
+    .managingContractAddress;
+  return {
+    contractAddress,
+    proposalId,
+    gasUsed: gasUsedPropose + gasUsedVote + gasUsedExecute,
+    gasUsedPropose,
+    gasUsedVote,
+    gasUsedExecute,
+  };
 }

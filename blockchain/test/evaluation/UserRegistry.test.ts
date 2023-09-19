@@ -5,7 +5,7 @@ import {
   UserRegistry__factory,
 } from "../../artifacts-frontend/typechain";
 import {
-  EVALUATION_32_STRING,
+  EVALUATION_32_CHAR_STRING,
   MEMBER_VOTING_POWER,
   UPDATE_DOCUMENT_URI,
 } from "../TestConfig";
@@ -32,7 +32,7 @@ describe("UserRegistry evaluation", function () {
   it("New member", async () => {
     const tx = await userRegistry.addMember(
       supplychainManager,
-      EVALUATION_32_STRING,
+      EVALUATION_32_CHAR_STRING,
       UPDATE_DOCUMENT_URI,
       MEMBER_VOTING_POWER
     );
@@ -45,7 +45,7 @@ describe("UserRegistry evaluation", function () {
   it("New actor", async () => {
     const tx = await userRegistry.addActor(
       actor1,
-      EVALUATION_32_STRING,
+      EVALUATION_32_CHAR_STRING,
       UPDATE_DOCUMENT_URI
     );
     await tx.wait();
@@ -57,13 +57,13 @@ describe("UserRegistry evaluation", function () {
   it("Update member", async () => {
     const tx = await userRegistry["updateMember(address,string,string)"](
       supplychainManager,
-      EVALUATION_32_STRING.replace(/^./, "~"),
+      EVALUATION_32_CHAR_STRING.replace(/^./, "~"),
       UPDATE_DOCUMENT_URI
     );
     await tx.wait();
 
     const member = await userRegistry.getMember(supplychainManager);
-    expect(member.name).equal(EVALUATION_32_STRING.replace(/^./, "~"));
+    expect(member.name).equal(EVALUATION_32_CHAR_STRING.replace(/^./, "~"));
   });
 
   it("Update actor", async () => {
@@ -72,13 +72,13 @@ describe("UserRegistry evaluation", function () {
     );
     const tx = await userRegistryAsActor1.updateActor(
       actor1,
-      EVALUATION_32_STRING.replace(/^./, "~"),
+      EVALUATION_32_CHAR_STRING.replace(/^./, "~"),
       UPDATE_DOCUMENT_URI
     );
     await tx.wait();
 
     const actor = await userRegistry.getActor(actor1);
-    expect(actor.name).equal(EVALUATION_32_STRING.replace(/^./, "~"));
+    expect(actor.name).equal(EVALUATION_32_CHAR_STRING.replace(/^./, "~"));
   });
 
   it("Add contract to actor access control list", async () => {

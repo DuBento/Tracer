@@ -15,12 +15,16 @@ export async function execute(
     "GovernorContract"
   );
 
-  console.log("Executing...");
+  // console.log("Executing...");
   const executeTx = await governor.execute(
     [proposalTarget],
     [0],
     [encodedCall],
     descriptionHash
   );
-  await executeTx.wait();
+  const receipt = await executeTx.wait();
+  if (!receipt) throw new Error("No receipt received");
+  const gasUsed = receipt.gasUsed;
+
+  return { gasUsed };
 }

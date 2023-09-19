@@ -4,6 +4,7 @@ import {
   USER_REGISTRY_ADD_MEMBER_METHOD,
 } from "../properties";
 import {
+  EVALUATION_32_CHAR_STRING,
   MEMBER_INFO_URI,
   MEMBER_NAME,
   MEMBER_VOTING_POWER,
@@ -26,7 +27,7 @@ export async function proposeNewMember(
 ) {
   const encodedFunctionCall = await getEncodedFunctionCall(memberAddress);
 
-  const proposalId = await propose(
+  const { proposalId } = await propose(
     await utils.getContractAddress("UserRegistry"),
     encodedFunctionCall,
     USER_REGISTRY_ADD_MEMBER_DESCRIPTION,
@@ -39,7 +40,7 @@ export async function proposeNewMember(
 async function voteFor(proposalId: string) {
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
-  const reason = "I like it!";
+  const reason = EVALUATION_32_CHAR_STRING;
   await vote(proposalId, decision, reason);
 }
 
@@ -73,7 +74,7 @@ export async function newMemberViaGovernance(memberAddress: string) {
   await voteFor(proposalId.toString());
 
   await executeNewMemberProposal(memberAddress);
-  console.log(`Member added: ${memberAddress}`);
+  // console.log(`Member added: ${memberAddress}`);
   member = await getMember(memberAddress);
 
   return { member, proposalId };

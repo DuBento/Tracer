@@ -3,6 +3,7 @@ import { getChainId, network } from "hardhat";
 import { GovernorContract } from "../artifacts-frontend/typechain";
 import * as utils from "../lib/utils";
 import { DEVELOPMENT_CHAINS, VOTING_PERIOD } from "../properties";
+import { EVALUATION_32_CHAR_STRING } from "../test/TestConfig";
 
 export async function vote(
   proposalId: string,
@@ -11,14 +12,14 @@ export async function vote(
   signerAddress?: string,
   moveTimeForward?: boolean
 ) {
-  console.log("Voting...");
+  // console.log("Voting...");
   const governor = await utils.getContract<GovernorContract>(
     "GovernorContract",
     { signerAddress }
   );
 
   let proposalState = await governor.state(proposalId);
-  console.log(`Before - Proposal State: ${proposalState}`);
+  // console.log(`Before - Proposal State: ${proposalState}`);
 
   const voteTx = await governor.castVoteWithReason(
     proposalId,
@@ -27,20 +28,23 @@ export async function vote(
   );
   const receipt = await voteTx.wait();
 
+  if (!receipt) throw new Error("No receipt received");
+  const gasUsed = receipt!.gasUsed;
+
   const events = receipt!.logs.filter(
     (log) => log instanceof EventLog
   ) as EventLog[];
 
-  console.log(
-    `Events reveived: ${JSON.stringify(events.map((event) => event.eventName))}`
-  );
-  console.log(
-    `Events args: ${JSON.stringify(
-      events.map((event) => event.args.toString())
-    )}`
-  );
+  // console.log(
+  //   `Events reveived: ${JSON.stringify(events.map((event) => event.eventName))}`
+  // );
+  // console.log(
+  //   `Events args: ${JSON.stringify(
+  //     events.map((event) => event.args.toString())
+  //   )}`
+  // );
 
-  console.log(`Before - current clock: ${await governor.clock()}`);
+  // console.log(`Before - current clock: ${await governor.clock()}`);
 
   // Moving forward to the end of the voting period
   if (moveTimeForward && DEVELOPMENT_CHAINS.includes(network.name)) {
@@ -49,18 +53,18 @@ export async function vote(
 
   // Check the proposal state
   proposalState = await governor.state(proposalId);
-  console.log(`After - Proposal State: ${proposalState}`);
-  console.log(
-    `After - deadline: ${await governor.proposalDeadline(proposalId)}`
-  );
-  console.log(`After - current clock: ${await governor.clock()}`);
-  return proposalState;
+  // console.log(`After - Proposal State: ${proposalState}`);
+  // console.log(
+  //   `After - deadline: ${await governor.proposalDeadline(proposalId)}`
+  // );
+  // console.log(`After - current clock: ${await governor.clock()}`);
+  return { proposalState, gasUsed };
 }
 
 export async function voteLastProposal() {
   const proposalId = utils.getLastProposalId(await getChainId());
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
-  const reason = "I like it!";
+  const reason = EVALUATION_32_CHAR_STRING;
   await vote(proposalId, decision, reason);
 }

@@ -54,13 +54,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     [batchId, nextState.toString()]
   );
 
-  const proposalId = await propose(
+  const { proposalId } = await propose(
     traceabilityAddress,
     encodedFunctionCall,
     PROPOSAL_DESCRIPTION
   );
 
-  const proposalState = await vote(
+  const { proposalState } = await vote(
     proposalId.toString(),
     1 /* For */,
     PROPOSAL_VOTE_DESCRIPTION
