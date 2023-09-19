@@ -7,7 +7,7 @@ import {
   TRACEABILITY_MOCK_ADDRESS_NAME,
   TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS,
 } from "../../properties";
-import { BATCH_DESCRIPTION, UPDATE_DOCUMENT_URI } from "../TestConfig";
+import { EVALUATION_32_STRING, UPDATE_DOCUMENT_URI } from "../TestConfig";
 
 describe("Traceability evaluation", function () {
   const traceabilityAddress = utils.getStoredAddress(
@@ -37,7 +37,7 @@ describe("Traceability evaluation", function () {
     // Create new batch
     const startTime = performance.now();
     const tx = await traceabilityContract.newBatch(
-      BATCH_DESCRIPTION,
+      EVALUATION_32_STRING,
       UPDATE_DOCUMENT_URI
     );
     const receipt = await tx.wait();
@@ -70,7 +70,7 @@ describe("Traceability evaluation", function () {
   it("Transaction", async () => {
     const attributes = new Array(
       TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS.length
-    ).fill("TRASH");
+    ).fill(EVALUATION_32_STRING);
 
     const startTime = performance.now();
     const tx = await traceabilityContract.handleTransaction(
