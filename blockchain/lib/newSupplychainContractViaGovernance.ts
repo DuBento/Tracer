@@ -98,6 +98,10 @@ export async function newSupplychainContractViaGovernance(
   const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");
   const contractAddress = (await userRegistry.getMember(memberAddress))
     .managingContractAddress;
+
+  if (contractAddress == ethers.ZeroAddress)
+    throw new Error("No traceability contract registered for member");
+
   return {
     contractAddress,
     proposalId,

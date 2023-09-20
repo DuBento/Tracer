@@ -269,7 +269,7 @@ describe("Governor", function () {
     });
 
     it("Interact with onlyOwner functions of the new Traceability contract (via governace)", async function () {
-      const batchId = await newBatch(
+      const { batchId } = await newBatch(
         supplychainContractAsActor1,
         BATCH_DESCRIPTION
       );

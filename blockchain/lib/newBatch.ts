@@ -6,7 +6,7 @@ export async function newBatch(
   traceability: Traceability,
   description: string,
   documentURI?: string
-): Promise<bigint> {
+) {
   const tx = await traceability.newBatch(description, documentURI || "");
   const receipt = await tx.wait();
 
@@ -19,5 +19,8 @@ export async function newBatch(
     ) as NewBatchEvent.Log
   )?.args;
 
-  return newBatchEvent.id;
+  const batchId = newBatchEvent.id;
+  const gasUsed = receipt.gasUsed;
+
+  return { batchId, gasUsed };
 }

@@ -100,7 +100,10 @@ describe("Traceability", function () {
 
   describe("Batches", function () {
     it("New batch should be properly initialized", async function () {
-      const id = await newBatch(Traceability, Values.BATCH_DESCRIPTION);
+      const { batchId: id } = await newBatch(
+        Traceability,
+        Values.BATCH_DESCRIPTION
+      );
 
       const batch = await Traceability.getBatch(id);
 
@@ -117,7 +120,11 @@ describe("Traceability", function () {
     let id: bigint;
 
     beforeEach(async function () {
-      id = await newBatch(Traceability, Values.BATCH_DESCRIPTION);
+      const { batchId } = await newBatch(
+        Traceability,
+        Values.BATCH_DESCRIPTION
+      );
+      id = batchId;
     });
 
     it("New update should be registered correctly", async function () {
@@ -198,7 +205,11 @@ describe("Traceability", function () {
     let id: bigint;
 
     beforeEach(async function () {
-      id = await newBatch(Traceability, Values.BATCH_DESCRIPTION);
+      const { batchId } = await newBatch(
+        Traceability,
+        Values.BATCH_DESCRIPTION
+      );
+      id = batchId;
     });
 
     it("New transaction between actors works correctly", async function () {
