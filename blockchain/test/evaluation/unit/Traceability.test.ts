@@ -1,14 +1,17 @@
 import { assert } from "chai";
 import { deployments, ethers, getNamedAccounts, network } from "hardhat";
-import { Traceability } from "../../artifacts-frontend/typechain";
-import { NewBatchEvent } from "../../artifacts-frontend/typechain/Traceability/Traceability";
-import { utils } from "../../lib";
+import { Traceability } from "../../../artifacts-frontend/typechain";
+import { NewBatchEvent } from "../../../artifacts-frontend/typechain/Traceability/Traceability";
+import { utils } from "../../../lib";
 import {
   DEVELOPMENT_CHAINS,
   TRACEABILITY_MOCK_ADDRESS_NAME,
   TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS,
-} from "../../properties";
-import { EVALUATION_32_CHAR_STRING, UPDATE_DOCUMENT_URI } from "../TestConfig";
+} from "../../../properties";
+import {
+  EVALUATION_32_CHAR_STRING,
+  UPDATE_DOCUMENT_URI,
+} from "../../TestConfig";
 
 describe("Traceability evaluation", function () {
   const traceabilityAddress = utils.getStoredAddress(

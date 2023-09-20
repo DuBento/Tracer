@@ -3,12 +3,12 @@ import { ethers, getNamedAccounts } from "hardhat";
 import {
   UserRegistry,
   UserRegistry__factory,
-} from "../../artifacts-frontend/typechain";
+} from "../../../artifacts-frontend/typechain";
 import {
   EVALUATION_32_CHAR_STRING,
   MEMBER_VOTING_POWER,
   UPDATE_DOCUMENT_URI,
-} from "../TestConfig";
+} from "../../TestConfig";
 
 /* We deploy a new instance of the UserRegistry to be able to test the methods directly without going through the governance process */
 describe("UserRegistry evaluation", function () {

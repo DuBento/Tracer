@@ -6,17 +6,17 @@ import {
   Traceability__factory,
   UserRegistry,
   UserRegistry__factory,
-} from "../../artifacts-frontend/typechain";
+} from "../../../artifacts-frontend/typechain";
 import {
   newMemberViaGovernance,
   newSupplychainContractViaGovernance,
-} from "../../lib";
+} from "../../../lib";
 import {
   EVALUATION_32_CHAR_STRING,
   MEMBER_VOTING_POWER,
   TRANSACTION_REQUIRED_ATTRIBUTE_KEYS,
   UPDATE_DOCUMENT_URI,
-} from "../TestConfig";
+} from "../../TestConfig";
 
 /* We deploy a new instance of the TraceabilityContractFactory to be able to test the methods directly without going through the governance process */
 describe("TraceabilityContractFactory evaluation", function () {
