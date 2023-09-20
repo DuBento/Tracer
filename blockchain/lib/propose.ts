@@ -36,9 +36,9 @@ export async function propose(
   )?.args.proposalId;
   // console.log(`Proposed with proposal ID:\n  ${proposalId}`);
 
-  const proposalState = await governor.state(proposalId);
-  const proposalSnapShot = await governor.proposalSnapshot(proposalId);
-  const proposalDeadline = await governor.proposalDeadline(proposalId);
+  // const proposalState = await governor.state(proposalId);
+  // const proposalSnapShot = await governor.proposalSnapshot(proposalId);
+  // const proposalDeadline = await governor.proposalDeadline(proposalId);
 
   // the Proposal State is an enum data type, defined in the IGovernor contract.
   // 0:Pending, 1:Active, 2:Canceled, 3:Defeated, 4:Succeeded, 5:Queued, 6:Expired, 7:Executed

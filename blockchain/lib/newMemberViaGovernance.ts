@@ -27,27 +27,25 @@ export async function proposeNewMember(
 ) {
   const encodedFunctionCall = await getEncodedFunctionCall(memberAddress);
 
-  const { proposalId } = await propose(
+  return await propose(
     await utils.getContractAddress("UserRegistry"),
     encodedFunctionCall,
     USER_REGISTRY_ADD_MEMBER_DESCRIPTION,
     signerAddress
   );
-
-  return proposalId;
 }
 
 async function voteFor(proposalId: string) {
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
   const reason = EVALUATION_32_CHAR_STRING;
-  await vote(proposalId, decision, reason);
+  return await vote(proposalId, decision, reason);
 }
 
-async function executeNewMemberProposal(memberAddress: string) {
+export async function executeNewMemberProposal(memberAddress: string) {
   const encodedFunctionCall = await getEncodedFunctionCall(memberAddress);
 
-  await execute(
+  return await execute(
     await utils.getContractAddress("UserRegistry"),
     encodedFunctionCall,
     USER_REGISTRY_ADD_MEMBER_DESCRIPTION
@@ -69,13 +67,24 @@ export async function newMemberViaGovernance(memberAddress: string) {
     return { member, proposalId: null };
   }
 
-  const proposalId = await proposeNewMember(memberAddress);
+  const { proposalId, gasUsed: gasUsedPropose } = await proposeNewMember(
+    memberAddress
+  );
 
-  await voteFor(proposalId.toString());
+  const { gasUsed: gasUsedVote } = await voteFor(proposalId.toString());
 
-  await executeNewMemberProposal(memberAddress);
+  const { gasUsed: gasUsedExecute } = await executeNewMemberProposal(
+    memberAddress
+  );
   // console.log(`Member added: ${memberAddress}`);
   member = await getMember(memberAddress);
 
-  return { member, proposalId };
+  return {
+    member,
+    proposalId,
+    gasUsed: gasUsedPropose + gasUsedPropose + gasUsedExecute,
+    gasUsedPropose,
+    gasUsedVote,
+    gasUsedExecute,
+  };
 }

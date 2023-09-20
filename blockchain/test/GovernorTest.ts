@@ -125,7 +125,7 @@ describe("Governor", function () {
     });
 
     it("Propose new member from unregistered account", async function () {
-      const proposalId = await proposeNewMember(actor1, actor1);
+      const { proposalId } = await proposeNewMember(actor1, actor1);
 
       const proposalState = await governorContract.state(proposalId);
       expect(proposalState).to.equal(0); // 0 = Active

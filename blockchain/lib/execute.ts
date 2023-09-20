@@ -1,5 +1,6 @@
 import { ethers } from "hardhat";
 import { GovernorContract } from "../artifacts-frontend/typechain";
+import { ProposalExecutedEvent } from "../artifacts-frontend/typechain/DAO/GovernorContract";
 import * as utils from "../lib/utils";
 
 export async function execute(
@@ -26,5 +27,13 @@ export async function execute(
   if (!receipt) throw new Error("No receipt received");
   const gasUsed = receipt.gasUsed;
 
-  return { gasUsed };
+  const proposalId = (
+    receipt.logs.find(
+      (event: any) =>
+        event instanceof ethers.EventLog &&
+        event.eventName == "ProposalExecuted"
+    ) as ProposalExecutedEvent.Log
+  )?.args.proposalId;
+
+  return { proposalId, gasUsed };
 }
