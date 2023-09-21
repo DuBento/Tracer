@@ -30,6 +30,9 @@ export default function RootLayout({
       lang="en"
       className={`h-full w-full ${montserrat.variable} ${lato.variable}`}
     >
+      <head>
+        <link rel="icon" href="/logo.ico" sizes="any" />
+      </head>
       <body>
         <Toaster position="bottom-left" reverseOrder={false} />
         {children}
