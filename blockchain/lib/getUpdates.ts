@@ -1,11 +1,12 @@
+import { BigNumberish } from "ethers";
 import { Traceability } from "../artifacts-frontend/typechain";
 import { UpdateEvent } from "../artifacts-frontend/typechain/Traceability/Traceability";
 
 export async function getUpdates(
   traceability: Traceability,
-  batchId: string
+  batchId: BigNumberish
 ): Promise<UpdateEvent.OutputObject[]> {
-  // Query all time for any transfer to ethers.eth
+  // Query all time for any update
   const filter = traceability.filters.Update(batchId);
   const events = await traceability.queryFilter(filter);
 

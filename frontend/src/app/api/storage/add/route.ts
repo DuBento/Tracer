@@ -1,4 +1,5 @@
 import TracerAPI from "@/TracerAPI";
+import { connectEthereum } from "@/TracerAPI/connection";
 import CryptoService, {
   FORMDATA_SIGNATURE_KEY,
   FORMDATA_TIMESTAMP_KEY,
@@ -13,6 +14,12 @@ import {
 } from "@/services/StorageService";
 import { NextResponse } from "next/server";
 
+const ALLOWED_BLOCK_WINDOW = 50; // blocks
+
+/**
+ *  TODO Improve by having a dedicated server always running and listening to events, storing the latest to cache the timestamp for security check
+ */
+
 export async function POST(request: Request) {
   try {
     // parse request
@@ -23,6 +30,7 @@ export async function POST(request: Request) {
     // asserts
     await checkValidRequest(requestFormData);
     checkAvailableIndexFilename(files);
+    await checkExistingBatch(requestFormData);
     await checkUserAccess(requestFormData);
 
     // fit with metadata
@@ -119,6 +127,14 @@ async function checkValidRequest(formData: FormData) {
     throw new Error("Wrong form data format: files");
 }
 
+async function checkExistingBatch(formData: FormData) {
+  const contractAddress = formData.get(FORMDATA_CONTRACT_ADDRESS_KEY) as string;
+  const batchId = formData.get(FORMDATA_BATCH_ID_KEY) as string;
+
+  const batch = await TracerAPI.Traceability.getBatch(contractAddress, batchId);
+  if (!batch.id) throw new Error("Batch does not exist");
+}
+
 async function checkUserAccess(formData: FormData) {
   const signature = formData.get(FORMDATA_SIGNATURE_KEY) as string;
   const address = CryptoService.verifySignature(formData, signature);
@@ -135,19 +151,37 @@ async function checkUserAccess(formData: FormData) {
   // Check additional security components
   const timestamp = BigInt(formData.get(FORMDATA_TIMESTAMP_KEY) as string);
   const batchId = formData.get(FORMDATA_BATCH_ID_KEY) as string;
-  const batch = await TracerAPI.Traceability.getBatch(contractAddress, batchId);
-  if (!batch.id) throw new Error("Batch does not exist");
 
-  const greaterUpdateTimestamps = batch.updates
-    .concat(batch.transactions.map((tx) => tx.info))
-    .map((update) => update.ts)
-    .filter((ts) => ts > timestamp)
-    .sort();
-  const valid = greaterUpdateTimestamps.length == 0;
-  if (!valid)
+  const provider = await connectEthereum();
+  const currentBlockNumber = await provider.getBlockNumber();
+  const lastAllowedBlockNumber =
+    currentBlockNumber > ALLOWED_BLOCK_WINDOW
+      ? currentBlockNumber - ALLOWED_BLOCK_WINDOW
+      : 0;
+
+  const updates = await TracerAPI.Traceability.getUpdates(
+    contractAddress,
+    batchId,
+    address,
+    lastAllowedBlockNumber,
+  );
+
+  let lastAllowedTimestamp;
+  if (updates) {
+    const lastUpdate = updates[updates.length - 1];
+    lastAllowedTimestamp = lastUpdate.ts;
+  } else {
+    // query last allowed timestamp
+    const latestAllowedBlock = await provider.getBlock(lastAllowedBlockNumber);
+    if (!latestAllowedBlock)
+      throw new Error("Could not get latest allowed block");
+    lastAllowedTimestamp = latestAllowedBlock?.timestamp;
+  }
+
+  if (lastAllowedTimestamp > timestamp)
     throw new Error(
       `Timestamp is not valid. Wait ${
-        greaterUpdateTimestamps[greaterUpdateTimestamps.length - 1] - timestamp
+        Number(lastAllowedTimestamp) - Number(timestamp)
       } seconds`,
     );
 

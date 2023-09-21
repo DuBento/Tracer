@@ -1,3 +1,4 @@
+import { networkName } from "@/properties";
 import { connectEthereum } from "./connection";
 import deployedAddresses from "./contracts/deployedAddresses.json";
 import {
@@ -6,7 +7,7 @@ import {
   UserRegistry__factory,
 } from "./contracts/typechain";
 
-const userRegistryAddress = deployedAddresses["UserRegistry"];
+const userRegistryAddress = deployedAddresses[networkName]["UserRegistry"];
 
 export type Member = IUserRegistry.MemberStructOutput;
 export type Actor = IUserRegistry.ActorStructOutput;

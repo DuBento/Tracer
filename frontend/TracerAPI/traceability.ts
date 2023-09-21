@@ -2,16 +2,19 @@ import {
   Traceability,
   Traceability__factory,
 } from "@/TracerAPI/contracts/typechain";
-import { EventLog, ethers } from "ethers";
+import { AddressLike, BigNumberish, EventLog, ethers } from "ethers";
 import { connectEthereum, connectSigner } from "./connection";
-import { NewBatchEvent } from "./contracts/typechain/supplychain/Traceability";
+import {
+  NewBatchEvent,
+  UpdateEvent,
+} from "./contracts/typechain/Traceability/Traceability";
 
 // Types
 
 export type Batch = Traceability.BatchStructOutput;
 export type BatchId = ethers.BigNumberish;
 
-export type Update = Traceability.UpdateStructOutput;
+export type Update = UpdateEvent.OutputObject;
 export type PartialUpdate = Partial<Update>;
 
 export type Transaction = Traceability.TransactionStructOutput;
@@ -49,7 +52,7 @@ const Traceability = {
       contract.getBatch(id),
     ),
 
-  listenOnNewBatchEvent: async (contractAddress: string) => {
+  listenOnNewBatchEvent: async (contractAddress: string) =>
     Traceability.connectReadOnly(contractAddress).then(
       async (contract: Traceability) => {
         const currentAddress = await contract.getAddress();
@@ -61,8 +64,25 @@ const Traceability = {
           );
         });
       },
-    );
-  },
+    ),
+
+  getUpdates: async (
+    contractAddress: string,
+    batchId: BigNumberish,
+    owner?: AddressLike,
+    nBlocks?: number,
+  ): Promise<Update[]> =>
+    Traceability.connectReadOnly(contractAddress).then(
+      async (contract: Traceability) => {
+        const negativeBlocks = nBlocks ? -Math.abs(nBlocks) : undefined;
+
+        // Query all time for any update
+        const filter = contract.filters.Update(batchId, owner);
+        const events = await contract.queryFilter(filter, negativeBlocks);
+
+        return events.map((event) => event.args);
+      },
+    ),
 
   // State changing methods
 

@@ -12,13 +12,13 @@ import { useState } from "react";
 const ManagementPage = () => {
   const [batchId, setBatchId] = useState<string>();
   const [contractAddress, setContractAddress] = useState<string>(
-    TracerAPI.deployedAddresses["mockTraceabilityContract"],
+    TracerAPI.getContractAddress("mockTraceabilityContract"),
   );
 
-  const defaultBatchId = TracerAPI.deployedAddresses["mockBatchId"];
+  const defaultBatchId = TracerAPI.getContractAddress("mockBatchId");
 
   return (
-    <main className="bg-khaki text-oxford_blue relative h-screen w-full overflow-auto px-8 py-4">
+    <main className="relative h-screen w-full overflow-auto bg-khaki px-8 py-4 text-oxford_blue">
       <div className="absolute right-0 top-0 pr-7 pt-7">
         <ChangeContractAddress {...{ contractAddress, setContractAddress }} />
       </div>

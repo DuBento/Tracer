@@ -2,7 +2,6 @@ import TracerAPI from "@/TracerAPI";
 import {
   CLIENT_VIEW_PAGE_LOCATION,
   GS1_DATA_LINK_BATCH_PREFIX,
-  networkName,
 } from "@/properties";
 import EthSymbol from "@/public/images/eth-symbol";
 import GithubSymbol from "@/public/images/github-symbol";
@@ -10,10 +9,10 @@ import Logo from "@/public/images/logo";
 import Image from "next/image";
 
 export default function Home() {
-  const defaultContractAddress =
-    TracerAPI.deployedAddresses[networkName]["mockTraceabilityContract"];
-  const defaultBatchId =
-    TracerAPI.deployedAddresses[networkName]["mockBatchId"];
+  const defaultContractAddress = TracerAPI.getContractAddress(
+    "mockTraceabilityContract",
+  );
+  const defaultBatchId = TracerAPI.getContractAddress("mockBatchId");
 
   const encodedBatchURL = TracerAPI.Utils.encodeBatchURI(
     defaultBatchId,

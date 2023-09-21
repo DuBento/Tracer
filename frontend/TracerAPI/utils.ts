@@ -1,6 +1,6 @@
 import base64url from "base64url";
 import { BigNumberish, ethers } from "ethers";
-import Traceability, { Batch, BatchId } from "./traceability";
+import Traceability, { Batch, BatchId, Update } from "./traceability";
 import UserRegistry from "./userRegistry";
 
 const BATCH_URI_DELIMITER = "@";
@@ -126,26 +126,28 @@ const Utils = {
     };
   },
 
-  getInvolvedActors: (batch: Batch): Set<string> => {
+  getInvolvedActors: (batch: Batch, updates: Update[]): Set<string> => {
     const actors = new Set<string>();
 
     actors.add(batch.currentOwner);
 
-    batch.updates.forEach((update) => {
+    updates.forEach((update) => {
       actors.add(update.owner);
     });
 
     batch.transactions.forEach((transaction) => {
       actors.add(transaction.receiver);
-      actors.add(transaction.info.owner);
     });
 
     return actors;
   },
 
-  getActorNamesMemoized: async (batch: Batch): Promise<Map<string, string>> => {
+  getActorNamesMemoized: async (
+    batch: Batch,
+    updates: Update[],
+  ): Promise<Map<string, string>> => {
     const actorNamesMap = new Map<string, string>();
-    const actorAddresses = Utils.getInvolvedActors(batch);
+    const actorAddresses = Utils.getInvolvedActors(batch, updates);
 
     for (const address of actorAddresses) {
       if (address in actorNamesMap) continue;
@@ -162,6 +164,8 @@ const Utils = {
     const batch = await Traceability.getBatch(contractAddress, batchId);
     if (!batch.id) return undefined;
 
+    const updates = await Traceability.getUpdates(contractAddress, batchId);
+
     const managerAddress =
       await Traceability.getContractManagerAddress(contractAddress);
     const member = await UserRegistry.getMember(managerAddress);
@@ -172,27 +176,35 @@ const Utils = {
     const requiredTransactionAttributesKeys =
       await Traceability.getRequiredTransactionAttributesKeys(contractAddress);
 
-    const actorNamesMap = await Utils.getActorNamesMemoized(batch);
+    const actorNamesMap = await Utils.getActorNamesMemoized(batch, updates);
     const { stateDescription, warning } = Utils.parseBatchState(batch.state);
 
     const eventLog: BatchEventLog[] = [];
+    let actor = batch.transactions[0].receiver;
+
     for (const transaction of batch.transactions) {
+      const transactionUpdateIdx = updates.findLastIndex(
+        (update) => update.owner == actor,
+      );
+      const transactionUpdate = updates[transactionUpdateIdx];
+      updates.splice(transactionUpdateIdx, 1);
+
       const event = {
         isTransaction: true,
         transactionAttributes: transaction.additionalAttributesValues,
-        ts: transaction.info.ts,
-        date: Utils.parseDate(transaction.info.ts),
-        time: Utils.parseTime(transaction.info.ts),
-        documentURI: transaction.info.documentURI,
+        ts: transactionUpdate!.ts,
+        date: Utils.parseDate(transactionUpdate!.ts),
+        time: Utils.parseTime(transactionUpdate!.ts),
+        documentURI: transactionUpdate!.documentURI,
       };
 
       const existingActorEventLog = eventLog.find(
-        (log) => log.actorAddress == transaction.info.owner,
+        (log) => log.actorAddress == transactionUpdate!.owner,
       );
       if (existingActorEventLog == undefined) {
         eventLog.push({
-          actorName: actorNamesMap.get(transaction.info.owner) || "Unknown",
-          actorAddress: transaction.info.owner,
+          actorName: actorNamesMap.get(transactionUpdate!.owner) || "Unknown",
+          actorAddress: transactionUpdate!.owner,
           events: [event],
         });
       } else {
@@ -207,17 +219,19 @@ const Utils = {
         eventLog.push({
           actorName: actorNamesMap.get(transaction.receiver) || "Unknown",
           actorAddress: transaction.receiver,
-          receivingDate: Utils.parseDate(transaction.info.ts),
-          receivingTime: Utils.parseTime(transaction.info.ts),
+          receivingDate: Utils.parseDate(transactionUpdate!.ts),
+          receivingTime: Utils.parseTime(transactionUpdate!.ts),
           events: [],
         });
       } else {
-        receivingActor.receivingDate = Utils.parseDate(transaction.info.ts);
-        receivingActor.receivingTime = Utils.parseTime(transaction.info.ts);
+        receivingActor.receivingDate = Utils.parseDate(transactionUpdate!.ts);
+        receivingActor.receivingTime = Utils.parseTime(transactionUpdate!.ts);
       }
+
+      actor = transaction.receiver;
     }
 
-    for (const update of batch.updates) {
+    for (const update of updates) {
       const event = {
         isTransaction: false,
         ts: update.ts,
