@@ -4,6 +4,7 @@ import { ethers } from "hardhat";
 
 import { Traceability } from "../artifacts-frontend/typechain";
 import { newBatch } from "../lib";
+import { getUpdates } from "../lib/getUpdates";
 import * as Values from "./TestConfig";
 import { deploySupplychainFixture } from "./fixtures/deploySupplychain.fixture";
 
@@ -49,8 +50,10 @@ describe("Traceability", function () {
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
       expect(batch.transactions).to.have.lengthOf(1);
       expect(batch.transactions[0].receiver).to.equal(batchOwner);
-      expect(batch.transactions[0].info.owner).to.equal(batchOwner);
-      expect(batch.transactions[0].info.documentURI).to.equal("");
+      const updates = await getUpdates(Traceability, id.toString());
+      const lastUpdate = updates[updates.length - 1];
+      expect(lastUpdate.owner).to.equal(batchOwner);
+      expect(lastUpdate.documentURI).to.equal("");
     });
   });
 
@@ -69,14 +72,13 @@ describe("Traceability", function () {
       await Traceability.handleUpdate(id, Values.UPDATE_DOCUMENT_URI);
 
       const batch = await Traceability.getBatch(id);
-      const updateIdx = batch.updates.length - 1;
 
       expect(batch.id).to.equal(id);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
-      expect(batch.updates[updateIdx].owner).to.equal(batchOwner);
-      expect(batch.updates[updateIdx].documentURI).to.equal(
-        Values.UPDATE_DOCUMENT_URI
-      );
+      const updates = await getUpdates(Traceability, id.toString());
+      const lastUpdate = updates[updates.length - 1];
+      expect(lastUpdate.owner).to.equal(batchOwner);
+      expect(lastUpdate.documentURI).to.equal(Values.UPDATE_DOCUMENT_URI);
     });
 
     xit("New update with owner address different than tx sender", async function () {
@@ -165,9 +167,9 @@ describe("Traceability", function () {
       expect(batch.currentOwner).to.equal(actor1);
       expect(batch.description).to.equal(Values.BATCH_DESCRIPTION);
       expect(batch.transactions[transactionIdx].receiver).to.equal(actor1);
-      expect(batch.transactions[transactionIdx].info.owner).to.equal(
-        batchOwner
-      );
+      const updates = await getUpdates(Traceability, id.toString());
+      const lastUpdate = updates[updates.length - 1];
+      expect(lastUpdate.owner).to.equal(batchOwner);
     });
 
     it("New transaction from actor that is not the current owner", async function () {

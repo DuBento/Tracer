@@ -14,19 +14,11 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         address currentOwner;
         ConformityState.State state;
         string description;
-        Update[] updates;
         Transaction[] transactions;
-    }
-
-    struct Update {
-        address owner;
-        uint48 ts; // as specified in EIP-6372
-        string documentURI;
     }
 
     struct Transaction {
         address receiver;
-        Update info;
         string[] additionalAttributesValues;
     }
 
@@ -41,6 +33,12 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
 
     // Events
     event NewBatch(address indexed owner, uint256 id);
+    event Update(
+        uint256 indexed batchId,
+        address indexed owner,
+        uint48 ts,
+        string documentURI
+    ); // ts: as specified in EIP-6372
 
     // Errors
     error UserIsNotCurrentBatchOwner();
@@ -131,6 +129,7 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
 
         // handle create transaction
         Transaction memory transaction = _newTransaction(
+            batchId,
             msg.sender,
             documentURI_,
             new string[](0)
@@ -140,18 +139,6 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         emit NewBatch(msg.sender, batch.id);
 
         return batchId;
-    }
-
-    function handleUpdate(
-        uint256 id_,
-        string memory documentURI_
-    ) public allowedActor {
-        Batch storage batch = batches[id_];
-        _assertValidUpdate(batch);
-        // Send BCEvent
-        // Record Update
-        Update memory update = _newUpdate(documentURI_);
-        batch.updates.push(update);
     }
 
     function handleTransaction(
@@ -167,6 +154,7 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         _assertValidAdditionalAttributes(additionalAttributesValues_);
 
         Transaction memory transaction = _newTransaction(
+            id_,
             receiver_,
             documentURI_,
             additionalAttributesValues_
@@ -174,6 +162,16 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         batch.transactions.push(transaction);
 
         batch.currentOwner = receiver_;
+    }
+
+    function handleUpdate(
+        uint256 id_,
+        string memory documentURI_
+    ) public allowedActor {
+        Batch storage batch = batches[id_];
+        _assertValidUpdate(batch);
+
+        _newUpdate(id_, documentURI_);
     }
 
     /**
@@ -192,23 +190,22 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
 
     //* internal
 
-    function _newUpdate(
-        string memory documentURI_
-    ) internal view returns (Update memory) {
-        return Update(msg.sender, SafeCast.toUint48(clock()), documentURI_);
-    }
-
+    /**
+     * The first update from an actor is the update related to the transaction.
+     * Defined implicitly to save gas.
+     */
     function _newTransaction(
+        uint256 id_,
         address receiver_,
         string memory documentURI_,
         string[] memory additionalAttributesValues_
-    ) internal view returns (Transaction memory) {
-        return
-            Transaction(
-                receiver_,
-                _newUpdate(documentURI_),
-                additionalAttributesValues_
-            );
+    ) internal returns (Transaction memory) {
+        _newUpdate(id_, documentURI_);
+        return Transaction(receiver_, additionalAttributesValues_);
+    }
+
+    function _newUpdate(uint256 id_, string memory documentURI_) internal {
+        emit Update(id_, msg.sender, SafeCast.toUint48(clock()), documentURI_);
     }
 
     //* private

@@ -13,7 +13,7 @@ export async function deploySupplychainFixture() {
   const { deployer, supplychainManager, actor1, actor2, actor3 } =
     await getNamedAccounts();
 
-  await deployments.fixture("dao_addons");
+  await deployments.fixture(["dao_addons"]);
 
   // Add Traceability manager as memeber to user registry
   const userRegistry = await utils.getContract<UserRegistry>("UserRegistry");

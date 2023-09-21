@@ -30,6 +30,8 @@ import {
 } from "../../TestConfig";
 
 describe("Workload 1", function () {
+  const N_UPDATES = 10;
+
   var supplychainManager: string;
   var actor1: string;
   var actor2: string;
@@ -166,7 +168,7 @@ describe("Workload 1", function () {
     console.log(`Gas used creating a new batch: ${gasUsed}`);
   });
 
-  it("Each actor pushes one update and one transaction", async () => {
+  it(`Each actor pushes ${N_UPDATES} update and one transaction`, async () => {
     let traceabilityContract = await utils.getContract<Traceability>(
       "Traceability",
       { contractAddress: traceabilityContractAddress }
@@ -182,13 +184,15 @@ describe("Workload 1", function () {
       );
 
       // update
-      const tx = await traceabilityContract.handleUpdate(
-        batchId,
-        EVALUATION_URI
-      );
-      const receipt = await tx.wait();
-      if (!receipt) throw new Error("No receipt");
-      gasUsedArrayUpdate.push(Number(receipt.gasUsed));
+      for (let j = 0; j < N_UPDATES; j++) {
+        const tx = await traceabilityContract.handleUpdate(
+          batchId,
+          EVALUATION_URI
+        );
+        const receipt = await tx.wait();
+        if (!receipt) throw new Error("No receipt");
+        gasUsedArrayUpdate.push(Number(receipt.gasUsed));
+      }
 
       // transaction
       if (i + 1 >= actors.length) break; // no transaction for last actor
