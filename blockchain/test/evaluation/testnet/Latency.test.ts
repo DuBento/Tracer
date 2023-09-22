@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 
 const NUMBER_OF_BLOCK_FOR_AVERAGE = 500;
+const NUMBER_OF_ITERATIONS = 25;
 
 describe("Latency evaluation", function () {
   before(async function () {});
@@ -28,9 +29,17 @@ describe("Latency evaluation", function () {
   });
 
   it(`Approximate network latency`, async function () {
-    const startTime = performance.now();
-    await ethers.provider.getBlockNumber();
-    const endTime = performance.now();
-    console.log("Network latency (ms): ", endTime - startTime);
+    const times = [];
+    for (let i = 0; i < NUMBER_OF_ITERATIONS; i++) {
+      const startTime = performance.now();
+      await ethers.provider.getBlockNumber();
+      const endTime = performance.now();
+      times.push(endTime - startTime);
+    }
+    console.log(
+      `Mean network latency for ${NUMBER_OF_ITERATIONS} calls (ms): ${
+        times.reduce((a, b) => a + b, 0) / times.length
+      }`
+    );
   });
 });
