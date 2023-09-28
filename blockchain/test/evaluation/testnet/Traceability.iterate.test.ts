@@ -8,7 +8,7 @@ import {
   TRACEABILITY_MOCK_ADDRESS_NAME,
 } from "../../../properties";
 import {
-  EVALUATION_32_CHAR_STRING,
+  EVALUATION_31_CHAR_STRING,
   UPDATE_DOCUMENT_URI,
 } from "../../TestConfig";
 
@@ -47,7 +47,7 @@ describe("Traceability iterative evaluation (times)", function () {
   async function createNewBatch() {
     const startTime = performance.now();
     const tx = await traceabilityContract.newBatch(
-      EVALUATION_32_CHAR_STRING,
+      EVALUATION_31_CHAR_STRING,
       UPDATE_DOCUMENT_URI
     );
     const receipt = await tx.wait();

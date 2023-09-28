@@ -3,7 +3,7 @@ import { getChainId, network } from "hardhat";
 import { GovernorContract } from "../artifacts-frontend/typechain";
 import * as utils from "../lib/utils";
 import { DEVELOPMENT_CHAINS, VOTING_PERIOD } from "../properties";
-import { EVALUATION_32_CHAR_STRING } from "../test/TestConfig";
+import { EVALUATION_31_CHAR_STRING } from "../test/TestConfig";
 
 export async function vote(
   proposalId: string,
@@ -65,6 +65,6 @@ export async function voteLastProposal() {
   const proposalId = utils.getLastProposalId(await getChainId());
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
-  const reason = EVALUATION_32_CHAR_STRING;
+  const reason = EVALUATION_31_CHAR_STRING;
   await vote(proposalId, decision, reason);
 }

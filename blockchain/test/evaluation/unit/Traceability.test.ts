@@ -9,7 +9,7 @@ import {
   TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS,
 } from "../../../properties";
 import {
-  EVALUATION_32_CHAR_STRING,
+  EVALUATION_31_CHAR_STRING,
   UPDATE_DOCUMENT_URI,
 } from "../../TestConfig";
 
@@ -44,7 +44,7 @@ describe("Traceability evaluation", function () {
     // Create new batch
     const startTime = performance.now();
     const tx = await traceabilityContract.newBatch(
-      EVALUATION_32_CHAR_STRING,
+      EVALUATION_31_CHAR_STRING,
       UPDATE_DOCUMENT_URI
     );
     const receipt = await tx.wait();
@@ -77,7 +77,7 @@ describe("Traceability evaluation", function () {
   it("Transaction", async () => {
     const attributes = new Array(
       TRACEABILITY_MOCK_REQUIRED_UPDATE_ATTRIBUTES_KEYS.length
-    ).fill(EVALUATION_32_CHAR_STRING);
+    ).fill(EVALUATION_31_CHAR_STRING);
 
     const startTime = performance.now();
     const tx = await traceabilityContract.handleTransaction(

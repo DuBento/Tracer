@@ -4,7 +4,7 @@ import {
   USER_REGISTRY_ADD_MEMBER_METHOD,
 } from "../properties";
 import {
-  EVALUATION_32_CHAR_STRING,
+  EVALUATION_31_CHAR_STRING,
   MEMBER_INFO_URI,
   MEMBER_NAME,
   MEMBER_VOTING_POWER,
@@ -38,7 +38,7 @@ export async function proposeNewMember(
 async function voteFor(proposalId: string) {
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
-  const reason = EVALUATION_32_CHAR_STRING;
+  const reason = EVALUATION_31_CHAR_STRING;
   return await vote(proposalId, decision, reason);
 }
 

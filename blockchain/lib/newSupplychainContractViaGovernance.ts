@@ -9,7 +9,7 @@ import {
   SUPPLYCHAIN_CREATE_METHOD,
   SUPPLYCHAIN_CREATE_PROPOSAL_DESCRIPTION,
 } from "../properties";
-import { EVALUATION_32_CHAR_STRING } from "../test/TestConfig";
+import { EVALUATION_31_CHAR_STRING } from "../test/TestConfig";
 
 const encodeFunctionCallPromise = (
   memberAddress: string,
@@ -44,7 +44,7 @@ async function proposeCreateSupplychain(
 async function voteFor(proposalId: string) {
   // 0 = Against, 1 = For, 2 = Abstain
   const decision = 1;
-  const reason = EVALUATION_32_CHAR_STRING;
+  const reason = EVALUATION_31_CHAR_STRING;
   return await vote(proposalId, decision, reason);
 }
 

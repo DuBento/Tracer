@@ -12,7 +12,7 @@ import {
   newSupplychainContractViaGovernance,
 } from "../../../lib";
 import {
-  EVALUATION_32_CHAR_STRING,
+  EVALUATION_31_CHAR_STRING,
   MEMBER_VOTING_POWER,
   TRANSACTION_REQUIRED_ATTRIBUTE_KEYS,
   UPDATE_DOCUMENT_URI,
@@ -53,7 +53,7 @@ describe("TraceabilityContractFactory evaluation", function () {
     // add necessary member
     tx = await userRegistry.addMember(
       supplychainManager,
-      EVALUATION_32_CHAR_STRING,
+      EVALUATION_31_CHAR_STRING,
       UPDATE_DOCUMENT_URI,
       MEMBER_VOTING_POWER
     );
@@ -63,7 +63,7 @@ describe("TraceabilityContractFactory evaluation", function () {
   it("Create new contract using the clone factory directly", async () => {
     const tx = await traceabilityContractFactory.create(
       supplychainManager,
-      EVALUATION_32_CHAR_STRING,
+      EVALUATION_31_CHAR_STRING,
       TRANSACTION_REQUIRED_ATTRIBUTE_KEYS
     );
     const receipt = await tx.wait();
@@ -94,7 +94,7 @@ describe("TraceabilityContractFactory evaluation", function () {
       await userRegistry.getAddress(),
       supplychainManager,
       supplychainManager,
-      EVALUATION_32_CHAR_STRING,
+      EVALUATION_31_CHAR_STRING,
       TRANSACTION_REQUIRED_ATTRIBUTE_KEYS
     );
     await tx.wait();
