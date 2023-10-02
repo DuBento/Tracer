@@ -96,7 +96,7 @@ describe("On chain files vs off chain (ipfs) comparation", function () {
     }
 
     console.log(
-      "Gas used for storing files on chain\n",
+      "Gas used for storing files off-chain\n",
       `Sizes: ${sizes}\n`,
       `Gas: ${gasUsed}\n`
     );
