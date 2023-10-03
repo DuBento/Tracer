@@ -19,6 +19,20 @@ describe("On chain files vs off chain (ipfs) comparation", function () {
   var actor1: string;
   var batchId: string;
 
+  const KB = 1024;
+  const sizes = [
+    1 * KB,
+    5 * KB,
+    10 * KB,
+    25 * KB,
+    50 * KB,
+    75 * KB,
+    95 * KB,
+    100 * KB,
+    125 * KB,
+    // KB * KB /* 1MB */,
+  ];
+
   before(async () => {
     if (DEVELOPMENT_CHAINS.includes(network.name)) {
       await deployments.fixture(["all"]);
@@ -49,17 +63,6 @@ describe("On chain files vs off chain (ipfs) comparation", function () {
   }
 
   it("Get gas used for update, storing file on chain. Different file sizes", async () => {
-    const KB = 1024;
-    const sizes = [
-      1 * KB,
-      5 * KB,
-      10 * KB,
-      20 * KB,
-      30 * KB,
-      40 * KB,
-      50 * KB,
-      KB * KB /* 1MB */,
-    ];
     const gasUsed = [];
 
     for (const size of sizes) {
@@ -71,11 +74,11 @@ describe("On chain files vs off chain (ipfs) comparation", function () {
         console.log("tx: ", tx.hash);
         const receipt = await tx.wait();
         gasUsed.push(Number(receipt!.gasUsed));
-        console.log(`Size: ${size} bytes : ${receipt!.gasUsed} gas`);
+        console.log(`Size: ${string.length} bytes : ${receipt!.gasUsed} gas`);
       } catch (error: any) {
         gasUsed.push("error");
         console.log(
-          `Size: ${size} bytes : error ${error.message} ${error.code} ${error.data}`
+          `Size: ${string.length} bytes : error ${error.message} ${error.code} ${error.data}`
         );
         console.log(JSON.stringify(error));
         console.error(error);
@@ -91,17 +94,6 @@ describe("On chain files vs off chain (ipfs) comparation", function () {
   });
 
   it("Get gas used for update, storing file off chain (ipfs). Different file sizes", async () => {
-    const KB = 1024;
-    const sizes = [
-      1 * KB,
-      5 * KB,
-      10 * KB,
-      20 * KB,
-      30 * KB,
-      40 * KB,
-      50 * KB,
-      KB * KB /* 1MB */,
-    ];
     const gasUsed = [];
 
     for (const size of sizes) {
