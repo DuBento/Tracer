@@ -84,7 +84,7 @@ const config: HardhatUserConfig = {
       ],
     },
     sepolia: {
-      url: `https://sepolia.infura.io/v3/${secrets.INFURA_API_KEY}`,
+      url: secrets.ETHEREUM_PROVIDER_URL,
       accounts: secrets.SEPOLIA_ACCOUNTS,
     },
   },
