@@ -1,24 +1,39 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import { deployments, getNamedAccounts, network } from "hardhat";
 import { Traceability } from "../../../artifacts-frontend/typechain";
-import { newBatch } from "../../../lib";
+import { newBatch, utils } from "../../../lib";
+import {
+  DEVELOPMENT_CHAINS,
+  TRACEABILITY_MOCK_ADDRESS_NAME,
+} from "../../../properties";
 import { BATCH_DESCRIPTION, EVALUATION_URI } from "../../TestConfig";
-import { deploySupplychainFixture } from "../../fixtures/deploySupplychain.fixture";
 
 describe("On chain files vs off chain (ipfs) comparation", function () {
+  this.timeout(0); // Disable test timeout
+
+  const traceabilityAddress = utils.getStoredAddress(
+    TRACEABILITY_MOCK_ADDRESS_NAME,
+    network.name
+  );
   var traceabilityContract: Traceability;
-  var supplyChainAddress: string;
-  var deployer: string;
   var manager: string;
-  var batchOwner: string;
+  var actor1: string;
   var batchId: string;
 
   before(async () => {
-    const values = await loadFixture(deploySupplychainFixture);
-    traceabilityContract = values.contract;
-    supplyChainAddress = values.contractAddress;
-    deployer = values.deployer;
-    manager = values.supplychainManager;
-    batchOwner = values.actor1;
+    if (DEVELOPMENT_CHAINS.includes(network.name)) {
+      await deployments.fixture(["all"]);
+    }
+    const namedAccounts = await getNamedAccounts();
+    manager = namedAccounts.supplychainManager;
+    actor1 = namedAccounts.actor1;
+
+    traceabilityContract = await utils.getContract<Traceability>(
+      "Traceability",
+      {
+        contractAddress: traceabilityAddress,
+        signerAddress: actor1,
+      }
+    );
 
     const { batchId: id } = await newBatch(
       traceabilityContract,
@@ -52,10 +67,18 @@ describe("On chain files vs off chain (ipfs) comparation", function () {
 
       try {
         const tx = await traceabilityContract.handleUpdate(batchId, string);
+        console.log("Gaslimit: ", tx.gasLimit);
+        console.log("tx: ", tx.hash);
         const receipt = await tx.wait();
         gasUsed.push(Number(receipt!.gasUsed));
-      } catch (error) {
+        console.log(`Size: ${size} bytes : ${receipt!.gasUsed} gas`);
+      } catch (error: any) {
         gasUsed.push("error");
+        console.log(
+          `Size: ${size} bytes : error ${error.message} ${error.code} ${error.data}`
+        );
+        console.log(JSON.stringify(error));
+        console.error(error);
         continue;
       }
     }
@@ -89,8 +112,11 @@ describe("On chain files vs off chain (ipfs) comparation", function () {
         );
         const receipt = await tx.wait();
         gasUsed.push(Number(receipt!.gasUsed));
+        console.log(`Size: ${size} bytes : ${receipt!.gasUsed} gas`);
       } catch (error) {
         gasUsed.push("error");
+        console.log(`Size: ${size} bytes : error`);
+        console.error(error);
         continue;
       }
     }
