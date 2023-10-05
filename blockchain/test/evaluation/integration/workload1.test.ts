@@ -17,20 +17,25 @@ import {
   UserRegistry,
 } from "../../../artifacts-frontend/typechain";
 import {
+  execute,
   newBatch,
   newMemberViaGovernance,
   newSupplychainContractViaGovernance,
+  propose,
   utils,
+  vote,
 } from "../../../lib";
 import {
   ACTOR_INFO_URI,
   ACTOR_NAME,
   BATCH_DESCRIPTION,
   EVALUATION_URI,
+  PROPOSAL_DESCRIPTION,
+  PROPOSAL_VOTE_DESCRIPTION,
 } from "../../TestConfig";
 
 describe("Workload 1", function () {
-  const N_UPDATES = 10;
+  const N_UPDATES = 1;
 
   var supplychainManager: string;
   var actor1: string;
@@ -224,6 +229,55 @@ describe("Workload 1", function () {
         .map((gas) => gas.toString())
         .join(" + ")}])`
     );
+  });
+
+  it("Supplychain manager flags the batch via governance", async () => {
+    const traceabilityContract = await utils.getContract<Traceability>(
+      "Traceability",
+      {
+        contractAddress: traceabilityContractAddress,
+        signerAddress: supplychainManager,
+      }
+    );
+    const nextState =
+      await traceabilityContract.CONFORMITY_STATE_CORRECTIVE_MEASURE_NEEDED();
+
+    const encodedFunctionCall = await utils.encodeFunctionCall(
+      "Traceability",
+      "changeConformityState",
+      [batchId.toString(), nextState.toString()]
+    );
+
+    const { proposalId, gasUsed: gasUsedPropose } = await propose(
+      traceabilityContractAddress,
+      encodedFunctionCall,
+      PROPOSAL_DESCRIPTION
+    );
+
+    const { gasUsed: gasUsedVote } = await vote(
+      proposalId.toString(),
+      1 /* For */,
+      PROPOSAL_VOTE_DESCRIPTION
+    );
+
+    const { gasUsed: gasUsedExecute } = await execute(
+      traceabilityContractAddress,
+      encodedFunctionCall,
+      PROPOSAL_DESCRIPTION
+    );
+
+    expect((await traceabilityContract.getBatch(batchId)).state).to.equal(
+      nextState
+    );
+
+    console.log(
+      `Gas used flagging the batch via governance: ${
+        gasUsedPropose + gasUsedVote + gasUsedExecute
+      } = ${gasUsedPropose} (propose) + ${gasUsedVote} (vote) + ${gasUsedExecute} (execute)`
+    );
+
+    totalGasUsed +=
+      Number(gasUsedPropose) + Number(gasUsedVote) + Number(gasUsedExecute);
   });
 
   after(function () {
