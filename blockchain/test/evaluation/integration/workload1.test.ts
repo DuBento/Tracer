@@ -64,15 +64,14 @@ describe("Workload 1", function () {
   });
 
   it("Register new regional member via Governance [propose, vote and execute]", async () => {
-    const { member, gasUsed } = await newMemberViaGovernance(
-      supplychainManager
-    );
+    const { member, gasUsed, gasUsedPropose, gasUsedVote, gasUsedExecute } =
+      await newMemberViaGovernance(supplychainManager);
 
     expect(member.addr).to.equal(supplychainManager);
 
     totalGasUsed += Number(gasUsed);
     console.log(
-      `Gas used registering a new member via governance [propose, vote and execute]: ${gasUsed} = ${gasUsed} (propose) + ${gasUsed} (vote) + ${gasUsed} (execute)`
+      `Gas used registering a new member via governance [propose, vote and execute]: ${gasUsed} = ${gasUsedPropose} (propose) + ${gasUsedVote} (vote) + ${gasUsedExecute} (execute)`
     );
   });
 
