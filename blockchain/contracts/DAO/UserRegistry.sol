@@ -174,9 +174,9 @@ contract UserRegistry is IUserRegistry, Ownable, ConformityState {
         address contract_,
         address addr_
     ) public view override returns (bool) {
-        address[] memory contracts = actors[addr_].participatingContracts;
-        for (uint i = 0; i < contracts.length; i++) {
-            if (contracts[i] == contract_) {
+        uint256 len = actors[addr_].participatingContracts.length;
+        for (uint i = 0; i < len; i++) {
+            if (actors[addr_].participatingContracts[i] == contract_) {
                 return true;
             }
         }
