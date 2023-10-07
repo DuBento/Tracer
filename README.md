@@ -222,3 +222,9 @@ All files written with Typescript.
 
 - For development, using a Docker container running [Kubo](https://hub.docker.com/r/ipfs/kubo/) (default IPFS implementation in Go)
 - For production or other, possible to use external pining services and gateways like [pinata](https://www.pinata.cloud/)
+
+---
+
+## Acknowledgments:
+
+I'd like to thank [@susmonteiro](https://www.github.com/susmonteiro) for her invaluable support, and especially for sharing some of her creativity and design insights with me.
