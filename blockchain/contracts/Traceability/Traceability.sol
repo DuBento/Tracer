@@ -120,7 +120,9 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         string memory description_,
         string memory documentURI_
     ) public allowedActor returns (uint256) {
-        uint256 batchId = _generateId();
+        uint256 batchId = _generateId(
+            keccak256(abi.encode(description_, documentURI_))
+        );
         Batch storage batch = batches[batchId];
         batch.id = batchId;
         batch.description = description_;
@@ -211,11 +213,16 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
 
     //* private
 
-    function _generateId() private view returns (uint256) {
+    function _generateId(bytes32 payloadHash_) private view returns (uint256) {
         return
             uint256(
                 keccak256(
-                    abi.encode(msg.sender, block.timestamp, block.prevrandao)
+                    abi.encode(
+                        payloadHash_,
+                        msg.sender,
+                        block.timestamp,
+                        block.prevrandao
+                    )
                 )
             );
     }
