@@ -147,6 +147,7 @@ contract Traceability is Ownable, ConformityState, IERC6372 {
         string memory documentURI_,
         string[] memory additionalAttributesValues_
     ) public allowedActor {
+        // allowed actor could be removed and only check if its the same as the current batch owner, but kept for clarity
         Batch storage batch = batches[id_];
         _assertValidUpdate(batch);
         _assertAllowedActor(receiver_);
