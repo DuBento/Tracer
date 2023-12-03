@@ -11,7 +11,7 @@
 
 https://github.com/DuBento/Tracer/assets/46141125/266f3af3-eadd-4e62-9a42-a7b7ed2109fc
 
-[Paper](https://github.com/DuBento/Tracer/blob/main/paper.md)
+[Paper](https://github.com/DuBento/Tracer/blob/main/paper.pdf)
 
 ## Instructions:
 
