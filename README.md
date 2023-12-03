@@ -7,7 +7,9 @@
 > Tracer provides a transparent, secure, and decentralized ledger of transactions recorded throughout the supply chain. It also incorporates an external file system to record large artifacts of product information, e.g. images, aiding consumers in making a more informed purchase decision. The reliability of our system makes for efficient product identification in the event of a food safety incident.
 > Our proposal introduces a Decentralized Autonomous Organization (DAO) as the regulatory body of our system. This DAO allows for decentralized decision-making while maintaining regulatory oversight, setting it apart from other traceability systems. Moreover, the system offers user-friendly interfaces, including a consumer-oriented timeline design accessed via QR codes on product packaging.
 
-[![Demo](https://img.youtube.com/vi/dcXOgJ5bFWQ/maxresdefault.jpg)](https://youtu.be/dcXOgJ5bFWQ)
+**Demo**
+
+https://github.com/DuBento/Tracer/assets/46141125/266f3af3-eadd-4e62-9a42-a7b7ed2109fc
 
 [Paper](https://github.com/DuBento/Tracer/blob/main/paper.md)
 
