@@ -1,4 +1,4 @@
-export const EVALUATION = true;
+export const EVALUATION = false;
 
 // Constants
 export const EVALUATION_31_CHAR_STRING = "Evaluation string with 31 chars";
